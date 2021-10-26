@@ -76,16 +76,12 @@ datatable_default <- function(data,
 #' @title qpr_infobox
 #' @description Function to render infobox from default template for QPR tabitems
 #' @inheritParams qpr_datatable
-#' @inheritParams shinydashboard::infoBox
-#' @inheritDotParams shinydashboard::infoBox
+#' @inheritParams bs4Dash::infoBox
+#' @inheritDotParams bs4Dash::infoBox
 #' @param .replace \code{(logical)} whether to replace the default arguments with those supplied and eliminate the default arguments, or to replace existing defaults & and add additional args specified
 #' @inheritParams shinydashboard infoBox
-#' @param ... \code{(named arguments)} passed on to \link[shinydashboard]{infoBox}
+#' @param ... \code{(named arguments)} passed on to \link[bs4Dash]{infoBox}
 #' @export
-#' @importFrom rlang fn_fmls call_args dots_list exec `!!!`
-#' @importFrom tidyselect starts_with
-#' @importFrom purrr list_modify
-#' @importFrom shinydashboard infoBox
 
 qpr_infobox <- function(.data,
                         .replace = FALSE,
@@ -113,7 +109,7 @@ qpr_infobox <- function(.data,
     .ib_opts[[i]] <- eval(.ib_opts[[i]])
   }
   
-  rlang::exec(shinydashboard::infoBox, !!!.ib_opts)
+  rlang::exec(bs4Dash::infoBox, !!!.ib_opts)
 }
 
 

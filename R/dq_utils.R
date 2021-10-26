@@ -11,13 +11,15 @@
 #' test <- data.frame(Issue = 1:5, Type = sample(c("Warning", "Error"), 5, TRUE), ProjectName = letters[1:5], EntryDate = seq.Date(lubridate::floor_date(lubridate::today() - 4, "month"), Sys.Date(), length.out = 5), ExitDate = seq.Date(lubridate::today() - 4, Sys.Date(), by = "day"))
 dq_filter_between <- function(x,
   ...,
-  env = rlang::caller_env()
+  date_range,
+  project
 ) {
   out <- x
-  if (exists("input", env))
+  if (!missing(date_range))
     out <- out |>
-      HMIS::served_between(isolate(env$input$date_range[1]), isolate(env$input$date_range[2])) |> 
-      dplyr::filter(ProjectName %in% isolate(env$input$project))
+      HMIS::served_between(date_range[1], date_range[2])
+  if (!missing(project))
+    out <- dplyr::filter(out, ProjectID %in% project)
   
   
   .dots <- rlang::enexprs(...)
@@ -50,8 +52,9 @@ dq_filter_between <- function(x,
 #' @examples
 #' dq_select_cols(data.frame(UniqueID = 1:3, Issue = letters[1:3], EntryDate = 1:3, blah = 1:3), blah)
 dq_select_cols <- function(x, ..., default = list(`Unique ID` = "UniqueID",
-                                                  "Issue",
-                                                  `Entry Date` = "EntryDate")) {
+                                                  `Entry Date` = "EntryDate",
+                                                  "Type",
+                                                  "Issue")) {
   
   ex <- rlang::enexprs(...)
   if (UU::is_legit(default))

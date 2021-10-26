@@ -33,6 +33,7 @@ golem_add_external_resources <- function(){
  
   tags$head(
     favicon(),
+    tags$script("js/new_tab_badges.js"),
     bundle_resources(
       path = app_sys('app/www'),
       app_title = 'RminorElevated'

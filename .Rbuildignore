@@ -7,3 +7,5 @@ $run_dev.*
 ^README\.Rmd$
 ^LICENSE\.md$
 ^\.httr-oauth$
+^app\.R$
+^rsconnect$

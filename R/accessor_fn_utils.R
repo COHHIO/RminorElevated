@@ -19,7 +19,7 @@ create_accessors <- function(path = "data") {
                     file_time = file.info(file.path(path, name))$mtime,
                     needs_update = file_time < client_modified) 
     
-    files_to_download <- dplyr::filter(db_files, !name %in% basename(files) | needs_update)
+    files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
     
     if (nrow(files_to_download)) {
       if (!dir.exists(path))
@@ -29,6 +29,18 @@ create_accessors <- function(path = "data") {
     files <- UU::list.files2(path)
   }
   purrr::map(files, accessor_create)
+}
+
+do_assignment <- function(funs, ns = "RminorElevated") {
+  namespace <- rlang::ns_env(ns)
+  rlang::env_unlock(namespace)
+  purrr::iwalk(funs, ~{
+    if (exists(.y, envir = namespace))
+      rlang::env_binding_unlock(namespace, .y)
+    assign(.y, .x, envir = namespace)
+    assignInNamespace(.y, .x, ns, envir = namespace)
+    rlang::env_binding_lock(namespace, .y)
+  })
 }
 
 #' @title Authorize Dropbox

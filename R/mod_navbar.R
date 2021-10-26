@@ -10,16 +10,10 @@
 mod_navbar_ui <- function(id){
   ns <- NS(id)
     bs4Dash::bs4DashNavbar(
-      skin = "dark",
-      status = "gray-dark",
+      tags$img(src = "www/Rme-logo.png"),
+      status = "white",
       border = TRUE,
       sidebarIcon = shiny::icon("bars"),
-      leftUi = tagList(
-        
-      ),
-      rightUi = tagList(
-        
-      ),
       fixed = FALSE
     )
 }

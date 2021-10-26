@@ -7,7 +7,7 @@
 dq_select_cols(
   x,
   ...,
-  default = list(`Unique ID` = "UniqueID", "Issue", `Entry Date` = "EntryDate")
+  default = list(`Unique ID` = "UniqueID", `Entry Date` = "EntryDate", "Type", "Issue")
 )
 }
 \arguments{

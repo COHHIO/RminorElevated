@@ -9,10 +9,11 @@
 #' @importFrom shiny NS tagList 
 mod_sidebar_ui <- function(id){
   ns <- NS(id)
+  refreshed <- purrr::map(list.files(path = "data", full.names = TRUE), ~file.info(.x)$mtime) |> {\(x) {do.call(c, x)}}() |> max()
   bs4Dash::bs4DashSidebar(
-    title = HTML("<small>The Colorado River Basin Outlook</small>"),
-    skin = "dark",
-    status = "primary",
+    title = HTML("<small>RminorElevated</small>"),
+    status = "white",
+    skin = "light",
     elevation = 4,
     collapsed = TRUE,
     expandOnHover = TRUE,
@@ -83,6 +84,11 @@ mod_sidebar_ui <- function(id){
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
+          text = "Ending Veteran Homelessness",
+          tabName = "vet_active_list", # cocCompetitionTab
+          icon = shiny::icon("medal")
+        ),
+        bs4Dash::bs4SidebarMenuItem(
           text = "BoS CoC Competition",
           tabName = "coc_competition", # cocCompetitionTab
           icon = shiny::icon("flag-checkered")
@@ -125,11 +131,15 @@ mod_sidebar_ui <- function(id){
           )
         ),
         actionButton(
-          inputId = "logOutButton",
+          inputId = "logOut",
           label = "Log Out",
           onclick =
-            "window.open('https://ohiobalanceofstatecoc.shinyapps.io/Rminor_elevated/__logout__/')"
-        )
+            "window.open(window.location.href + '__logout__/')"
+        ),
+        tags$small(paste0("Data refreshed: ", refreshed), style = paste0("color:", purrr::when(refreshed, 
+                                                                                               . > Sys.Date() ~ "#28a745",
+                                                                                               . > Sys.Date() - 7 ~ "#ffc107",
+                                                                                               ~ "#dc3545"), ";"),  id = "dataRefresh")
       )
       
     )

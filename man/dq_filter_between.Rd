@@ -4,16 +4,14 @@
 \alias{dq_filter_between}
 \title{Filter data.frame with default filters for DQ}
 \usage{
-dq_filter_between(x, ..., env = rlang::caller_env())
+dq_filter_between(x, ..., date_range, project)
 }
 \arguments{
 \item{x}{\code{(data.frame)} with `ProjectName`, `EntryDate`, `ExitDate`}
 
-\item{...}{\code{(character)} Additional expressions passed on to \link[dplyr]{filter}}
+\item{...}{\code{(character)} Expressions passed on to \link[dplyr]{filter}}
 
 \item{env}{\code{(environment)} The parent environment from which to retrieve input reactiveValues}
-
-\item{Issue}{\code{(character)} If issue names to filter for}
 }
 \value{
 \code{(data.frame)} filtered accordingly

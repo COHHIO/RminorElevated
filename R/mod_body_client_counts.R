@@ -12,7 +12,9 @@ mod_body_client_counts_ui <- function(id){
   shiny::tagList(
     ui_header_row(),
     ui_row_box(
-      ui_picker_project()
+      ui_picker_project(),
+      ui_date_range(start = Sys.Date() - lubridate::days(90)),
+      headerBorder = FALSE
     ),
     ui_row_box(
       title = "Summary",
@@ -34,19 +36,19 @@ mod_body_client_counts_server <- function(id){
     ns <- session$ns
     
     output$header <- shiny::renderUI({
-      list(shiny::h2("Client Counts Report"),
-           shiny::h4(input$project))
+           server_header(
+             title = "Client Counts Report",
+             project = input$project,
+             date_range = input$date_range
+             )
     })
     
     output$dt_output <- DT::renderDataTable({
       
-      
-     
         validation()  |> 
           HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-          dplyr::filter(ProjectName == input$project) |>
+          dplyr::filter(ProjectID == input$project) |>
           dplyr::mutate(
-            PersonalID = as.character(PersonalID),
             RelationshipToHoH = dplyr::case_when(
               RelationshipToHoH == 1 ~ "Head of Household",
               RelationshipToHoH == 2 ~ "Child",
@@ -81,25 +83,24 @@ mod_body_client_counts_server <- function(id){
             ),
             sort = lubridate::today() - EntryDate
           ) |>
-          dplyr::mutate(PersonalID = as.character(PersonalID)) |>
           dplyr::arrange(dplyr::desc(sort), HouseholdID, PersonalID) |>
           dplyr::select(
             "County" = CountyServed,
-            "Client ID" = PersonalID,
+            "Unique ID" = UniqueID,
             "Relationship to Head of Household" = RelationshipToHoH,
             "Entry Date" = EntryDate,
             "Move In Date (RRH/PSH Only)" = MoveInDateAdjust,
             "Exit Date" = ExitDate,
             Status
           ) |> 
-            datatable_default()
+            datatable_default(escape = FALSE)
     })
     
     output$summary <- DT::renderDataTable({
       
       hhs <- validation() |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectName == input$project) |>
+        dplyr::filter(ProjectID == input$project) |>
         dplyr::select(HouseholdID,
                       ProjectType,
                       EntryDate,
@@ -134,7 +135,7 @@ mod_body_client_counts_server <- function(id){
       
       clients <- validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectName == input$project) |>
+        dplyr::filter(ProjectID == input$project) |>
         dplyr::select(PersonalID,
                       ProjectType,
                       EntryDate,

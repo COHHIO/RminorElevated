@@ -29,9 +29,9 @@ Sys.setenv(TZ = "America/New_York")
 # library(feather)
 db_auth()
 # Create accessor functions
-list2env(create_accessors("data"), .GlobalEnv)
+do_assignment(create_accessors("data"))
 
-clarity_url <- "https://cohhio.clarityhs.com"
+
 
 
 
@@ -39,7 +39,10 @@ clarity_url <- "https://cohhio.clarityhs.com"
 
 
 if (exists("validation")) {
-  projects <- sort(validation()$ProjectName) |> unique()
+  projects <- validation() |>
+    dplyr::distinct(ProjectID, ProjectName) |>
+    dplyr::arrange(ProjectName) |> 
+      {\(x) {rlang::set_names(x$ProjectID, x$ProjectName)}}()
   
   desk_time_providers <- validation() |>
     HMIS::entered_between(Sys.Date() - lubridate::years(1),

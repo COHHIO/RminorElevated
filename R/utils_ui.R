@@ -29,9 +29,16 @@ ui_picker_project <- function(
 #' @return A fluidrow containing a minimizable box with the header
 #' @export
 
-ui_header_row <- function(outputId = rlang::caller_env()$ns("header")) {
-  shiny::fluidRow(bs4Dash::box(shiny::htmlOutput(outputId), width = width))
-}
+ui_header_row <-
+  function(outputId = rlang::caller_env()$ns("header"),
+           width = 12,
+           headerBorder = FALSE) {
+    shiny::fluidRow(bs4Dash::box(
+      shiny::htmlOutput(outputId),
+      width = width,
+      headerBorder = headerBorder
+    ))
+  }
 
 #' @title A date range picker with sensible defaults
 #'
@@ -67,33 +74,59 @@ ui_date_range <- function(
 #' @examples
 #' ui_row_box(tags$p("Hi"))
 ui_row_box <- function(...,
-                       title,
-                       footer,
-                       status,
+                       title = NULL,
+                       footer = NULL,
+                       status = NULL,
                        solidHeader = FALSE,
-                       background,
+                       background = NULL,
                        width = 12,
-                       height,
+                       height = NULL,
                        collapsible = TRUE,
                        collapsed = FALSE,
                        closable = FALSE,
                        maximizable = FALSE,
-                       icon,
+                       icon = NULL,
                        gradient = FALSE,
                        boxToolSize = "sm",
-                       elevation,
+                       elevation = NULL,
                        headerBorder = TRUE,
-                       label,
-                       dropdownMenu,
-                       sidebar,
-                       id) {
+                       label = NULL,
+                       dropdownMenu = NULL,
+                       sidebar = NULL,
+                       id = NULL) {
   
-  .missing <- UU::missing_args(include_null = FALSE)
-  .present <- ls() |> 
-    {\(x) {x[!x %in% c(.missing, "...")]}}() |> 
-    rlang::set_names()
   .dots <- rlang::dots_list(...)
-  shiny::fluidRow(eval(rlang::call2(bs4Dash::box, !!!purrr::map(.present, rlang::sym), !!!.dots)))
+  if (UU::is_legit(.dots)) {
+    out <- shiny::fluidRow(class = "ui_row_box", eval(
+      rlang::call2(
+        bs4Dash::box,
+        title = title,
+        footer = footer,
+        status = status,
+        solidHeader = solidHeader,
+        background = background,
+        width = width,
+        height = height,
+        collapsible = collapsible,
+        collapsed = collapsed,
+        closable = closable,
+        maximizable = maximizable,
+        icon = icon,
+        gradient = gradient,
+        boxToolSize = "sm",
+        elevation = elevation,
+        headerBorder = headerBorder,
+        label = label,
+        dropdownMenu = dropdownMenu,
+        sidebar = sidebar,
+        id = id,
+        !!!.dots
+      )
+    ))
+  } else {
+    out <- NULL
+  }
+  out
 }
 
 #' @title A default full width row box.
@@ -102,41 +135,64 @@ ui_row_box <- function(...,
 #' @export
 #'
 #' @examples
-#' ui_box_solid("Hi")
-ui_box_solid <- function(...,
-                       title,
-                       footer,
-                       status,
+#' ui_solid_box("Hi")
+ui_solid_box <- function(...,
+                       title = NULL,
+                       footer = NULL,
+                       status = NULL,
                        solidHeader = TRUE,
-                       background,
-                       width = 6,
-                       height,
+                       background = NULL,
+                       width = 12,
+                       height = NULL,
                        collapsible = TRUE,
                        collapsed = FALSE,
                        closable = FALSE,
                        maximizable = FALSE,
-                       icon,
+                       icon = NULL,
                        gradient = FALSE,
                        boxToolSize = "sm",
-                       elevation,
+                       elevation = NULL,
                        headerBorder = TRUE,
-                       label,
-                       dropdownMenu,
-                       sidebar,
-                       id
-                       ) {
-  
-  
+                       label = NULL,
+                       dropdownMenu = NULL,
+                       sidebar = NULL,
+                       id = NULL) {
   if (!missing(id))
     id = purrr::when(id, 
                      stringr::str_detect(., "^dq\\_box\\_", negate = TRUE) ~ paste0("dq_box_", .),
                      ~ .)
-  .missing <- UU::missing_args(include_null = FALSE)
-  .dots <- rlang::dots_list(..., .named = TRUE)
-  .present <- ls() |> 
-    {\(x) {x[!x %in% c(.missing, "...")]}}() |> 
-    rlang::set_names()
-  eval(rlang::call2(bs4Dash::box, !!!purrr::map(.present, rlang::sym), !!!.dots))
+  .dots <- rlang::dots_list(...)
+  if (UU::is_legit(.dots)) {
+    out <- shiny::fluidRow(class = "ui_row_box", eval(
+      rlang::call2(
+        bs4Dash::box,
+        title = title,
+        footer = footer,
+        status = status,
+        solidHeader = solidHeader,
+        background = background,
+        width = width,
+        height = height,
+        collapsible = collapsible,
+        collapsed = collapsed,
+        closable = closable,
+        maximizable = maximizable,
+        icon = icon,
+        gradient = gradient,
+        boxToolSize = "sm",
+        elevation = elevation,
+        headerBorder = headerBorder,
+        label = label,
+        dropdownMenu = dropdownMenu,
+        sidebar = sidebar,
+        id = id,
+        !!!.dots
+      )
+    ))
+  } else {
+    out <- NULL
+  }
+  out
 }
 
 
