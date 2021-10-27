@@ -52,7 +52,7 @@ if (exists("validation")) {
   
 }
   
-# tab_choices <- unique(regions()$RegionName) |> 
+# tab_choices <- unique(Regions()$RegionName) |> 
 # {list(
 #   spdat1 = list(
 #     choices = .
