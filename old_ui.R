@@ -106,7 +106,7 @@ old_ui <- function(request) {
                 label = "Select County/-ies",
                 inputId = "prioritizationCounty",
                 multiple = TRUE,
-                choices = regions() %>%
+                choices = Regions() %>%
                   filter(County != "Mahoning") %>%
                   arrange(County) %>% pull(County),
                 options = pickerOptions(
@@ -167,7 +167,7 @@ old_ui <- function(request) {
                   label = "Select County/-ies",
                   inputId = "vaccineCounty",
                   multiple = TRUE,
-                  choices = regions() %>%
+                  choices = Regions() %>%
                     arrange(County) %>% pull(County),
                   options = pickerOptions(
                     liveSearch = TRUE,
@@ -222,7 +222,7 @@ old_ui <- function(request) {
                   label = "Select County/-ies",
                   inputId = "vaccineStatusCounty",
                   multiple = TRUE,
-                  choices = regions() %>%
+                  choices = Regions() %>%
                     arrange(County) %>% pull(County),
                   options = pickerOptions(
                     liveSearch = TRUE,
@@ -310,7 +310,7 @@ old_ui <- function(request) {
                         label = "Select County/-ies",
                         inputId = "vetCounty",
                         multiple = TRUE,
-                        choices = regions() %>%
+                        choices = Regions() %>%
                           arrange(County) %>% pull(County),
                         options = pickerOptions(
                           liveSearch = TRUE,

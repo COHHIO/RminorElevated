@@ -23,3 +23,5 @@ inst/auth/
 data/
 inst/auth
 .Renviron
+
+.files/

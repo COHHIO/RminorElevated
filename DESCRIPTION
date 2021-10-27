@@ -36,7 +36,6 @@ RoxygenNote: 7.1.1.9001
 URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
-    '_disable_autoload.R'
     'accessor_fn_utils.R'
     'app_config.R'
     'app_server.R'
@@ -59,6 +58,7 @@ Collate:
     'mod_body_dq_system_wide.R'
     'mod_body_dq_timeliness.R'
     'mod_body_dq_unsheltered.R'
+    'mod_body_prioritization.R'
     'mod_body_utilization.R'
     'mod_data_quality.R'
     'mod_navbar.R'
