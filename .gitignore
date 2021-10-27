@@ -25,3 +25,5 @@ inst/auth
 .Renviron
 
 .files/
+
+inst/app/www/css/custom.min.css

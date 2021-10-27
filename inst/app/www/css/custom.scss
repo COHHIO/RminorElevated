@@ -12,8 +12,11 @@
 
 // Fix the alignment of sidebar text & hide it when minimized
 .sidebar-mini {
-  &  .nav-sidebar .nav-link {
+  & .nav-sidebar .nav-link {
     white-space: normal;
+    word-wrap: break-word;
+    display: inline-flex;
+    align-items: center;
   }
   &.sidebar-collapse .main-sidebar {
     .nav-sidebar {
@@ -23,7 +26,9 @@
     }
     &:hover .nav-sidebar {
       & span, #logOut, #dataRefresh {
-        display: inherit;
+        display: inline-block;
+        white-space: normal;
+        word-wrap: break-word;
       }
     }
   }
