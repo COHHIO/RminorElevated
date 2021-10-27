@@ -39,40 +39,6 @@ qpr_datatable <- function(.data,
 }
 
 
-
-#' @title DT Datatable with some helpful defaults
-#'
-#' @inheritParams DT::datatable
-#' @inheritDotParams DT::datatable
-#'
-#' @return \code{(shiny.tag)}
-#' @export
-
-datatable_default <- function(data,
-                         rownames = FALSE,
-                         options = list(dom = 'Bfrtip',
-                                        buttons = c('copy', 'excel', 'csvHtml5'),
-                                        responsive = TRUE),
-                         filter = list(position = 'top',
-                                       clear = TRUE,
-                                       plain = FALSE),
-                         extensions = "Buttons",
-                         style = "bootstrap4",
-                         elementId = NULL,
-                         ...) {
-  DT::datatable(
-    data,
-    rownames = rownames,
-    filter = filter,
-    options = options,
-    extensions = extensions,
-    style = style,
-    elementId = elementId,
-    ...
-  )
-}
-
-
 #' @title qpr_infobox
 #' @description Function to render infobox from default template for QPR tabitems
 #' @inheritParams qpr_datatable
