@@ -24,7 +24,7 @@ create_accessors <- function(path = "data") {
     if (nrow(files_to_download)) {
       if (!dir.exists(path))
         UU::mkpath(path)
-      slider::slide(files_to_download, ~rdrop2::drop_download(.x$path_display, file.path(path, .x$name), overwrite = TRUE))
+      apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
     }
     files <- UU::list.files2(path)
   }
