@@ -15,8 +15,7 @@ mod_sidebar_ui <- function(id){
     skin = "light",
     elevation = 4,
     collapsed = TRUE,
-    expandOnHover = TRUE,
-    fixed = FALSE,
+    fixed = TRUE,
       bs4Dash::bs4SidebarMenu(
         id = "active_tab",
         compact = TRUE,
@@ -95,6 +94,7 @@ mod_sidebar_ui <- function(id){
         bs4Dash::bs4SidebarMenuItem(
           text = "Quarterly Performance Report",
           icon = shiny::icon("file-medical-alt"),
+          tabName = "qpr",
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Community Need",
             tabName = "qpr_community_need" #spdatTab
