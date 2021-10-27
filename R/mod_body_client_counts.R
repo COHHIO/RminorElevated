@@ -83,7 +83,7 @@ mod_body_client_counts_server <- function(id){
             ),
             sort = lubridate::today() - EntryDate
           ) |>
-          dplyr::arrange(dplyr::desc(sort), HouseholdID, PersonalID) |>
+          dplyr::arrange(dplyr::desc(sort), HouseholdID) |>
           dplyr::select(
             "County" = CountyServed,
             "Unique ID" = UniqueID,
@@ -136,8 +136,7 @@ mod_body_client_counts_server <- function(id){
       clients <- validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID == input$project) |>
-        dplyr::select(PersonalID,
-                      ProjectType,
+        dplyr::select(ProjectType,
                       EntryDate,
                       MoveInDateAdjust,
                       ExitDate) |>
