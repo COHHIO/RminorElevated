@@ -5,30 +5,27 @@ accessor_create <- function(.x) rlang::new_function(args =
                         ... = ,
                       ),
                     body = base::quote({
-                      if (file.info(path)$mtime < lubridate::floor_date(Sys.time(), "day"))
+                      last_modified <- file.info(path)$mtime
+                      md <- rdrop2::drop_get_metadata(file.path(dropbox_folder, basename(path)))
+                      if (last_modified < lubridate::floor_date(Sys.time(), "day") && lubridate::as_datetime(md$client_modified) > last_modified)
                         rdrop2::drop_download(file.path(dropbox_folder, basename(path)), local_path = path, overwrite = TRUE)
                       UU::file_fn(path)(path, ...)
                       
                     }))
 
-create_accessors <- function(path = "data") {
+create_accessors <- function(path = "data", dropbox_folder = file.path("RminorElevated")) {
   files <- UU::list.files2(path)
-  if (any(purrr::map_lgl(files, ~file.info(.x)$mtime < lubridate::floor_date(Sys.time(), "day")))) {
-    db_files <- rdrop2::drop_dir("RminorElevated") |> 
-      dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
-                    file_time = file.info(file.path(path, name))$mtime,
-                    needs_update = file_time < client_modified) 
-    
-    files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
-    
-    if (nrow(files_to_download)) {
-      if (!dir.exists(path))
-        UU::mkpath(path)
-      apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
-    }
-    files <- UU::list.files2(path)
+  db_files <- rdrop2::drop_dir("RminorElevated") |> 
+    dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
+                  file_time = file.info(file.path(path, name))$mtime,
+                  needs_update = file_time < client_modified)
+  files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
+  if (nrow(files_to_download)) {
+    if (!dir.exists(path))
+      UU::mkpath(path)
+    apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
   }
-  purrr::map(files, accessor_create)
+  purrr::map(UU::list.files2(path), accessor_create)
 }
 
 do_assignment <- function(funs, ns = "RminorElevated") {
