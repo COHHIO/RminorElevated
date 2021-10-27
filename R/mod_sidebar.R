@@ -11,7 +11,6 @@ mod_sidebar_ui <- function(id){
   ns <- NS(id)
   refreshed <- purrr::map(list.files(path = "data", full.names = TRUE), ~file.info(.x)$mtime) |> {\(x) {do.call(c, x)}}() |> max()
   bs4Dash::bs4DashSidebar(
-    title = HTML("<small>RminorElevated</small>"),
     status = "white",
     skin = "light",
     elevation = 4,
@@ -39,7 +38,7 @@ mod_sidebar_ui <- function(id){
         bs4Dash::bs4SidebarMenuItem(
           text = "COVID-19",
           tabName = "covid19",
-          icon = shiny::icon("syringe"),
+          icon = shiny::icon("virus"),
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Vaccine Status",
             tabName = "c19_vaccine_status"
@@ -134,7 +133,7 @@ mod_sidebar_ui <- function(id){
           inputId = "logOut",
           label = "Log Out",
           onclick =
-            "window.open(window.location.href + '__logout__/')"
+            "window.open(window.location.href + '__logout__/', '_self')"
         ),
         tags$small(paste0("Data refreshed: ", refreshed), style = paste0("color:", purrr::when(refreshed, 
                                                                                                . > Sys.Date() ~ "#28a745",
