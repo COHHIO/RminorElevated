@@ -10,7 +10,7 @@
 mod_navbar_ui <- function(id){
   ns <- NS(id)
     bs4Dash::bs4DashNavbar(
-      tags$img(src = "www/Rme-logo.png"),
+      shiny::tags$h2("RminorElevated"),
       status = "white",
       border = TRUE,
       sidebarIcon = shiny::icon("bars"),

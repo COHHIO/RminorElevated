@@ -112,7 +112,7 @@ mod_data_quality_ui <- function(id){
           fluidRow(box(
             pickerInput(
               inputId = ns("regionList3"),
-              choices = c(unique(regions()$RegionName)),
+              choices = c(unique(Regions()$RegionName)),
               options = pickerOptions(liveSearch = TRUE,
                                       liveSearchStyle = 'contains'),
               width = "70%"
