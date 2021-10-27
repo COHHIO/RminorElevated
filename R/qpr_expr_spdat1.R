@@ -4,7 +4,7 @@ qpr_expr$spdat1$expr <- rlang::expr({
   .dat <- qpr_spdats_project() %>%
     HMIS::entered_between(input$date_range[1],
                           input$date_range[2]) %>%
-    dplyr::left_join(., regions(), by = c("CountyServed" = "County")) %>%
+    dplyr::left_join(., Regions(), by = c("CountyServed" = "County")) %>%
     dplyr::filter(RegionName == input$region)
   
   .detail <- .dat %>% 

@@ -4,7 +4,7 @@ qpr_expr$spdat2$expr <- rlang::expr({
   .dat <- qpr_spdats_county() %>%
     served_between(input$date_range[1],
                    input$date_range[2]) %>%
-    left_join(regions(), by = c("CountyServed" = "County")) %>%
+    left_join(Regions(), by = c("CountyServed" = "County")) %>%
     filter(RegionName == input$region)
   
   .detail <- .dat %>% 
