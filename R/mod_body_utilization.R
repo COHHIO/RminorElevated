@@ -1,267 +1,159 @@
+
+
 #' mod_body_utilization UI Function
 #'
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd 
+#' @noRd
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList
 # TODO Need to finish here
-.mod_body_utilization_ui <- function(id){
-  ns <- NS(id)
+mod_body_utilization_ui <- function(id) {
+  ns <- shiny::NS(id)
+  date_range <-
+    names(utilizers_clients()) |> stringr::str_subset("[a-zA-Z]{3}\\d{4}") |> lubridate::parse_date_time(orders = "bY") |> sort()
+  choices <- utilization_clients() |> 
+    dplyr::distinct(ProjectName, ProjectID) |> 
+    dplyr::arrange(ProjectName) |> 
+    {\(x) {rlang::set_names(dplyr::pull(x, ProjectID), dplyr::pull(x, ProjectName))}}()
   
-    fluidPage(
-      ui_header_row(),
-      fluidRow(
-        box(
-          title = "NOTICE",
-          status = "warning",
-          solidHeader = TRUE,
-          "During this time, congregate facilities should be aiming to deconcentrate. If this causes fluctuations in Utilization, that is okay. Please continue to keep your clients safe."
-          ,
-          width = 6
-        )
+  shiny::fluidPage(
+    ui_header_row(),
+    ui_row_box(
+      ui_picker_project(choices = choices),
+      shinyWidgets::airDatepickerInput(
+        inputId = ns("date_range"),
+        label = "Click to Choose a Month",
+        maxDate = max(date_range) + lubridate::dmonths(1),
+        minDate = min(date_range),
+        dateFormat = "MM yyyy",
+        view = "month",
+        value =
+          lubridate::floor_date(rm_dates()$meta_HUDCSV$Export_Date, unit = "month") - lubridate::days(1),
+        minView = "months",
+        addon = "none",
+        autoClose = TRUE,
+        width = '50%'
       ),
-      fluidRow(box(
-        ui_picker_project(),
-        airDatepickerInput(
-          inputId = "utilizationDate",
-          label = "Click to Choose a Month",
-          max = ymd(floor_date(rm_dates()$meta_HUDCSV$Export_Date, unit = "month") - days(1)),
-          min = ymd(floor_date(ymd(
-            rm_dates()$meta_HUDCSV$Export_End
-          ), "month") - years(2) + days(1)),
-          dateFormat = "MM yyyy",
-          view = "month",
-          value =
-            ymd(floor_date(rm_dates()$meta_HUDCSV$Export_Date, unit = "month") - days(1)),
-          minView = "months",
-          addon = "none",
-          autoClose = TRUE,
-          width = '50%'
-        ),
-        width = 12
-      )),
-      fluidRow(box(
-        infoBoxOutput("utilizationSummary0", width = '100%'),
-        infoBoxOutput("utilizationSummary1", width = '100%'),
-        infoBoxOutput("utilizationSummary2", width = '100%'),
-        width = 12
-      )),
-      fluidRow(box(
-        DT::dataTableOutput("utilizationDetail"), width = 12
-      ))
-    )
-    
+      width = 12
+    ),
+    ui_row_box(
+      bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
+        "infobox_bn_served"
+      ), width = '100%')),
+      bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
+        "infobox_pbn_available"
+      ), width = '100%')),
+      bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
+        "infobox_bu_served"
+      ), width = '100%')),
+      width = 12
+    ),
+    ui_row_box(DT::dataTableOutput(ns("detail")), width = 12)
+  )
+  
 }
-    
+
 #' mod_body_utilization Server Functions
 #'
 #' @noRd 
-.mod_body_utilization_server <- function(id){
-  moduleServer( id, function(input, output, session){
+mod_body_utilization_server <- function(id){
+  shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$headerUtilization <- renderUI({
-      list(h2("Bed and Unit Utilization"),
-           h4(input$providerListUtilization),
-           h4(format(ymd(
-             input$utilizationDate
-           ), "%B %Y"))
-      )
+    
+    output$header <- shiny::renderUI(server_header("Bed and Unit Utilization", input$project, format(input$date_range, "%B %Y"), shiny::tags$p(shiny::icon("exclamation-triangle", style = "display:inline-block; color: #ffc107;"), "During this time, congregate facilities should be aiming to deconcentrate. If this causes fluctuations in Utilization, that is okay. Please continue to keep your clients safe.", status = "warning")))
+    
+    ReportStart <- eventReactive(input$date_range,{
+      lubridate::floor_date(input$date_range,
+                                   unit = "month")
+      })
+    ReportEnd <- reactive(ReportStart()  + lubridate::dmonths(1))
+    col_nm <- reactive({
+      ReportStart() |>
+        format(format = "%b%Y")
     })
-    output$utilizationDetail <-
+    
+    uc_selected <- reactive({
+      utilizers_clients() |>
+        HMIS::served_between(ReportStart(), ReportEnd()) |> 
+        dplyr::filter(ProjectID == input$project) |>
+        dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
+                                                MoveInDateAdjust, EntryDate)) |>
+        dplyr::select(UniqueID, BedStart, ExitDate, dplyr::all_of(col_nm()))
+    })
+    bed_count <- reactive({
+      Beds() |> 
+        HMIS::beds_available_between(ReportStart(), ReportEnd()) |> 
+        dplyr::filter(ProjectID == input$project) |>
+        dplyr::group_by(ProjectID) |>
+        dplyr::summarise(BedCount = sum(BedInventory), .groups = "drop") |>
+        dplyr::pull(BedCount)
+    })
+    
+    daysInMonth <- reactive(lubridate::days_in_month(input$date_range))
+    
+    output$detail <-
       DT::renderDataTable({
-        ReportStart <-
-          format(floor_date(ymd(input$utilizationDate),
-                            unit = "month"), "%m-%d-%Y")
-        ReportEnd <-
-          format(floor_date(ymd(input$utilizationDate) + days(31),
-                            unit = "month") - days(1),
-                 "%m-%d-%Y")
-        
-        y <- paste0(substr(input$utilizationDate, 6, 7),
-                    "01",
-                    substr(input$utilizationDate, 1, 4))
-        
-        z <-
-          paste("Bed Nights in", format(ymd(input$utilizationDate), "%B %Y"))
-        # input <- list(providerListUtilization = sample(c(sort(utilization_bed()$ProjectName)), 1))
-        a <- utilizers_clients() %>%
-          filter(
-            ProjectName == input$providerListUtilization,
-            served_between(., ReportStart, ReportEnd)
-          ) %>%
-          mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
-                                    MoveInDate, EntryDate),
-                 PersonalID = as.character(PersonalID)) %>%
-          select(PersonalID, BedStart, ExitDate, all_of(y))
-        
-        colnames(a) <- c("Client ID", "Bed Start", "Exit Date", z)
-        
-        datatable(a,
-                  rownames = FALSE,
-                  filter = 'top',
-                  options = list(dom = 'ltpi'))
-        
+        uc_selected() |> 
+          rlang::set_names(c("Unique ID", "Bed Start", "Exit Date", paste("Bed Nights in", format(ReportStart(), "%B %Y")))) |> 
+          datatable_default(escape = FALSE)
       })
     
-    output$utilizationSummary0 <-
-      renderInfoBox({
-        ReportStart <-
-          format(floor_date(ymd(input$utilizationDate),
-                            unit = "month"), "%m-%d-%Y")
-        ReportEnd <-
-          format(floor_date(ymd(input$utilizationDate) + days(31),
-                            unit = "month") - days(1),
-                 "%m-%d-%Y")
-        
-        y <- paste0(substr(input$utilizationDate, 6, 7),
-                    "01",
-                    substr(input$utilizationDate, 1, 4))
-        
-        a <- utilizers_clients() %>%
-          filter(
-            ProjectName == input$providerListUtilization,
-            served_between(., ReportStart, ReportEnd)
-          ) %>%
-          mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
-                                    MoveInDate, EntryDate)) %>%
-          select(PersonalID, BedStart, ExitDate, all_of(y))
-        
-        colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
-        
-        beds <- Beds() %>%
-          filter(ProjectName == input$providerListUtilization &
-                   beds_available_between(., ReportStart, ReportEnd)) %>%
-          group_by(ProjectID) %>%
-          summarise(BedCount = sum(BedInventory)) %>%
-          ungroup() %>%
-          pull(BedCount)
-        
-        daysInMonth <- days_in_month(ymd(input$utilizationDate))
-        
-        infoBox(
+    output$infobox_bn_served <-
+      bs4Dash::renderInfoBox({
+        bs4Dash::infoBox(
           title = "Total Bed Nights Served",
           color = "purple",
-          icon = icon("bed"),
-          value = sum(a$BNs),
+          icon = shiny::icon("bed"),
+          value = sum(uc_selected()[[col_nm()]]),
           subtitle = "See table below for detail."
         )
       })
     
-    output$utilizationSummary1 <-
-      renderInfoBox({
-        ReportStart <-
-          format(floor_date(ymd(input$utilizationDate),
-                            unit = "month"), "%m-%d-%Y")
-        ReportEnd <-
-          format(floor_date(ymd(input$utilizationDate) + days(31),
-                            unit = "month") - days(1),
-                 "%m-%d-%Y")
+    
+    output$infobox_pbn_available <-
+      bs4Dash::renderInfoBox({
         
-        y <- paste0(substr(input$utilizationDate, 6, 7),
-                    "01",
-                    substr(input$utilizationDate, 1, 4))
-        
-        a <- utilizers_clients() %>%
-          filter(
-            ProjectName == input$providerListUtilization,
-            served_between(., ReportStart, ReportEnd)
-          ) %>%
-          mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
-                                    MoveInDate, EntryDate)) %>%
-          select(PersonalID, BedStart, ExitDate, all_of(y))
-        
-        colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
-        
-        beds <- Beds() %>%
-          filter(ProjectName == input$providerListUtilization &
-                   beds_available_between(., ReportStart, ReportEnd)) %>%
-          group_by(ProjectID) %>%
-          summarise(BedCount = sum(BedInventory)) %>%
-          ungroup() %>%
-          pull(BedCount)
-        
-        # units <- Utilization %>%
-        #   filter(ProjectName == input$providerListUtilization) %>%
-        #   select(UnitCount)
-        
-        daysInMonth <- days_in_month(ymd(input$utilizationDate))
-        
-        infoBox(
+        bs4Dash::infoBox(
           title = "Possible Bed Nights",
           color = "purple",
-          icon = icon("bed"),
-          value = beds * daysInMonth,
+          icon = shiny::icon("bed"),
+          value = bed_count() * daysInMonth(),
           subtitle = paste(
             "Bed Count:",
-            beds,
-            "beds ×",
-            daysInMonth,
+            bed_count(),
+            "beds x",
+            daysInMonth(),
             "days in",
-            format(ymd(input$utilizationDate), "%B"),
+            format(ReportStart(), "%B"),
             "=",
-            beds * daysInMonth
+            bed_count() * daysInMonth()
           )
         )
       })
     
-    output$utilizationSummary2 <-
-      renderInfoBox({
-        ReportStart <-
-          format(floor_date(ymd(input$utilizationDate),
-                            unit = "month"), "%m-%d-%Y")
-        ReportEnd <-
-          format(floor_date(ymd(input$utilizationDate) + days(31),
-                            unit = "month") - days(1),
-                 "%m-%d-%Y")
-        
-        y <- paste0(substr(input$utilizationDate, 6, 7),
-                    "01",
-                    substr(input$utilizationDate, 1, 4))
-        
-        a <- utilizers_clients() %>%
-          filter(
-            ProjectName == input$providerListUtilization,
-            served_between(., ReportStart, ReportEnd)
-          ) %>%
-          mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
-                                    MoveInDate, EntryDate)) %>%
-          select(PersonalID, BedStart, ExitDate, all_of(y))
-        
-        colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
-        
-        beds <- Beds() %>%
-          filter(ProjectName == input$providerListUtilization &
-                   beds_available_between(., ReportStart, ReportEnd)) %>%
-          group_by(ProjectID) %>%
-          summarise(BedCount = sum(BedInventory)) %>%
-          ungroup() %>%
-          pull(BedCount)
-        
-        daysInMonth <-
-          as.numeric(days_in_month(ymd(input$utilizationDate)))
-        
-        bedUtilization <- percent(sum(a$BNs) / (beds * daysInMonth))
-        
-        infoBox(
+    output$infobox_pu_served <-
+      bs4Dash::renderInfoBox({
+        bedUtilization <- scales::percent(sum(uc_selected()[[col_nm()]]) / (bed_count() * daysInMonth()))
+        bs4Dash::infoBox(
           title = "Bed Utilization",
           color = "teal",
-          icon = icon("bed"),
+          icon = shiny::icon("bed"),
           value = bedUtilization,
-          subtitle = paste(sum(a$BNs),
-                           "÷",
-                           beds * daysInMonth,
+          subtitle = paste(sum(uc_selected()[[col_nm()]]),
+                           "/",
+                           bed_count() * daysInMonth(),
                            "=",
                            bedUtilization)
         )
       })
   })
 }
-    
+
 ## To be copied in the UI
 # mod_mod_body_utilization_ui("mod_body_utilization_1")
-    
+
 ## To be copied in the server
 # mod_mod_body_utilization_server("mod_body_utilization_1")
