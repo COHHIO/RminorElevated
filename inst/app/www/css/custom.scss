@@ -1,0 +1,55 @@
+/*-- scss:(imports) --*/
+@import 'inst/app/www/css/_bootstrap-variables.scss';
+
+/*-- scss:(rules) --*/
+#box_scenario_chooser.collapsed-card {
+  width: 60px;
+  opacity: .7;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Fix the alignment of sidebar text & hide it when minimized
+.sidebar-mini {
+  & .nav-sidebar .nav-link {
+    white-space: normal;
+    word-wrap: break-word;
+    display: inline-flex;
+    align-items: center;
+  }
+  &.sidebar-collapse .main-sidebar {
+    .nav-sidebar {
+       & span, #logOut, #dataRefresh {
+        display: none;
+      }
+    }
+    &:hover .nav-sidebar {
+      & span, #logOut, #dataRefresh {
+        display: inline-block;
+        white-space: normal;
+        word-wrap: break-word;
+      }
+    }
+  }
+}
+
+.info-box-icon {
+  font-size: 12px;
+}
+
+.info-box .info-box-text, .info-box .progress-description {
+  white-space: normal;
+}
+.card {
+  height: 100% !important;
+}
+.card-title {
+  font-size: 1.6rem;
+  font-weight: 500;
+  
+}
+.ui_row_box {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

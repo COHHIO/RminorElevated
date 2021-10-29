@@ -10,18 +10,14 @@
 #' inputId = ns("region"),
 #' label = "Select Region(s)",
 #' choices = choices$choices, # 
-#' options = shinyWidgets::pickerOptions(                                                  liveSearch = TRUE),
+#' options = shinyWidgets::pickerOptions(liveSearch = TRUE),
 #' selected = NULL,
 #' width = "70%"
 #' )`
 #' Default value for choices is found in *global.R* for each tabItem namespace.
 #QUESTION Should there be defaults for options?
 #' @param date_choices \code{(logical)} whether to show a date range picker
-#' @importFrom shiny NS tagList 
-#' @importFrom rlang parse_expr
-#' @importFrom purrr compact
-#' @importFrom lubridate floor_date today
-#' @importFrom shiny
+
 
 mod_QPR_tabItem_ui <- function(id, choices = NULL, date_choices = NULL) {
   ns <- NS(id)
@@ -42,7 +38,7 @@ mod_QPR_tabItem_ui <- function(id, choices = NULL, date_choices = NULL) {
   Regions = if (!isFALSE(choices))
     list(
       inputId = ns("region"),
-      label = "Select Region(s)",
+      label = "Select Project: ",
       choices = tab_choices[[id]]$choices,
       options = shinyWidgets::pickerOptions(liveSearch = TRUE),
       selected = NULL,
@@ -103,9 +99,6 @@ mod_QPR_tabItem_ui <- function(id, choices = NULL, date_choices = NULL) {
 #' to the header after the \link[shiny]{h2} tag with `header`. Defaults to
 #'  \code{list(h4(input$region), h4(paste(ReportStart, "to", ReportEnd)))} if 
 #'  unspecified. 
-#' @importFrom shiny NS tagList 
-#' @importFrom rlang parse_expr eval_bare
-#' @importFrom purrr keep
 
 
 mod_QPR_server <- function(id, header, input, output, session, ...){
