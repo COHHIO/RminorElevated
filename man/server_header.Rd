@@ -4,7 +4,7 @@
 \alias{server_header}
 \title{Create a default header block}
 \usage{
-server_header(title, project, date_range)
+server_header(title, project, date_range, ...)
 }
 \arguments{
 \item{title}{\code{(character)} Title to be wrapped in \link[shiny]{h2}}

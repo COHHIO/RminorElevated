@@ -11,7 +11,7 @@ old_server <- function( input, output, session ) {
   #     width = 12,
   #     HTML(
   #       "<p>R minor elevated is intended for use by the Ohio Balance of State CoC
-  #       and the Mahoning County CoC HMIS users. This site requires a login 
+  #       and the Mahoning County CoC HMIS users. This site 7requires a login 
   #       because client-level data is shown (without Personally Identifying 
   #       Information). Please use this site to verify that your HMIS data is 
   #       accurate and complete.
@@ -77,7 +77,7 @@ old_server <- function( input, output, session ) {
       # input <- list(providerListUtilization = sample(c(sort(utilization_bed()$ProjectName)), 1))
       a <- utilizers_clients() %>%
         filter(
-          ProjectName == input$providerListUtilization,
+          ProjectID == input$providerListUtilization,
           served_between(., ReportStart, ReportEnd)
         ) %>%
         mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -110,7 +110,7 @@ old_server <- function( input, output, session ) {
       
       a <- utilizers_clients() %>%
         filter(
-          ProjectName == input$providerListUtilization,
+          ProjectID == input$providerListUtilization,
           served_between(., ReportStart, ReportEnd)
         ) %>%
         mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -120,7 +120,7 @@ old_server <- function( input, output, session ) {
       colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
       
       beds <- Beds() %>%
-        filter(ProjectName == input$providerListUtilization &
+        filter(ProjectID == input$providerListUtilization &
                  beds_available_between(., ReportStart, ReportEnd)) %>%
         group_by(ProjectID) %>%
         summarise(BedCount = sum(BedInventory)) %>%
@@ -154,7 +154,7 @@ old_server <- function( input, output, session ) {
       
       a <- utilizers_clients() %>%
         filter(
-          ProjectName == input$providerListUtilization,
+          ProjectID == input$providerListUtilization,
           served_between(., ReportStart, ReportEnd)
         ) %>%
         mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -164,7 +164,7 @@ old_server <- function( input, output, session ) {
       colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
       
       beds <- Beds() %>%
-        filter(ProjectName == input$providerListUtilization &
+        filter(ProjectID == input$providerListUtilization &
                  beds_available_between(., ReportStart, ReportEnd)) %>%
         group_by(ProjectID) %>%
         summarise(BedCount = sum(BedInventory)) %>%
@@ -172,7 +172,7 @@ old_server <- function( input, output, session ) {
         pull(BedCount)
       
       # units <- Utilization %>%
-      #   filter(ProjectName == input$providerListUtilization) %>%
+      #   filter(ProjectID == input$providerListUtilization) %>%
       #   select(UnitCount)
       
       daysInMonth <- days_in_month(ymd(input$utilizationDate))
@@ -211,7 +211,7 @@ old_server <- function( input, output, session ) {
       
       a <- utilizers_clients() %>%
         filter(
-          ProjectName == input$providerListUtilization,
+          ProjectID == input$providerListUtilization,
           served_between(., ReportStart, ReportEnd)
         ) %>%
         mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -221,7 +221,7 @@ old_server <- function( input, output, session ) {
       colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
       
       beds <- Beds() %>%
-        filter(ProjectName == input$providerListUtilization &
+        filter(ProjectID == input$providerListUtilization &
                  beds_available_between(., ReportStart, ReportEnd)) %>%
         group_by(ProjectID) %>%
         summarise(BedCount = sum(BedInventory)) %>%
@@ -967,7 +967,7 @@ old_server <- function( input, output, session ) {
   #     # input <- list(providerListUtilization = sample(c(sort(utilization_bed()$ProjectName)), 1))
   #     a <- utilizers_clients() %>%
   #       filter(
-  #         ProjectName == input$providerListUtilization,
+  #         ProjectID == input$providerListUtilization,
   #         served_between(., ReportStart, ReportEnd)
   #       ) %>%
   #       mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -1000,7 +1000,7 @@ old_server <- function( input, output, session ) {
   #     
   #     a <- utilizers_clients() %>%
   #       filter(
-  #         ProjectName == input$providerListUtilization,
+  #         ProjectID == input$providerListUtilization,
   #         served_between(., ReportStart, ReportEnd)
   #       ) %>%
   #       mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -1010,7 +1010,7 @@ old_server <- function( input, output, session ) {
   #     colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
   #     
   #     beds <- Beds() %>%
-  #       filter(ProjectName == input$providerListUtilization &
+  #       filter(ProjectID == input$providerListUtilization &
   #                beds_available_between(., ReportStart, ReportEnd)) %>%
   #       group_by(ProjectID) %>%
   #       summarise(BedCount = sum(BedInventory)) %>%
@@ -1044,7 +1044,7 @@ old_server <- function( input, output, session ) {
   #     
   #     a <- utilizers_clients() %>%
   #       filter(
-  #         ProjectName == input$providerListUtilization,
+  #         ProjectID == input$providerListUtilization,
   #         served_between(., ReportStart, ReportEnd)
   #       ) %>%
   #       mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -1054,7 +1054,7 @@ old_server <- function( input, output, session ) {
   #     colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
   #     
   #     beds <- Beds() %>%
-  #       filter(ProjectName == input$providerListUtilization &
+  #       filter(ProjectID == input$providerListUtilization &
   #                beds_available_between(., ReportStart, ReportEnd)) %>%
   #       group_by(ProjectID) %>%
   #       summarise(BedCount = sum(BedInventory)) %>%
@@ -1062,7 +1062,7 @@ old_server <- function( input, output, session ) {
   #       pull(BedCount)
   #     
   #     # units <- Utilization %>%
-  #     #   filter(ProjectName == input$providerListUtilization) %>%
+  #     #   filter(ProjectID == input$providerListUtilization) %>%
   #     #   select(UnitCount)
   #     
   #     daysInMonth <- days_in_month(ymd(input$utilizationDate))
@@ -1101,7 +1101,7 @@ old_server <- function( input, output, session ) {
   #     
   #     a <- utilizers_clients() %>%
   #       filter(
-  #         ProjectName == input$providerListUtilization,
+  #         ProjectID == input$providerListUtilization,
   #         served_between(., ReportStart, ReportEnd)
   #       ) %>%
   #       mutate(BedStart = if_else(ProjectType %in% c(3, 9, 13),
@@ -1111,7 +1111,7 @@ old_server <- function( input, output, session ) {
   #     colnames(a) <- c("Client ID", "Bed Start", "Exit Date", "BNs")
   #     
   #     beds <- Beds() %>%
-  #       filter(ProjectName == input$providerListUtilization &
+  #       filter(ProjectID == input$providerListUtilization &
   #                beds_available_between(., ReportStart, ReportEnd)) %>%
   #       group_by(ProjectID) %>%
   #       summarise(BedCount = sum(BedInventory)) %>%
