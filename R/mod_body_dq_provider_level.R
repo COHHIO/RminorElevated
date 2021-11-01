@@ -71,7 +71,6 @@ mod_body_dq_provider_level_server <- function(id){
     eligibility_detail <- eligibility_detail()
     
     
-    
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
       req(input$project)
@@ -93,33 +92,6 @@ mod_body_dq_provider_level_server <- function(id){
         
       }
     })
-    
-    output$dq_DuplicateEEs <- renderUI({
-      req(input$project)
-      DuplicateEEs <- dq_profiles  |> 
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Duplicate Entry Exits")  |> 
-        dq_select_cols(
-          "Exit Date" = ExitDate
-        ) 
-      
-      if (nrow(DuplicateEEs)) {
-        ui_solid_box(
-          id = "dup_ees",
-          title = "Duplicate Entry Exits",
-          status = "warning",
-          shiny::tags$p(
-            "Please correct this issue before moving on to your other errors.<br> Duplicate Entry Exits are created when the user clicks \"Add Entry Exit\" instead of clicking the Entry pencil to get back into an assessment. These must be deleted for each member of the household. Please take care to not delete Entry Exits with valid Interims attached."
-          ),
-          datatable_default(DuplicateEEs, escape = FALSE)
-        )
-      }
-      else {
-        
-      }
-    })
-    
-    
-    
     
     output$dq_HHIssues <- renderUI({
       req(input$project)
@@ -151,7 +123,33 @@ mod_body_dq_provider_level_server <- function(id){
       }
     })
     
-    output$dq_MissingLocation <- renderTable({
+    output$dq_DuplicateEEs <- renderUI({
+      req(input$project)
+      DuplicateEEs <- dq_profiles  |> 
+        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Duplicate Entry Exits")  |> 
+        dq_select_cols(
+          "Exit Date" = ExitDate
+        ) 
+      
+      if (nrow(DuplicateEEs)) {
+        ui_solid_box(
+          id = "dup_ees",
+          title = "Duplicate Entry Exits",
+          status = "warning",
+          shiny::tags$p(
+            "Please correct this issue before moving on to your other errors.<br> Duplicate Entry Exits are created when the user clicks \"Add Entry Exit\" instead of clicking the Entry pencil to get back into an assessment. These must be deleted for each member of the household. Please take care to not delete Entry Exits with valid Interims attached."
+          ),
+          datatable_default(DuplicateEEs, escape = FALSE)
+        )
+      }
+      else {
+        
+      }
+    })
+    
+
+    
+    output$dq_MissingLocation <- renderUI({
       req(input$project)
       HHIssues <- dq_profiles |> 
         dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Missing Client Location") |> 
