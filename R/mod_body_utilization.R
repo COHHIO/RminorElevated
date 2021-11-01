@@ -13,7 +13,7 @@
 mod_body_utilization_ui <- function(id) {
   ns <- shiny::NS(id)
   date_range <-
-    names(utilizers_clients()) |> stringr::str_subset("[a-zA-Z]{3}\\d{4}") |> lubridate::parse_date_time(orders = "bY") |> sort()
+    names(utilization_clients()) |> stringr::str_subset("[a-zA-Z]{3}\\d{4}") |> lubridate::parse_date_time(orders = "bY") |> sort()
   choices <- utilization_clients() |> 
     dplyr::distinct(ProjectName, ProjectID) |> 
     dplyr::arrange(ProjectName) |> 
@@ -40,6 +40,8 @@ mod_body_utilization_ui <- function(id) {
       width = 12
     ),
     ui_row_box(
+      title = "Summary",
+      fluidRow(
       bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
         "infobox_bn_served"
       ), width = '100%')),
@@ -47,11 +49,16 @@ mod_body_utilization_ui <- function(id) {
         "infobox_pbn_available"
       ), width = '100%')),
       bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
-        "infobox_bu_served"
-      ), width = '100%')),
+        "infobox_utilization"
+      ), width = '100%'))
+      ),
       width = 12
     ),
-    ui_row_box(DT::dataTableOutput(ns("detail")), width = 12)
+    ui_row_box(
+      title = "Detail", 
+      DT::dataTableOutput(ns("detail")),
+      width = 12
+    )
   )
   
 }
@@ -76,7 +83,7 @@ mod_body_utilization_server <- function(id){
     })
     
     uc_selected <- reactive({
-      utilizers_clients() |>
+      utilization_clients() |>
         HMIS::served_between(ReportStart(), ReportEnd()) |> 
         dplyr::filter(ProjectID == input$project) |>
         dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
@@ -134,7 +141,7 @@ mod_body_utilization_server <- function(id){
         )
       })
     
-    output$infobox_pu_served <-
+    output$infobox_utilization <-
       bs4Dash::renderInfoBox({
         bedUtilization <- scales::percent(sum(uc_selected()[[col_nm()]]) / (bed_count() * daysInMonth()))
         bs4Dash::infoBox(
