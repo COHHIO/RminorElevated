@@ -30,8 +30,12 @@ mod_body_server <- function(id){
       if (exists(active$server))
         rlang::exec(active$server, id = paste0("body_", isolate(active$tab)), .env = e)
       # Render the body UIs here
-      if (exists(active$ui))
+      if (exists(active$ui)) {
         rlang::exec(active$ui, id = paste0(ns("body_"), active$tab))
+      } else {
+        rlang::exec("mod_coming_soon_ui", id = "coming_soon")
+      }
+        
     })
   })
 }

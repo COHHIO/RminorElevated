@@ -6,8 +6,7 @@
 #'
 #' @return \code{shiny.tag.list}
 #' @export
-#'
-#' @examples
+
 server_header <- function(title, project, date_range, ...) {
   out <- list()
   out$header <- shiny::h2(title)

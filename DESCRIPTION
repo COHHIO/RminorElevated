@@ -60,6 +60,7 @@ Collate:
     'mod_body_dq_unsheltered.R'
     'mod_body_prioritization.R'
     'mod_body_utilization.R'
+    'mod_coming_soon.R'
     'mod_data_quality.R'
     'mod_navbar.R'
     'mod_sidebar.R'
