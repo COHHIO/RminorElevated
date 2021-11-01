@@ -8,7 +8,7 @@ datatable_default(
   data,
   rownames = FALSE,
   options = list(dom = "Bfrtip", buttons = c("copy", "excel", "csvHtml5"), responsive =
-    TRUE),
+    TRUE, lengthMenu = c(10, 25, 50, 75, 100), lengthChange = TRUE, pageLength = 100),
   filter = list(position = "top", clear = TRUE, plain = FALSE),
   extensions = "Buttons",
   style = "bootstrap4",
