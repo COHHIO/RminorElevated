@@ -69,13 +69,13 @@ mod_body_dq_provider_level_server <- function(id){
     dq_profiles <- dq_main()
     
     eligibility_detail <- eligibility_detail()
-    
+    project <- reactive(input$project) |> shiny::debounce(1500)
     
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
-      req(input$project)
+      req(project())
       AP_not_doing_referrals <- aps_no_referrals()  |> 
-        dplyr::filter(ReferringProjectID %in% input$project)
+        dplyr::filter(ReferringProjectID %in% project())
       
       if (nrow(AP_not_doing_referrals) > 0) {
         ui_row_box(
@@ -94,9 +94,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_HHIssues <- renderUI({
-      req(input$project)
+      req(project())
       HHIssues <- dq_profiles |> 
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue %in% c(
+        dq_filter_between(date_range = input$date_range, project = project(), Issue %in% c(
           "Too Many Heads of Household",
           "Missing Relationship to Head of Household",
           "No Head of Household",
@@ -104,7 +104,10 @@ mod_body_dq_provider_level_server <- function(id){
         )) |> 
         dq_select_cols(
           `A UniqueID in the HH` = UniqueID,
-          "MoveInDateAdjust"
+          "MoveInDateAdjust",
+          default = list(`Entry Date` = "EntryDate",
+                         "Type",
+                         "Issue")
         )
       
       if (nrow(HHIssues)) {
@@ -124,9 +127,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_DuplicateEEs <- renderUI({
-      req(input$project)
+      req(project())
       DuplicateEEs <- dq_profiles  |> 
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Duplicate Entry Exits")  |> 
+        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Duplicate Entry Exits")  |> 
         dq_select_cols(
           "Exit Date" = ExitDate
         ) 
@@ -150,9 +153,9 @@ mod_body_dq_provider_level_server <- function(id){
 
     
     output$dq_MissingLocation <- renderUI({
-      req(input$project)
+      req(project())
       HHIssues <- dq_profiles |> 
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Missing Client Location") |> 
+        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Missing Client Location") |> 
         dq_select_cols()
       
       
@@ -173,9 +176,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_PATHMissingContact <- renderUI({
-      req(input$project)
+      req(project())
       MissingPathContact <- dq_profiles  |> 
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Missing PATH Contact") |> 
+        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Missing PATH Contact") |> 
         dq_select_cols()
       
       if (nrow(MissingPathContact)) {
@@ -197,14 +200,14 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_Ineligible <- renderUI({
-      req(input$project)
+      req(project())
     Ineligible <- eligibility_detail |> 
-        dq_filter_between(date_range = input$date_range, project = input$project) |> 
+        dq_filter_between(date_range = input$date_range, project = project()) |> 
         dplyr::mutate(
           PreviousStreetESSH = dplyr::if_else(PreviousStreetESSH == 1, "Yes", "No")
         )  |> 
         dplyr::select(
-          "Client ID" = UniqueID,
+          "Unique ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Residence Prior" = ResidencePrior,
           "Length of Stay" = LengthOfStay,
@@ -233,9 +236,9 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_OverlappingEEs <- renderUI({
-      req(input$project)
+      req(project())
       OverlappingEEs <- dq_overlaps() |>
-        dq_filter_between(date_range = input$date_range, project = input$project, Issue == "Overlapping Project Stays") |>
+        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Overlapping Project Stays") |>
         dq_select_cols(
           "Exit Date" = ExitDate,
           "Move In Date" = MoveInDateAdjust,
@@ -258,9 +261,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_Errors <- DT::renderDataTable({
-      req(input$project)
+      req(project())
       dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = input$project, 
+        dq_filter_between(date_range = input$date_range, project = project(), 
           !Issue %in% c(
             "Too Many Heads of Household",
             "Missing Relationship to Head of Household",
@@ -277,9 +280,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_Warnings <- DT::renderDataTable({
-      req(input$project)
+      req(project())
       DQWarnings <- dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = input$project, 
+        dq_filter_between(date_range = input$date_range, project = project(), 
           !Issue %in% c(
             "Too Many Heads of Household",
             "Missing Relationship to Head of Household",
@@ -297,9 +300,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_summary <- DT::renderDataTable({
-      req(input$project)
+      req(project())
       guidance <- dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = input$project) |> 
+        dq_filter_between(date_range = input$date_range, project = project()) |> 
         dplyr::group_by(Type, Issue, Guidance) |>
         dplyr::ungroup() |>
         dplyr::select(Type, Issue, Guidance) |>
