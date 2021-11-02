@@ -58,8 +58,9 @@ dq_select_cols <- function(x, ..., default = list(`Unique ID` = "UniqueID",
   
   ex <- rlang::enexprs(...)
   if (UU::is_legit(default))
-    ex <- rlang::exprs(!!!default, !!!ex)
+    ex <- rlang::exprs(!!!ex, !!!default)
   dplyr::select(x, 
                 !!!ex
-                )
+                ) |> 
+    dplyr::select(dplyr::matches("Unique"), dplyr::matches("Date"), dplyr::everything())
 }
