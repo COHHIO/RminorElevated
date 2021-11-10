@@ -7,42 +7,47 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-.mod_body_prioritization_ui <- function(id){
+mod_body_prioritization_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
     ui_picker_project(
+      inputId = ns("region"),
       label = "Select County/-ies",
-      inputId = "region",
       multiple = TRUE,
-      choices = stringr::str_subset(dplyr::arrange(Regions())$County, "^Mahoning", negate = TRUE),
+      choices = sort(Regions()$County),
       options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
         liveSearchStyle = 'contains',
         actionsBox = TRUE
       )
     ),
-    ui_row_box(title = "Active List", 
+    ui_row_box(title = "Prioritization List", 
                DT::dataTableOutput(ns("summary")),
-               footer = "Dark gray cells mean the client has a Data Quality issue that may be causing incorrect information to show.")
+               footer = tags$div(class = "alert alert-warning", role = 'alert', "Warning colored rows mean the client has a Data Quality issue that may be causing incorrect information to show."))
   )
 }
     
 #' body_prioritization Server Functions
 #'
 #' @noRd 
-.mod_body_prioritization_server <- function(id){
+mod_body_prioritization_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
    output$header <- renderUI(server_header("Prioritization Report",
                               paste0("Literally Homeless Clients as of ", rm_dates()$meta_HUDCSV$Export_End)))
+   
+   region <- eventReactive(input$region, {input$region}) |> debounce(1500)
+   
    output$summary <- DT::renderDataTable({
-     active <- active_list() %>%
-       filter(CountyServed %in% c(input$region) |
-                is.na(CountyServed)) %>%
-       arrange(C19Priority) %>%
-       select(
-         "HoH Client ID" = PersonalID,
+     req(region())
+     
+     prioritization() |>
+       dplyr::filter(CountyServed %in% region() |
+                is.na(CountyServed)) |>
+       dplyr::arrange(C19Priority) |>
+       dplyr::select(
+         "HoH Unique ID" = UniqueID,
          "Project Name" = ProjectName,
          "Entry Date" = EntryDate,
          "County" = CountyServed,
@@ -58,40 +63,30 @@
          Score,
          HH_DQ_Issue,
          CountyGuessed
-       )
-     
+       ) |> 
      datatable_default(
-       active,
        rownames = FALSE,
        options = list(dom = 'Bfrltip',
                       buttons = c('copy', 'excel', 'csvHtml5'),
                       responsive = TRUE,
-                      columnDefs = list(list(
-                        visible = FALSE, 
-                        targets = c(14:15)
-                      )), 
-                      initComplete = JS(
+                      initComplete = DT::JS(
                         "function(settings, json) {",
                         "$('th').css({'text-align': 'center'});",
                         "$('td').css({'text-align': 'center'});",
-                        "}"))
-     ) %>%
+                        "}")),
+       escape = FALSE
+     ) |> 
        DT::formatStyle(
-         columns = 1, # HoH Client ID indices
-         valueColumns = 15, # HH_DQ_issue indices
-         color = DT::styleEqual(c(1),
-                            c("white")),
-         backgroundColor = DT::styleEqual(c(1),
-                                      c("#7d7d8d"))
-       ) %>%
-       DT::formatStyle(
-         columns = 4, # County
-         valueColumns = 16, # CountyGuessed indices
-         color = DT::styleEqual(c(1),
-                            c("white")),
-         backgroundColor = DT::styleEqual(c(1),
-                                      c("#7d7d8d"))
-       )
+         columns = c("HoH Unique ID", "County"), 
+         valueColumns = c("HH_DQ_Issue", "CountyGuessed"),
+         target = "row",
+         backgroundColor = DT::styleEqual(c(TRUE), c("#fff3cd"))
+       ) |> 
+       datatable_options_update(options = list(columnDefs = list(list(
+         visible = FALSE,
+         targets = c(14:15)
+       ))))
+       
    })
   })
 }
