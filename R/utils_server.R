@@ -48,6 +48,12 @@ datatable_default <- function(data,
                               style = "bootstrap4",
                               elementId = NULL,
                               ...) {
+  options <- purrr::list_modify(eval(rlang::fn_fmls()$options), !!!options)
+  if (!"Buttons" %in% extensions)
+    extentions <- c(extensions, "Buttons")
+  if (!"buttons" %in% names(options))
+    options$buttons = c('copy', 'excel', 'csvHtml5')
+  
   DT::datatable(
     data,
     rownames = rownames,
@@ -61,3 +67,19 @@ datatable_default <- function(data,
     ...
   )
 }
+
+#' @title Update datatable options
+#'
+#' @param x \code{(datatables)}
+#' @param options \code{(list)} of options to replace
+#'
+#' @return \code({datatables})
+#' @export
+
+datatable_options_update <- function(x, options) {
+  out <- x
+  out$x$options <- purrr::list_modify(out$x$options, !!!options)
+  out
+}
+
+
