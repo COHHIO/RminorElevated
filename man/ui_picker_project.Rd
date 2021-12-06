@@ -8,6 +8,7 @@ ui_picker_project(
   label = "Select Project",
   inputId = rlang::caller_env()$ns("project"),
   choices = projects,
+  selected = NULL,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE, liveSearchStyle =
     "contains"),
   ...
@@ -16,10 +17,14 @@ ui_picker_project(
 \arguments{
 \item{label}{Display label for the control, or \code{NULL} for no label.}
 
-\item{inputId}{\code{(namespaced character)} A character vector wrapped in `ns` from the parent environment.}
+\item{inputId}{\code{(character)} Automatically namespace with ID `'project'` if non specified.}
 
 \item{choices}{List of values to select from. If elements of the
 list are named then that name rather than the value is displayed to the user.}
+
+\item{selected}{The initially selected value (or multiple values if \code{multiple = TRUE}).
+If not specified then defaults to the first value for single-select lists
+ and no values for multiple select lists.}
 
 \item{options}{List of options, see \link[shinyWidgets]{pickerOptions} for all available options.
 To limit the number of selection possible, see example below.}
@@ -27,9 +32,6 @@ To limit the number of selection possible, see example below.}
 \item{...}{
   Arguments passed on to \code{\link[shinyWidgets:pickerInput]{shinyWidgets::pickerInput}}
   \describe{
-    \item{\code{selected}}{The initially selected value (or multiple values if \code{multiple = TRUE}).
-If not specified then defaults to the first value for single-select lists
- and no values for multiple select lists.}
     \item{\code{multiple}}{Is selection of multiple items allowed?}
     \item{\code{choicesOpt}}{Options for choices in the dropdown menu.}
     \item{\code{width}}{The width of the input : 'auto', 'fit', '100px', '75\%'.}
