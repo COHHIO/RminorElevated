@@ -78,7 +78,12 @@ datatable_default <- function(data,
 
 datatable_options_update <- function(x, options) {
   out <- x
-  out$x$options <- purrr::list_modify(out$x$options, !!!options)
+  if (UU::is_legit(out$x$options$columnDefs) && UU::is_legit(options$columnDefs)) {
+    out$x$options$columnDefs <- append(out$x$options$columnDefs, options$columnDefs)
+    options$columnDefs <- NULL
+  }
+  if (UU::is_legit(options))
+    out$x$options <- purrr::list_modify(out$x$options, !!!options)
   out
 }
 
