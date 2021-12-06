@@ -2,6 +2,7 @@
 #'
 #' @param inputId \code{(namespaced character)} A character vector wrapped in `ns` from the parent environment.
 #' @inherit shinyWidgets::pickerInput params return
+#' @param inputId \code{(character)} Automatically namespace with ID `'project'` if non specified.
 #' @inheritDotParams shinyWidgets::pickerInput
 
 #' @export
@@ -10,6 +11,7 @@ ui_picker_project <- function(
   label = "Select Project",
   inputId = rlang::caller_env()$ns("project"),
   choices = projects, 
+  selected = NULL,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE,
                                         liveSearchStyle = 'contains'),
   ...) {
@@ -18,6 +20,7 @@ ui_picker_project <- function(
     inputId = inputId,
     choices = choices,
     options = options,
+    selected = selected,
     ...
   )
 }
@@ -34,6 +37,7 @@ ui_header_row <-
            width = 12,
            headerBorder = FALSE) {
     shiny::fluidRow(bs4Dash::box(
+      style = "padding: .1rem 1.25rem;",
       shiny::htmlOutput(outputId),
       width = width,
       headerBorder = headerBorder
