@@ -35,17 +35,17 @@ mod_body_prioritization_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
    output$header <- renderUI(server_header("Prioritization Report",
-                              paste0("Literally Homeless Clients as of ", rm_dates()$meta_HUDCSV$Export_End)))
+                              x = shiny::h3(paste0("Updated: ", rm_dates()$meta_HUDCSV$Export_End))))
    
    region <- eventReactive(input$region, {input$region}) |> debounce(1500)
-   
+   pc <- prioritization_colors()
    output$summary <- DT::renderDataTable({
      req(region())
-     
+
      prioritization() |>
        dplyr::filter(CountyServed %in% region() |
                 is.na(CountyServed)) |>
-       dplyr::arrange(C19Priority) |>
+       dplyr::arrange(dplyr::desc(C19Priority), dplyr::desc(Situation_col)) |>
        dplyr::select(
          "HoH Unique ID" = UniqueID,
          "Project Name" = ProjectName,
@@ -53,6 +53,7 @@ mod_body_prioritization_server <- function(id){
          "County" = CountyServed,
          "Current Situation (Entry, Referral, Perm Housing Track)" = Situation,
          "COVID-19: Priority for Immediate Non-congregate Housing" = C19Priority,
+         "Expected Move-in" = ExpectedPHDate,
          "Veteran" = VeteranStatus,
          "Fleeing DV" = CurrentlyFleeing,
          "Transition Aged Youth" = TAY,
@@ -62,7 +63,8 @@ mod_body_prioritization_server <- function(id){
          "Income" = IncomeFromAnySource,
          Score,
          HH_DQ_Issue,
-         CountyGuessed
+         CountyGuessed,
+         Situation_col
        ) |> 
      datatable_default(
        rownames = FALSE,
@@ -82,9 +84,15 @@ mod_body_prioritization_server <- function(id){
          target = "row",
          backgroundColor = DT::styleEqual(c(TRUE), c("#fff3cd"))
        ) |> 
+       DT::formatStyle(
+         "Current Situation (Entry, Referral, Perm Housing Track)",
+         "Situation_col",
+         target = "cell",
+         backgroundColor = DT::styleEqual(names(pc), pc)
+       ) |> 
        datatable_options_update(options = list(columnDefs = list(list(
          visible = FALSE,
-         targets = c(14:15)
+         targets = c(15:17)
        ))))
        
    })
