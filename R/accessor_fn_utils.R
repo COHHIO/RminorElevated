@@ -32,7 +32,7 @@ do_assignment <- function(funs, ns = "RminorElevated") {
   namespace <- rlang::ns_env(ns)
   rlang::env_unlock(namespace)
   purrr::iwalk(funs, ~{
-    if (exists(.y, envir = namespace))
+    if (exists(.y, envir = namespace, inherits = FALSE))
       rlang::env_binding_unlock(namespace, .y)
     assign(.y, .x, envir = namespace)
     assignInNamespace(.y, .x, ns, envir = namespace)
