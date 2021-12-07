@@ -7,11 +7,13 @@
 #' @return \code{shiny.tag.list}
 #' @export
 
-server_header <- function(title, project, date_range, ...) {
+server_header <- function(title, project, date_range, ..., region) {
   out <- list()
   out$header <- shiny::h2(title)
   if (!missing(project))
     out$project <- shiny::h4(names(projects)[project == projects])
+  if (!missing(region))
+    out$region <- shiny::h4(names(regions)[region == projects])
   if (!missing(date_range)) {
     out$dr <- purrr::when(date_range, length(.) > 1 ~ shiny::h4(paste0(.[1]," - ", .[2])),
                           ~ shiny::h4(.))
