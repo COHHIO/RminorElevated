@@ -77,6 +77,11 @@ if (exists("validation")) {
   
 }
   
+if (exists("Regions")) {
+  regions <- Regions() |> 
+    dplyr::distinct(Region, RegionName) |> 
+    {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
+}
 # tab_choices <- unique(Regions()$RegionName) |> 
 # {list(
 #   spdat1 = list(
