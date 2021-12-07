@@ -28,7 +28,7 @@ mod_body_dq_system_wide_server <- function(id){
           y = MedianDeskTime,
           fill = MedianDeskTime
         )
-      ) +@
+      ) +
         geom_col(show.legend = FALSE) +
         coord_flip() +
         labs(x = "",
