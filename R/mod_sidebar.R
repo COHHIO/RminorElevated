@@ -64,10 +64,11 @@ mod_sidebar_ui <- function(id){
             text = "Data Entry Timeliness",
             tabName = "dq_timeliness" #deskTime
           ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Unsheltered",
-            tabName = "dq_unsheltered"
-          ),
+          # Deprecated in Clarity
+          # bs4Dash::bs4SidebarMenuSubItem(
+          #   text = "Unsheltered",
+          #   tabName = "dq_unsheltered" #dqUnsh
+          # ),
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Region-level",
             tabName = "dq_region_level" #dqRegion
