@@ -22,21 +22,11 @@ dq_filter_between <- function(x,
     out <- dplyr::filter(out, ProjectID %in% project)
   
   
-  .dots <- rlang::enexprs(...)
+  .dots <- rlang::enquos(...)
   
-  
-  if (length(.dots) > 1) {
-    ex <- purrr::reduce(.dots, ~rlang::expr(!!.x & !!.y))
-  } else {
-    ex <- .dots
-  }
-    
-  if (exists("ex", inherits = FALSE)) 
-    out <- out |> 
-      dplyr::filter(
-      !!!ex
-      )
-  out
+  purrr::reduce(.dots, ~dplyr::filter(.x, 
+      !!!.y
+  ), .init = out)
 }
 
 
