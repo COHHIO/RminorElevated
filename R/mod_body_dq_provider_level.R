@@ -12,7 +12,9 @@ mod_body_dq_provider_level_ui <- function(id){
   tagList(
     ui_header_row(),
     ui_row_box(
-      ui_picker_project(options = shinyWidgets::pickerOptions(
+      ui_picker_project(
+        choices = projects[names(projects) %in% dq_providers()],
+        options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
         liveSearchStyle = 'contains',
         actionsBox = TRUE
@@ -29,13 +31,14 @@ mod_body_dq_provider_level_ui <- function(id){
       uiOutput(ns("dq_HHIssues")),
       uiOutput(ns("dq_DuplicateEEs")),
       # DQIncorrectEEType SP only
-      uiOutput(ns("dq_MissingLocation")),
+      # uiOutput(ns("dq_MissingLocation")), # Deprecated in Clarity
       uiOutput(ns("dq_PATHMissingContact"))
     ),
     shiny::fluidRow(uiOutput(ns("dq_Ineligible"))),
     shiny::fluidRow(uiOutput(ns("dq_OverlappingEEs"))),
     ui_solid_box(
       DT::dataTableOutput(ns("dq_Errors")),
+      dq_see_guidance(),
       title = "Data Quality Errors",
       width = 12,
       solidHeader = TRUE,
@@ -43,6 +46,7 @@ mod_body_dq_provider_level_ui <- function(id){
     ),
     ui_solid_box(
       DT::dataTableOutput(ns("dq_Warnings")),
+      dq_see_guidance(),
       title = "Data Quality Warnings",
       width = 12,
       status = "warning"
@@ -50,6 +54,7 @@ mod_body_dq_provider_level_ui <- function(id){
     ui_solid_box(
       id = "dq_summary",
       DT::dataTableOutput(ns("dq_summary")),
+      dq_see_guidance(),
       title = "Data Quality Guidance",
       status = "info"
     )
