@@ -25,7 +25,7 @@ dq_filter_between <- function(x,
   .dots <- rlang::enquos(...)
   
   purrr::reduce(.dots, ~dplyr::filter(.x, 
-      !!!.y
+      !!.y
   ), .init = out)
 }
 
@@ -41,7 +41,8 @@ dq_filter_between <- function(x,
 #'
 #' @examples
 #' dq_select_cols(data.frame(UniqueID = 1:3, Issue = letters[1:3], EntryDate = 1:3, blah = 1:3), blah)
-dq_select_cols <- function(x, ..., default = list(`Unique ID` = "UniqueID",
+dq_select_cols <- function(x, ..., default = list("UniqueID",
+                                                  "EnrollmentID",
                                                   `Entry Date` = "EntryDate",
                                                   "Type",
                                                   "Issue")) {
@@ -54,3 +55,5 @@ dq_select_cols <- function(x, ..., default = list(`Unique ID` = "UniqueID",
                 ) |> 
     dplyr::select(dplyr::matches("Unique"), dplyr::matches("Date"), dplyr::everything())
 }
+
+dq_see_guidance <- function() tags$span("See ", tags$a(href = "#dq_box_dq_summary", "Guidance below"), " for instructions on how to fix these errors.")
