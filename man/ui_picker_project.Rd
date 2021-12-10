@@ -9,6 +9,7 @@ ui_picker_project(
   inputId = rlang::caller_env()$ns("project"),
   choices = projects,
   selected = NULL,
+  multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE, liveSearchStyle =
     "contains"),
   ...
@@ -24,7 +25,9 @@ list are named then that name rather than the value is displayed to the user.}
 
 \item{selected}{The initially selected value (or multiple values if \code{multiple = TRUE}).
 If not specified then defaults to the first value for single-select lists
- and no values for multiple select lists.}
+and no values for multiple select lists.}
+
+\item{multiple}{Is selection of multiple items allowed?}
 
 \item{options}{List of options, see \link[shinyWidgets]{pickerOptions} for all available options.
 To limit the number of selection possible, see example below.}
@@ -32,10 +35,9 @@ To limit the number of selection possible, see example below.}
 \item{...}{
   Arguments passed on to \code{\link[shinyWidgets:pickerInput]{shinyWidgets::pickerInput}}
   \describe{
-    \item{\code{multiple}}{Is selection of multiple items allowed?}
     \item{\code{choicesOpt}}{Options for choices in the dropdown menu.}
     \item{\code{width}}{The width of the input : 'auto', 'fit', '100px', '75\%'.}
-    \item{\code{inline}}{Put the label and the picker on the same line.}
+    \item{\code{inline}}{Display picker inline, to have label and menu on same line use \code{width = "fit"}.}
   }}
 }
 \value{

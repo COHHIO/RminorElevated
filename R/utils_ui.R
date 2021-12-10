@@ -12,6 +12,7 @@ ui_picker_project <- function(
   inputId = rlang::caller_env()$ns("project"),
   choices = projects, 
   selected = NULL,
+  multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE,
                                         liveSearchStyle = 'contains'),
   ...) {
@@ -20,6 +21,7 @@ ui_picker_project <- function(
     inputId = inputId,
     choices = choices,
     options = options,
+    multiple = multiple,
     selected = selected,
     ...
   )
@@ -53,7 +55,7 @@ ui_header_row <-
 ui_date_range <- function(
   inputId = rlang::caller_env()$ns("date_range"),
   label = "Date Range",
-  start = Sys.Date() - lubridate:::days(7),
+  start = Sys.Date() - lubridate::days(7),
   end = Sys.Date(),
   min = rm_dates()$meta_HUDCSV$Export_Start,
   width = 300,

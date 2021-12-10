@@ -26,7 +26,7 @@ or a character vector of row names; by default, the row names are displayed
 in the first column of the table if exist (not \code{NULL})}
 
 \item{options}{a list of initialization options (see
-\url{http://datatables.net/reference/option/}); the character options
+\url{https://datatables.net/reference/option/}); the character options
 wrapped in \code{\link[htmlwidgets]{JS}()} will be treated as literal
 JavaScript code instead of normal character strings; you can also set
 options globally via \code{\link{options}(DT.options = list(...))}, and
@@ -51,11 +51,17 @@ sizing)}
 \item{extensions}{a character vector of the names of the DataTables
 extensions (\url{https://datatables.net/extensions/index})}
 
-\item{style}{the style name (\url{http://datatables.net/manual/styling/});
-currently only \code{'default'}, \code{'bootstrap'}, and
-\code{'bootstrap4'} are supported. Note that DT doesn't contain the theme
-files so in order to display the style correctly, you have to link
-the necessary files in the header.}
+\item{style}{either \code{'auto'}, \code{'default'}, \code{'bootstrap'}, or
+\code{'bootstrap4'}. If \code{'auto'}, and a **bslib** theme is
+currently active, then bootstrap styling is used in a way that "just works"
+for the active theme. Otherwise,
+\href{https://datatables.net/manual/styling/classes}{DataTables
+\code{'default'} styling} is used. If set explicitly to \code{'bootstrap'}
+or \code{'bootstrap4'}, one must take care to ensure Bootstrap's HTML
+dependencies (as well as Bootswatch themes, if desired) are included on the
+page. Note, when set explicitly, it's the user's responsibility to ensure
+that only one unique `style` value is used on the same page, if multiple
+DT tables exist, as different styling resources may conflict with each other.}
 
 \item{elementId}{An id for the widget (a random string by default).}
 
@@ -63,7 +69,7 @@ the necessary files in the header.}
   Arguments passed on to \code{\link[DT:datatable]{DT::datatable}}
   \describe{
     \item{\code{class}}{the CSS class(es) of the table; see
-\url{http://datatables.net/manual/styling/classes}}
+\url{https://datatables.net/manual/styling/classes}}
     \item{\code{callback}}{the body of a JavaScript callback function with the argument
 \code{table} to be applied to the DataTables instance (i.e. \code{table})}
     \item{\code{colnames}}{if missing, the column names of the data; otherwise it can be
@@ -85,13 +91,15 @@ alternatively, you can specify numeric column indices or column names to
 indicate which columns to escape, e.g. \code{1:5} (the first 5 columns),
 \code{c(1, 3, 4)}, or \code{c(-1, -3)} (all columns except the first and
 third), or \code{c('Species', 'Sepal.Length')}; since the row names take
-the first column to display, you should add the numeric column indices
-by one when using \code{rownames}}
+the first column to display, you should add the numeric column indices by
+one when using \code{rownames}}
     \item{\code{fillContainer}}{\code{TRUE} to configure the table to automatically fill
 it's containing element. If the table can't fit fully into it's container
 then vertical and/or horizontal scrolling of the table cells will occur.}
     \item{\code{autoHideNavigation}}{\code{TRUE} to automatically hide navigational UI
-when the number of total records is less than the page size.}
+(only display the table body) when the number of total records is less
+than the page size. Note, it only works on the client-side processing mode
+and the `pageLength` option should be provided explicitly.}
     \item{\code{selection}}{the row/column selection mode (single or multiple selection
 or disable selection) when a table widget is rendered in a Shiny app;
 alternatively, you can use a list of the form \code{list(mode = 'multiple',
@@ -111,10 +119,25 @@ it to \code{"row"} to be able to edit a row, or \code{"column"} to edit a
 column, or \code{"all"} to edit all cells on the current page of the table.
 In all modes, start editing by doubleclicking on a cell. This argument can
 also be a list of the form \code{list(target = TARGET, disable =
-list(columns = INDICES))}, where \code{TARGET} can be \code{cell},
-\code{row}, \code{column}, or \code{all}, and \code{INDICES} is an integer
-vector of column indices. Use the list form if you want to disable editing
-certain columns.}
+list(columns = INDICES))}, where \code{TARGET} can be \code{"cell"},
+\code{"row"}, \code{"column"}, or \code{"all"}, and \code{INDICES} is an
+integer vector of column indices. Use the list form if you want to disable
+editing certain columns. You can also restrict the editing to accept only
+numbers by setting this argument to a list of the form \code{list(target =
+TARGET, numeric = INDICES)} where \code{INDICES} can be the vector of the
+indices of the columns for which you want to restrict the editing to
+numbers or \code{"all"} to restrict the editing to numbers for all columns.
+If you don't set \code{numeric}, then the editing is restricted to numbers
+for all numeric columns; set \code{numeric = "none"} to disable this
+behavior. Finally, you can also edit the cells in text areas, which are
+useful for large contents. For that, set the \code{editable} argument to a
+list of the form \code{list(target = TARGET, area = INDICES)} where
+\code{INDICES} can be the vector of the indices of the columns for which
+you want the text areas, or \code{"all"} if you want the text areas for
+all columns. Of course, you can request the numeric editing for some
+columns and the text areas for some other columns by setting
+\code{editable} to a list of the form \code{list(target = TARGET, numeric
+= INDICES1, area = INDICES2)}.}
   }}
 }
 \value{
