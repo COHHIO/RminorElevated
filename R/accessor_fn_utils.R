@@ -13,8 +13,15 @@ accessor_create <- function(.x) rlang::new_function(args =
                       
                     }))
 
+clean_null <- function(files) {
+  .rds <- stringr::str_subset(files, "rds$")
+  .sizes <- file.size(.rds)
+  file.remove(.rds[.sizes == 44])
+  files[!files %in% .rds[.sizes == 44]]
+}
+
 create_accessors <- function(path = "data", dropbox_folder = file.path("RminorElevated")) {
-  files <- UU::list.files2(path)
+  files <- clean_null(UU::list.files2(path))
   db_files <- rdrop2::drop_dir("RminorElevated") |> 
     dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
                   file_time = file.info(file.path(path, name))$mtime,
