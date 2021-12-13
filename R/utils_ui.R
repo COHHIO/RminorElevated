@@ -4,6 +4,7 @@
 #' @inherit shinyWidgets::pickerInput params return
 #' @param inputId \code{(character)} Automatically namespace with ID `'project'` if non specified.
 #' @inheritDotParams shinyWidgets::pickerInput
+#' @param add_options \code{(list)} of options to add to existing defaults
 
 #' @export
 
@@ -15,7 +16,11 @@ ui_picker_project <- function(
   multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE,
                                         liveSearchStyle = 'contains'),
-  ...) {
+  
+  ...,
+  add_options) {
+  if (!missing(add_options))
+    options <- purrr::list_modify(options, !!!do.call(shinyWidgets::pickerOptions, add_options))
   shinyWidgets::pickerInput(
     label = label,
     inputId = inputId,
@@ -209,3 +214,53 @@ fun_arg_maker <- function(fn) {
 fun_arg_pass <- function(fn) {
   rlang::fn_fmls(fn) |> purrr::imap_chr(~paste0(.y, " = ",.y,",")) |> cat(sep = "\n")
 }
+
+#' @title Construct a list from various elements
+#' @description The `icon` is placed before `text`. Any additional arguments will be added after `text`.
+#' @param x \code{(data.frame)} with a **Required** `text` column and **Optional** `style` & `icon` columns
+#' @param ... named elements with which to make a data.frame.
+#' @param ordered \code{(logical)}  Whether the list should be ordered `<ol>`
+#' @return \code{(shiny.tag)}
+#' @export
+
+ui_list <- function(x, ..., l_style = NULL, ordered = FALSE) {
+  if (missing(x))
+    x <- tibble::tibble(...)
+  stopifnot(is.data.frame(x))
+  rlang::exec(
+    purrr::when(ordered, . ~ shiny::tags$ol, shiny::tags$ul),
+    style = l_style,
+    !!!(x |>
+          purrr::pmap( ~ {
+            .x <- list(...)
+            rlang::exec(shiny::tags$li, style = .x$style, .x$icon, .x$text,!!!.x[!names(.x) %in% c("text", "icon", "style")])
+          }))
+  )
+}
+
+#' @title Iterative generation of icons
+#'
+#' @inheritParams shiny::icon
+#'
+#' @return
+#' @export
+
+ui_icons <- function(name, class = NULL, lib = "font-awesome", ...) {
+  tibble::tibble(name = name, class = class, lib = lib, ...) |> 
+  purrr::pmap(~do.call(shiny::icon, list(...)))
+}
+
+simpleCard <- function(..., style = NULL, width = 4) {
+  shiny::tags$div(class = glue::glue("col-12 col-md-{width}"),
+                  shiny::tags$div(class = "card",
+                                  if (!is.null(style))
+                                    style = style,
+                                  shiny::tags$div(class = "card-body",
+                                                  ...))
+                  )
+  
+}
+
+icons = list(vet_active = ui_icons(name = c("check", "times",
+                                          "question-circle", "exclamation-triangle"),
+                                   style = glue::glue_data(list(color = c("teal", "tomato", "grey", "goldenrod"), fontsize = "150%"), "color: {color}; font-size: {fontsize}")) |> rlang::set_names(c("pass", "fail", "unknown", "alert")))
