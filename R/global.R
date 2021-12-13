@@ -81,7 +81,10 @@ if (exists("Regions")) {
   regions <- Regions() |> 
     dplyr::distinct(Region, RegionName) |> 
     {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
+  counties <- sort(Regions()$County)
 }
+
+
 # tab_choices <- unique(Regions()$RegionName) |> 
 # {list(
 #   spdat1 = list(
