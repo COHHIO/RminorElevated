@@ -285,7 +285,7 @@ mod_body_dq_provider_level_server <- function(id){
             Type == "Error"
         ) |>
         dq_select_cols() |> 
-        datatable_default(escape = FALSE),
+        datatable_default(escape = FALSE)
     })
     
     output$dq_Warnings <- DT::renderDataTable({
