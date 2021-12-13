@@ -12,7 +12,8 @@ ui_picker_project(
   multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE, liveSearchStyle =
     "contains"),
-  ...
+  ...,
+  add_options
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ To limit the number of selection possible, see example below.}
     \item{\code{width}}{The width of the input : 'auto', 'fit', '100px', '75\%'.}
     \item{\code{inline}}{Display picker inline, to have label and menu on same line use \code{width = "fit"}.}
   }}
+
+\item{add_options}{\code{(list)} of options to add to existing defaults}
 }
 \value{
 A select control that can be added to a UI definition.
