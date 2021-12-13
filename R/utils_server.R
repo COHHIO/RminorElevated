@@ -7,13 +7,15 @@
 #' @return \code{shiny.tag.list}
 #' @export
 
-server_header <- function(title, project, date_range, ..., region) {
+server_header <- function(title, project, date_range, ..., region, county) {
   out <- list()
   out$header <- shiny::h2(title)
   if (!missing(project))
-    out$project <- shiny::h4(names(projects)[project == projects])
+    out$project <- shiny::h4(names(projects)[projects %in% project])
   if (!missing(region))
-    out$region <- shiny::h4(names(regions)[region == projects])
+    out$region <- shiny::h4("Region(s):", paste0(names(regions)[regions %in% region], collapse = ", "))
+  if (!missing(county))
+    out$county <- shiny::h4("County(ies):", paste0(names(counties)[counties %in% county], collapse = ", "))
   if (!missing(date_range)) {
     out$dr <- purrr::when(date_range, length(.) > 1 ~ shiny::h4(paste0(.[1]," - ", .[2])),
                           ~ shiny::h4(.))
@@ -89,4 +91,17 @@ datatable_options_update <- function(x, options) {
   out
 }
 
-
+server_debounce <- function(..., wait = 1500, e = rlang::caller_env()) {
+  ex <- rlang::enexprs(..., .named = TRUE)
+  exs <- purrr::imap(ex, ~{
+      ex <- rlang::expr({
+        `<<-`(!!rlang::sym(stringr::str_remove(.y, "^input\\$")), shiny::debounce(shiny::eventReactive(!!.x, !!.x), !!wait))
+      })  
+    })
+  insts <- purrr::imap(ex, ~rlang::expr(`<-`(!!rlang::sym(stringr::str_remove(.y, "^input\\$")), function() { })))
+  inst <- rlang::expr({!!!insts})
+  ob <- rlang::expr(observeEvent(!!ex[[1]], {
+    !!!exs
+  }, ignoreInit = TRUE))
+  purrr::map(list(inst, ob), rlang::eval_bare, env = e)
+}

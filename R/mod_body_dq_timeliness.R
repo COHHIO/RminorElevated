@@ -49,8 +49,7 @@ mod_body_dq_timeliness_server <- function(id){
     output$header <- shiny::renderUI(RminorElevated::server_header("Data Entry Timeliness", shiny::h3(paste0("Fixed Date Range: ", ReportStart, " to ", ReportEnd))))
     
     
-    project <- shiny::eventReactive(input$project, {input$project}) |> shiny::debounce(1000)
-    
+    server_debounce(input$project)
     
     
     output$detail <- shiny::renderPlot({
