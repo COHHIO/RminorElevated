@@ -13,7 +13,7 @@ mod_body_dq_provider_level_ui <- function(id){
     ui_header_row(),
     ui_row_box(
       ui_picker_project(
-        choices = projects[names(projects) %in% dq_providers()],
+        choices = projects[projects %in% dq_providers()],
         options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
         liveSearchStyle = 'contains',
@@ -54,7 +54,6 @@ mod_body_dq_provider_level_ui <- function(id){
     ui_solid_box(
       id = "dq_summary",
       DT::dataTableOutput(ns("dq_summary")),
-      dq_see_guidance(),
       title = "Data Quality Guidance",
       status = "info"
     )
@@ -113,7 +112,7 @@ mod_body_dq_provider_level_server <- function(id){
         )) |> 
         dq_select_cols(
           `A UniqueID in the HH` = UniqueID,
-          "MoveInDateAdjust",
+          `Move-in Date` = "MoveInDateAdjust",
           default = list(`Entry Date` = "EntryDate",
                          "Type",
                          "Issue")
@@ -148,7 +147,7 @@ mod_body_dq_provider_level_server <- function(id){
           id = "dup_ees",
           title = "Duplicate Entry Exits",
           status = "warning",
-          shiny::tags$p(
+          shiny::HTML(
             guidance$duplicate_ees
           ),
           datatable_default(DuplicateEEs, escape = FALSE)
@@ -196,7 +195,7 @@ mod_body_dq_provider_level_server <- function(id){
           title = "Missing Contact (PATH)",
           status = "warning",
           datatable_default(MissingPATHContact, escape = FALSE),
-          tags$p(guidance$missing_path_contact)
+          HTML(guidance$missing_path_contact)
         )
       }
       else {
@@ -227,7 +226,7 @@ mod_body_dq_provider_level_server <- function(id){
           status = "info",
           solidHeader = TRUE,
           width = 12,
-          shiny::tags$p(
+          shiny::HTML(
             guidance$check_eligibility
           ),
           datatable_default(Ineligible, escape = FALSE)
@@ -262,7 +261,7 @@ mod_body_dq_provider_level_server <- function(id){
           status = "warning",
           width = 12,
           datatable_default(OverlappingEEs, escape = FALSE),
-          shiny::tags$p(guidance$project_stays)
+          shiny::HTML(guidance$project_stays)
         )
       } else {
         
