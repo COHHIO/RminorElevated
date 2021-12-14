@@ -191,18 +191,19 @@ mod_body_vet_active_list_server <- function(id) {
     })
     
     output$downloadVeteranActiveList <- shiny::downloadHandler(
-      filename = "veteran_active_list.csv",
+      filename = function () "veteran_active_list.csv",
       content = function(file) {
         write.csv(
           val |>
             dplyr::filter(County %in% county() |
                             is.na(County)) |>
-            dplyr::mutate(DisablingCondition = HMIS::enhanced_yes_no_translator(DisablingCondition)) |>
+            dplyr::mutate(DisablingCondition = HMIS::hud_translations$`1.8 No_Yes_Reasons for Missing Data`(DisablingCondition)) |>
+            clarity.looker::make_linked_df(UniqueID, unlink = TRUE) |> 
             dplyr::select(
               SSVFServiceArea,
               County,
               PersonalID,
-              HOMESID,
+              UniqueID,
               DateVeteranIdentified,
               EntryDate,
               ListStatus,
