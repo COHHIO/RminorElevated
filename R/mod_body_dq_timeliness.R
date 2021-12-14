@@ -53,19 +53,23 @@ mod_body_dq_timeliness_server <- function(id){
     
     
     output$detail <- shiny::renderPlot({
+      req(input$project)
       req(project())
+      
       dt_median <- desk_time_medians |> 
         dplyr::filter(ProjectName == project())
       desk_time <- desk_time |> 
         dplyr::filter(ProjectName == project())
       
-      ggplot2::ggplot(
+      p <- ggplot2::ggplot(
         desk_time,
         ggplot2::aes(y = DeskTime)
-      ) +
-        ggplot2::geom_linerange(data = desk_time |> dplyr::filter(GoalMet == "orangered"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, xmin = EntryDate, xmax = DateCreated), show.legend = FALSE) +
-        ggplot2::geom_point(data = desk_time |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated), show.legend = FALSE) + 
-        ggplot2::scale_color_identity() +
+      )
+      if (any(desk_time$GoalMet == "orangered", na.rm = TRUE))
+        p <- p + ggplot2::geom_linerange(data = desk_time |> dplyr::filter(GoalMet == "orangered"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, xmin = EntryDate, xmax = DateCreated), show.legend = FALSE)
+      if (any(desk_time$GoalMet == "forestgreen", na.rm = TRUE))
+        p <- p + ggplot2::geom_point(data = desk_time |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated), show.legend = FALSE) 
+        p + ggplot2::scale_color_identity() +
         ggplot2::geom_hline(yintercept = 5, color = "forestgreen") +
         ggplot2::geom_hline(yintercept = dt_median$MedianDeskTime, color = "black") +
         ggplot2::scale_x_date(date_breaks = "1 month", limits = c(ReportStart, ReportEnd), date_labels = "%b %y") + 
