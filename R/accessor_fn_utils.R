@@ -21,7 +21,8 @@ clean_null <- function(files) {
 }
 
 create_accessors <- function(path = "data", dropbox_folder = file.path("RminorElevated")) {
-  files <- clean_null(UU::list.files2(path))
+  files <- clean_null(UU::list.files2(path)) |> 
+    stringr::str_subset("\\.png^", negate = TRUE)
   db_files <- rdrop2::drop_dir("RminorElevated") |> 
     dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
                   file_time = file.info(file.path(path, name))$mtime,
