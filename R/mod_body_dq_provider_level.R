@@ -53,6 +53,7 @@ mod_body_dq_provider_level_ui <- function(id){
     ),
     ui_solid_box(
       id = "dq_summary",
+      tags$p(tags$strong("Percentile in CoC: "), "a higher percentile indicates a very low frequency of this error for the volume of clients in th(is/ese) program(s) compared to the frequency of this error across all other programs in the CoC."),
       DT::dataTableOutput(ns("dq_summary")),
       title = "Data Quality Guidance",
       status = "info"
@@ -70,14 +71,34 @@ mod_body_dq_provider_level_server <- function(id){
       server_header(title = "Data Quality", date_range = input$date_range)
     })
     guidance <- guidance()
-    dq_profiles <- dq_main()
+    
     
     eligibility_detail <- eligibility_detail()
-    project <- reactive(input$project) |> shiny::debounce(1500)
+    server_debounce(input$project, input$date_range)
+    
+    dq_p <- dq_main()
+    dq_main_time <- eventReactive(input$date_range, {
+      req(date_range())
+      dq_p |> 
+        dq_filter_between(date_range = date_range())
+        
+    }) 
+    dq_main_time_proj <- reactive({
+      req(input$project, dq_main_time(), project())
+      dq_main_time() |> 
+        dq_filter_between(project = project())
+    }) |> 
+      debounce(1500)
+    co_clients <- co_clients_served()
+    clients <- reactive({
+      req(input$date_range, date_range())
+      co_clients |> 
+        dq_filter_between(date_range = date_range())
+    })
     
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
-      req(project())
+      req(input$project, project())
       AP_no_referrals <- aps_no_referrals()  |> 
         dplyr::filter(ProjectID %in% project())
       
@@ -102,9 +123,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_HHIssues <- renderUI({
-      req(project())
-      HHIssues <- dq_profiles |> 
-        dq_filter_between(date_range = input$date_range, project = project(), Issue %in% c(
+      req(dq_main_time_proj())
+      HHIssues <- dq_main_time_proj() |> 
+        dq_filter_between(Issue %in% c(
           "Too Many Heads of Household",
           "Missing Relationship to Head of Household",
           "No Head of Household",
@@ -135,9 +156,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_DuplicateEEs <- renderUI({
-      req(project())
-      DuplicateEEs <- dq_profiles  |> 
-        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Duplicate Entry Exits")  |> 
+      req(dq_main_time_proj())
+      DuplicateEEs <- dq_main_time_proj()  |> 
+        dq_filter_between(Issue == "Duplicate Entry Exits")  |> 
         dq_select_cols(
           "Exit Date" = ExitDate
         ) 
@@ -162,7 +183,7 @@ mod_body_dq_provider_level_server <- function(id){
     # Deprecated in Clarity
     # output$dq_MissingLocation <- renderUI({
     #   req(project())
-    #   HHIssues <- dq_profiles |> 
+    #   HHIssues <- dq_main_time_proj |> 
     #     dq_filter_between(date_range = input$date_range, project = project(), Issue == "Missing Client Location") |> 
     #     dq_select_cols()
     #   
@@ -184,9 +205,9 @@ mod_body_dq_provider_level_server <- function(id){
     # })
     
     output$dq_PATHMissingContact <- renderUI({
-      req(project())
-      MissingPathContact <- dq_profiles  |> 
-        dq_filter_between(date_range = input$date_range, project = project(), Issue == "Missing PATH Contact") |> 
+      req(dq_main_time_proj())
+      MissingPathContact <- dq_main_time_proj()  |> 
+        dq_filter_between(Issue == "Missing PATH Contact") |> 
         dq_select_cols()
       
       if (nrow(MissingPathContact)) {
@@ -205,9 +226,9 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_Ineligible <- renderUI({
-      req(project())
+      req(dq_main_time_proj())
     Ineligible <- eligibility_detail |> 
-        dq_filter_between(date_range = input$date_range, project = project()) |> 
+        dq_filter_between() |> 
         dplyr::mutate(
           PreviousStreetESSH = dplyr::if_else(PreviousStreetESSH == 1, "Yes", "No")
         )  |> 
@@ -241,9 +262,8 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_OverlappingEEs <- renderUI({
-      req(project())
+      req(dq_main_time_proj())
       OverlappingEEs <- dq_overlaps() |>
-        dq_filter_between(date_range = input$date_range, project = project()) |>
         dq_select_cols(
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -269,9 +289,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_Errors <- DT::renderDataTable({
-      req(project())
-      dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = project(), 
+      req(dq_main_time_proj())
+      dq_main_time_proj() |>
+        dq_filter_between(
           !Issue %in% c(
             "Too Many Heads of Household",
             "Missing Relationship to Head of Household",
@@ -288,9 +308,9 @@ mod_body_dq_provider_level_server <- function(id){
     })
     
     output$dq_Warnings <- DT::renderDataTable({
-      req(project())
-      DQWarnings <- dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = project(), 
+      req(dq_main_time_proj())
+      DQWarnings <- dq_main_time_proj() |>
+        dq_filter_between(
           !Issue %in% c(
             "Too Many Heads of Household",
             "Missing Relationship to Head of Household",
@@ -307,19 +327,34 @@ mod_body_dq_provider_level_server <- function(id){
 
     })
     
+    
+      
     output$dq_summary <- DT::renderDataTable({
-      req(project())
-      guidance <- dq_profiles |>
-        dq_filter_between(date_range = input$date_range, project = project()) |> 
-        dplyr::group_by(Type, Issue, Guidance) |>
-        dplyr::ungroup() |>
-        dplyr::select(Type, Issue, Guidance) |>
+      req(input$project, nrow(dq_main_time()) > 0, clients(), dq_main_time_proj())
+      
+      issues_by_project <- dq_performance(dq_performance(dq_main_time(), groups = c("Issue", "ProjectID")), dq_performance(clients()), join = T) |> 
+        dplyr::group_by(Issue) |> 
+        dplyr::mutate(rank = round(1 - dplyr::percent_rank(p))) |> 
+        dplyr::distinct(Issue, ProjectID, rank)
+      out <- dq_main_time_proj() |>
+        dplyr::group_by(Type, Issue, Guidance, ProjectID) |>
+        dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
         dplyr::mutate(Type = factor(Type, levels = c("High Priority",
                                               "Error",
                                               "Warning"))) |>
         dplyr::arrange(Type) |>
-        unique() |> 
-        datatable_default(escape = FALSE)
+        dplyr::left_join(issues_by_project, by = c("ProjectID", "Issue")) |> 
+        dplyr::rename(`# of Issues` = n,
+                      `Percentile in CoC` = rank) |> 
+        unique()
+        
+        
+        datatable_default(out, escape = FALSE) |> 
+          DT::formatStyle(
+            columns = "Percentile in CoC",
+            valueColumns = "Percentile in CoC",
+            background = DT::styleColorBar(c(0,1), color = "orangered")
+          )
     })
     
   })
