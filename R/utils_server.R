@@ -105,3 +105,64 @@ server_debounce <- function(..., wait = 1500, e = rlang::caller_env()) {
   }, ignoreInit = TRUE))
   purrr::map(list(inst, ob), rlang::eval_bare, env = e)
 }
+
+
+#' @title Style DT divergent color bar 
+#'
+#' Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
+#'
+#' @details This function draws background color bars behind table cells in a column,
+#' width the width of bars being proportional to the column values *and* the color
+#' dependent on the sign of the value.
+#'
+#' A typical usage is for values such as `log2FoldChange` for tables resulting from
+#' differential expression analysis.
+#' Still, the functionality of this can be quickly generalized to other cases -
+#' see in the examples.
+#'
+#' The code of this function is heavily inspired from styleColorBar, and borrows
+#' at full hands from an excellent post on StackOverflow -
+#' https://stackoverflow.com/questions/33521828/stylecolorbar-center-and-shift-left-right-dependent-on-sign/33524422#33524422
+#'
+#' @param data The numeric vector whose range will be used for scaling the table
+#' data from 0-100 before being represented as color bars. A vector of length 2
+#' is acceptable here for specifying a range possibly wider or narrower than the
+#' range of the table data itself.
+#' @param color_pos The color of the bars for the positive values
+#' @param color_neg The color of the bars for the negative values
+#'
+#' @return This function generates JavaScript and CSS code from the values
+#' specified in R, to be used in DT tables formatting.
+#'
+#' @export
+#'
+#' @examples
+#' simplest_df <- data.frame(
+#'   a = c(rep("a", 9)),
+#'   value = c(-4, -3, -2, -1, 0, 1, 2, 3, 4)
+#' )
+#'
+#' # or with a very simple data frame
+#' DT::datatable(simplest_df) %>%
+#'   formatStyle(
+#'     "value",
+#'     background = styleColorBar_divergent(
+#'       simplest_df$value,
+#'       scales::alpha("forestgreen", 0.4),
+#'       scales::alpha("gold", 0.4)
+#'     ),
+#'     backgroundSize = "100% 90%",
+#'     backgroundRepeat = "no-repeat",
+#'     backgroundPosition = "center"
+#'   )
+styleDivergentBar <- function(data,
+                                    color_pos,
+                                    color_neg) {
+  max_val <- max(abs(data))
+  htmlwidgets::JS(
+    sprintf(
+      "isNaN(parseFloat(value)) || value < 0 ? 'linear-gradient(90deg, transparent, transparent ' + (50 + value/%s * 50) + '%%, %s ' + (50 + value/%s * 50) + '%%,%s  50%%,transparent 50%%)': 'linear-gradient(90deg, transparent, transparent 50%%, %s 50%%, %s ' + (50 + value/%s * 50) + '%%, transparent ' + (50 + value/%s * 50) + '%%)'",
+      max_val, color_pos, max_val, color_pos, color_neg, color_neg, max_val, max_val
+    )
+  )
+}
