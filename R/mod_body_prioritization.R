@@ -22,7 +22,7 @@ mod_body_prioritization_ui <- function(id){
         actionsBox = TRUE
       )
     ),
-    ui_row_box(title = "Prioritization List", 
+    ui_row(title = "Prioritization List", 
                DT::dataTableOutput(ns("summary")),
                footer = tags$div(class = "alert alert-warning", role = 'alert', "Warning colored rows mean the client has a Data Quality issue that may be causing incorrect information to show."))
   )

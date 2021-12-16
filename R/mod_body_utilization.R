@@ -21,7 +21,7 @@ mod_body_utilization_ui <- function(id) {
   
   shiny::fluidPage(
     ui_header_row(),
-    ui_row_box(
+    ui_row(
       ui_picker_project(choices = choices),
       shinyWidgets::airDatepickerInput(
         inputId = ns("date_range"),
@@ -39,7 +39,7 @@ mod_body_utilization_ui <- function(id) {
       ),
       width = 12
     ),
-    ui_row_box(
+    ui_row(
       title = "Summary",
       fluidRow(
       bs4Dash::column(4, bs4Dash::infoBoxOutput(ns(
@@ -54,7 +54,7 @@ mod_body_utilization_ui <- function(id) {
       ),
       width = 12
     ),
-    ui_row_box(
+    ui_row(
       title = "Detail", 
       DT::dataTableOutput(ns("detail")),
       width = 12

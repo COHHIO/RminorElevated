@@ -77,14 +77,37 @@ ui_date_range <- function(
   )
 }
 
+#' @title Make columns from assorted shiny.tag elements
+#' Sorts shiny.tags into columns based on the maximum number of columns (`max_cols`) per row
+#' @param x \code{(shiny.tags)}
+#' @param max_cols \code{(logical/integer)} Either `TRUE` **Default** for a default of 4 columns per row, `FALSE` for no columns, or an integer indicating the max number of columns. 
+#'
+#' @return \code{(list(s))}
+#' @export
+
+make_columns <- function(x, max_cols = TRUE) {
+  max_cols <- purrr::when(isTRUE(max_cols),
+                          . ~ 4, 
+                          ~ max_cols)
+  if (max_cols) {
+    .ld <- length(x)
+    rows <- split(x, rep(1:.ld, each = max_cols, length.out = .ld))
+    out <- purrr::map(rows, ~{
+      purrr::map(.x, ~rlang::exec(bs4Dash::column, !!!.x, width = 12 %/% length(.x)))
+    })
+  } else 
+    out <- x
+  out
+}
+
 #' @title A default full width row box.
 #' @inheritParams bs4Dash::box
 #' @return A full-width \link[bs4Dash]{box} nested in a row
 #' @export
 #'
 #' @examples
-#' ui_row_box(tags$p("Hi"))
-ui_row_box <- function(...,
+#' ui_row(tags$p("Hi"))
+ui_row <- function(...,
                        title = NULL,
                        footer = NULL,
                        status = NULL,
@@ -104,39 +127,51 @@ ui_row_box <- function(...,
                        label = NULL,
                        dropdownMenu = NULL,
                        sidebar = NULL,
-                       id = NULL) {
-  
+                       id = NULL,
+                       box = TRUE,
+                       columns = FALSE) {
   .dots <- rlang::dots_list(...)
-  if (UU::is_legit(.dots)) {
-    out <- shiny::fluidRow(class = "ui_row_box", eval(
+  .cols <- make_columns(.dots, columns)
+  .args <- list(title = title,
+                footer = footer,
+                status = status,
+                solidHeader = solidHeader,
+                background = background,
+                width = width,
+                height = height,
+                collapsible = collapsible,
+                collapsed = collapsed,
+                closable = closable,
+                maximizable = maximizable,
+                icon = icon,
+                gradient = gradient,
+                boxToolSize = "sm",
+                elevation = elevation,
+                headerBorder = headerBorder,
+                label = label,
+                dropdownMenu = dropdownMenu,
+                sidebar = sidebar,
+                id = id)
+  
+  if (UU::is_legit(.cols) && !columns) {
+    out <- shiny::fluidRow(class = "ui_row", eval(
       rlang::call2(
-        bs4Dash::box,
-        title = title,
-        footer = footer,
-        status = status,
-        solidHeader = solidHeader,
-        background = background,
-        width = width,
-        height = height,
-        collapsible = collapsible,
-        collapsed = collapsed,
-        closable = closable,
-        maximizable = maximizable,
-        icon = icon,
-        gradient = gradient,
-        boxToolSize = "sm",
-        elevation = elevation,
-        headerBorder = headerBorder,
-        label = label,
-        dropdownMenu = dropdownMenu,
-        sidebar = sidebar,
-        id = id,
-        !!!.dots
+        purrr::when(box, . ~ bs4Dash::box, ~ shiny::tagList),
+        !!!purrr::when(box,. && UU::is_legit(.cols) ~ append(.args, .cols), . ~ .args,  ~ .cols)
       )
     ))
-  } else {
+  } else if (UU::is_legit(.cols) && columns) {
+    out <- do.call(tagList, purrr::map(.cols, ~{
+      shiny::fluidRow(class = "ui_row", eval(
+        rlang::call2(
+          purrr::when(box, . ~ bs4Dash::box, ~ shiny::tagList),
+          !!!purrr::when(box,. && UU::is_legit(.cols) ~ append(.args, .x), . ~ .args,  ~ .x)
+        )
+      ))
+    }))
+    
+  } else
     out <- NULL
-  }
   out
 }
 
@@ -174,7 +209,7 @@ ui_solid_box <- function(...,
                      ~ .)
   .dots <- rlang::dots_list(...)
   if (UU::is_legit(.dots)) {
-    out <- shiny::fluidRow(class = "ui_row_box", eval(
+    out <- shiny::fluidRow(class = "ui_row", eval(
       rlang::call2(
         bs4Dash::box,
         title = title,

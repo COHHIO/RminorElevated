@@ -11,7 +11,7 @@ mod_body_dq_region_level_ui <- function(id) {
   ns <- NS(id)
   tagList(
     ui_header_row(),
-    ui_row_box(
+    ui_row(
       ui_picker_project(
         inputId = ns("region"),
         choices = regions,

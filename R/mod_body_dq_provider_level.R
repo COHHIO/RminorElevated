@@ -11,7 +11,7 @@ mod_body_dq_provider_level_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
-    ui_row_box(
+    ui_row(
       ui_picker_project(
         choices = projects[projects %in% dq_providers()],
         options = shinyWidgets::pickerOptions(

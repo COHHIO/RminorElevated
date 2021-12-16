@@ -11,16 +11,16 @@ mod_body_client_counts_ui <- function(id){
   ns <- shiny::NS(id)
   shiny::tagList(
     ui_header_row(),
-    ui_row_box(
+    ui_row(
       ui_picker_project(),
       ui_date_range(start = Sys.Date() - lubridate::days(90)),
       headerBorder = FALSE
     ),
-    ui_row_box(
+    ui_row(
       title = "Summary",
       DT::dataTableOutput(ns("summary")),
     ),
-    ui_row_box(
+    ui_row(
       title = "Client Details",
       DT::dataTableOutput(ns("dt_output")),
       width = 12

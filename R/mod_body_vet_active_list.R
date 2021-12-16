@@ -12,7 +12,7 @@ mod_body_vet_active_list_ui <- function(id) {
   chronic_status <- as.character(sort(unique(val$ChronicStatus)))
   tagList(
     ui_header_row(),
-    ui_row_box(
+    ui_row(
       title = "Legend",
       fluidRow(
         bs4Dash::bs4Card(
@@ -67,7 +67,7 @@ mod_body_vet_active_list_ui <- function(id) {
         ) 
       )
     ),
-    ui_row_box(
+    ui_row(
       fluidRow(
         column(
           3,

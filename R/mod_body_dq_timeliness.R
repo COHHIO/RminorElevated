@@ -12,9 +12,9 @@ mod_body_dq_timeliness_ui <- function(id){
   shiny::tagList(
     ui_header_row(),
     ui_picker_project(choices = desk_time_providers),
-    ui_row_box(shiny::plotOutput(ns("detail")),
+    ui_row(shiny::plotOutput(ns("detail")),
                                title = "Detail"),
-    ui_row_box(title = "Guidance", shiny::HTML("
+    ui_row(title = "Guidance", shiny::HTML("
       <h4>HUD and Data Quality</h4>
         <p>HUD defines <em>Data Quality</em> as having three elements:</p>
         <ol>
