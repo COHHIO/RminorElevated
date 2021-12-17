@@ -7,7 +7,7 @@
 #' @return \code{shiny.tag.list}
 #' @export
 
-server_header <- function(title, project, date_range, ..., region, county) {
+server_header <- function(title, ..., project, date_range, region, county) {
   out <- list()
   out$header <- shiny::h2(title)
   if (!missing(project))
