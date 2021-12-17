@@ -87,14 +87,28 @@ dq_performance <- function(.data, .join_data, groups = c("ProjectID", "ProjectNa
   
   if (join){
     summed <- dplyr::left_join(summed$data, summed$join_data, by = rlang::exec(UU::common_names, !!!summed), suffix = suffix)
-    .ns = stringr::str_subset(names(summed), "^n")
+    .ns = purrr::map(stringr::str_subset(names(summed), "^n"), rlang::sym)
     out <- summed |> 
       dplyr::mutate(
-        p = !!rlang::expr(!!rlang::sym(.ns[[1]]) / !!rlang::sym(.ns[[2]])),
-        rank = 1 - dplyr::percent_rank(p)
+        p = !!rlang::expr(!!.ns[[1]] / !!.ns[[2]]),
+        rank = .5 - dplyr::percent_rank(p)
       )   
   } else {
     out <- summed[[1]]
   }
   out
+}
+
+
+datatable_frequency <- function(.data) {
+  datatable_default(.data, escape = FALSE) |> 
+    DT::formatStyle(
+      columns = "Frequency",
+      valueColumns = "rank",
+      background = styleDivergentBar(c(-.5,.5), color_pos = "#28a745", color_neg = "#dc3545")
+    ) |> 
+    datatable_options_update(options = list(columnDefs = list(list(
+      visible = FALSE,
+      targets = length(.data)- 1
+    ))))
 }
