@@ -76,6 +76,24 @@ datatable_default <- function(data,
   )
 }
 
+
+#' @title Give DT ready column numbers from names or numbers
+#'
+#' @param x \code{(character/numeric)} Column numbers or names
+#'
+#' @return
+#' @export
+
+which_cols <- function(x, .data) {UseMethod("which_cols")}
+
+#' @export
+which_cols.numeric <- function(x, .data) x
+
+#' @export
+which_cols.character <- function(x, .data) {
+  dplyr::matches(UU::regex_or(x), vars = names(.data))
+}
+
 #' @title Update datatable options
 #'
 #' @param x \code{(datatables)}
