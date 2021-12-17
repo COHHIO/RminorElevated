@@ -10,7 +10,11 @@
 mod_body_dq_system_wide_ui <- function(id){
   ns <- NS(id)
   tagList(
- 
+    ui_header_row(),
+    ui_row(title = "Access Points", dq_APs() |> 
+                 {\(x) {bs4Dash::bs4MultiProgressBar(value = x$percent, min = 0, max = 1, status = c("danger", "success"), striped = c(TRUE, FALSE), animated = rep(FALSE, length(x$percent)), label = paste0(x$category, ": ", x$count), style= "height: 3rem;font-size: 1.5rem;")}}()
+               )
+    
   )
 }
     
@@ -20,6 +24,11 @@ mod_body_dq_system_wide_ui <- function(id){
 mod_body_dq_system_wide_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    output$header <- output$header <- renderUI({
+      server_header(title = "Data Quality",
+                    shiny::h3("System-Wide"),
+                    date_range = c(rm_dates()$hc$check_dq_back_to, Sys.Date()))
+    })
     output$desk_time_medians <- renderPlot({
       ggplot(
         head(desk_time_medians, 10L),
