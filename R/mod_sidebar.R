@@ -75,12 +75,8 @@ mod_sidebar_ui <- function(id){
             tabName = "dq_region_level" #dqRegion
           ),
           bs4Dash::bs4SidebarMenuSubItem(
-            text = "System-wide",
-            tabName = "dq_system_wide" # dqCoC
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "CE Summary",
-            tabName = "dq_system_summary" #ceCoC
+            text = "System Summary",
+            tabName = "dq_system_summary" # dqCoC
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
