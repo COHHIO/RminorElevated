@@ -85,15 +85,33 @@ ui_date_range <- function(
 #' @return \code{(list(s))}
 #' @export
 
-make_columns <- function(x, max_cols = TRUE) {
+make_columns <- function(x, max_cols = TRUE, fn = list(bs4Dash::box, bs4Dash::column)[[1]]) {
   max_cols <- purrr::when(isTRUE(max_cols),
                           . ~ 4, 
                           ~ max_cols)
+  
   if (max_cols) {
-    .ld <- length(x)
-    rows <- split(x, rep(1:.ld, each = max_cols, length.out = .ld))
+    ld <- nrow(x)
+    rows <- x |> 
+      dplyr::mutate(.g = rep(1:ld, each = max_cols, length.out = ld)) |> 
+      dplyr::group_by(.g) |> 
+      dplyr::group_split(.keep = FALSE)
+    
     out <- purrr::map(rows, ~{
-      purrr::map(.x, ~rlang::exec(bs4Dash::column, !!!.x, width = 12 %/% length(.x)))
+      .cols <- .x
+      .width = 12 %/% max_cols
+      do.call(shiny::fluidRow, 
+              purrr::pmap(.cols, ~ {
+                .args <- rlang::dots_list(..., .named = TRUE)
+                .lgl <- names(.args) %in% rlang::fn_fmls_names(fn)
+                .args <- append(.args[.lgl], unname(.args[!.lgl]))
+                
+                rlang::exec(fn,
+                            !!!.args,
+                            width = .width
+                            )
+              })
+      )
     })
   } else 
     out <- x
