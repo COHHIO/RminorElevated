@@ -53,7 +53,11 @@ mod_body_dq_provider_level_ui <- function(id){
     ),
     ui_solid_box(
       id = "dq_summary",
-      tags$p(tags$strong("Percentile in CoC: "), "a higher percentile indicates a very low frequency of this error for the volume of clients in th(is/ese) program(s) compared to the frequency of this error across all other programs in the CoC."),
+      bs4Dash::accordion(
+        id = "dq_frequency_info",
+        bs4Dash::accordionItem(title = "Frequency Explanation (# / Total Clients)",
+        tags$p("Frequency is calculate as the # of times this error occurs / the # of clients (not the number of clients with the error / the # of clients). The bargraph indicates how frequently this error occurs for th(is/ese) programs(s) compared to the average for the rest of the CoC. ",tags$span("Green", style = "color:rgb(40, 167, 69)") , " indicates that the error occurs less frequently than the CoC average, ",tags$span("Red", style = "color:rgb(220, 53, 69)"), " indicates the error occurs more frequently than the CoC average. The larger the bar, the greater the distance from the average, IE a large red bar indicates this error occurs much more frequently for these programs than the CoC average."))
+      ),
       DT::dataTableOutput(ns("dq_summary")),
       title = "Data Quality Guidance",
       status = "info"
@@ -78,28 +82,31 @@ mod_body_dq_provider_level_server <- function(id){
     
     dq_p <- dq_main()
     dq_main_time <- eventReactive(input$date_range, {
-      req(date_range())
+      req(input$date_range)
       dq_p |> 
-        dq_filter_between(date_range = date_range())
+        dq_filter_between(date_range = input$date_range)
         
-    }) 
-    dq_main_time_proj <- reactive({
-      req(input$project, dq_main_time(), project())
+    }) |> 
+      debounce(1500)
+    dq_main_time_proj <- eventReactive(input$project, {
+      req(input$project, dq_main_time())
       dq_main_time() |> 
-        dq_filter_between(project = project())
+        dq_filter_between(project = input$project)
     }) |> 
       debounce(1500)
     co_clients <- co_clients_served()
-    clients <- reactive({
-      req(input$date_range, date_range())
+    clients <- eventReactive(input$date_range, {
+      req(input$date_range)
       co_clients |> 
-        dq_filter_between(date_range = date_range())
-    })
+        dq_filter_between(date_range = input$date_range)
+      
+    }) |> 
+      debounce(1500)
     
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
       req(input$project, project())
-      AP_no_referrals <- aps_no_referrals()  |> 
+      AP_no_referrals <- dq_aps_no_referrals()  |> 
         dplyr::filter(ProjectID %in% project())
       
       if (nrow(AP_no_referrals) > 0) {
@@ -327,34 +334,44 @@ mod_body_dq_provider_level_server <- function(id){
 
     })
     
-    
+    issues_by_project <- reactive({
+      req(dq_main_time(), clients())
+      dq_performance(dq_performance(dq_main_time(), groups = c("Issue", "ProjectID")), dq_performance(clients()), join = T) |> 
+        dplyr::group_by(Issue) |> 
+        dplyr::mutate(rank = round(rank, 5),
+                      p = round(p, 5)) |> 
+        dplyr::distinct(Issue, ProjectID, rank, p)
+    })
       
     output$dq_summary <- DT::renderDataTable({
-      req(input$project, nrow(dq_main_time()) > 0, clients(), dq_main_time_proj())
+      req(input$project, issues_by_project(), dq_main_time_proj())
       
-      issues_by_project <- dq_performance(dq_performance(dq_main_time(), groups = c("Issue", "ProjectID")), dq_performance(clients()), join = T) |> 
-        dplyr::group_by(Issue) |> 
-        dplyr::mutate(rank = round(1 - dplyr::percent_rank(p))) |> 
-        dplyr::distinct(Issue, ProjectID, rank)
+      
       out <- dq_main_time_proj() |>
-        dplyr::group_by(Type, Issue, Guidance, ProjectID) |>
+        dplyr::group_by(Type, Issue, Guidance, ProjectName, ProjectID) |>
         dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
         dplyr::mutate(Type = factor(Type, levels = c("High Priority",
                                               "Error",
                                               "Warning"))) |>
         dplyr::arrange(Type) |>
-        dplyr::left_join(issues_by_project, by = c("ProjectID", "Issue")) |> 
+        dplyr::left_join(issues_by_project(), by = c("ProjectID", "Issue")) |> 
+        dplyr::mutate(p = round(p, 3),
+                      ProjectID = NULL) |> 
         dplyr::rename(`# of Issues` = n,
-                      `Percentile in CoC` = rank) |> 
+                      Frequency = p) |> 
         unique()
         
         
         datatable_default(out, escape = FALSE) |> 
           DT::formatStyle(
-            columns = "Percentile in CoC",
-            valueColumns = "Percentile in CoC",
-            background = DT::styleColorBar(c(0,1), color = "orangered")
-          )
+            columns = "Frequency",
+            valueColumns = "rank",
+            background = styleDivergentBar(c(-.5,.5), color_pos = "#28a745", color_neg = "#dc3545")
+          ) |> 
+          datatable_options_update(options = list(columnDefs = list(list(
+            visible = FALSE,
+            targets = length(out)- 1
+          ))))
     })
     
   })
