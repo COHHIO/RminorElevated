@@ -51,8 +51,12 @@ datatable_default <- function(data,
                               extensions = "Buttons",
                               style = "bootstrap4",
                               elementId = NULL,
+                              add_options,
                               ...) {
+  #TODO datatable option to download entire table instead of what is visible
   options <- purrr::list_modify(eval(rlang::fn_fmls()$options), !!!options)
+  if (!missing(add_options))
+    options <- purrr::list_modify(options, !!!add_options)
   if (!"Buttons" %in% extensions)
     extentions <- c(extensions, "Buttons")
   if (!"buttons" %in% names(options))
