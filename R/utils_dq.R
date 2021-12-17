@@ -98,17 +98,3 @@ dq_performance <- function(.data, .join_data, groups = c("ProjectID", "ProjectNa
   }
   out
 }
-
-
-datatable_frequency <- function(.data) {
-  datatable_default(.data, escape = FALSE) |> 
-    DT::formatStyle(
-      columns = "Frequency",
-      valueColumns = "rank",
-      background = styleDivergentBar(c(-.5,.5), color_pos = "#28a745", color_neg = "#dc3545")
-    ) |> 
-    datatable_options_update(options = list(columnDefs = list(list(
-      visible = FALSE,
-      targets = length(.data)- 1
-    ))))
-}

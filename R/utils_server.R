@@ -102,16 +102,65 @@ which_cols.character <- function(x, .data) {
 #' @return \code({datatables})
 #' @export
 
-datatable_options_update <- function(x, options) {
+datatable_options_update <- function(x, options, hide_cols) {
   out <- x
+  
+  if (missing(options))
+    options <- out$x$options
+  if (!missing(hide_cols))
+    options <- append(options, list(columnDefs = list(list(
+      visible = FALSE,
+      targets = which_cols(hide_cols, x$x$data) - 1 # js numbers start with 0
+    ))))
   if (UU::is_legit(out$x$options$columnDefs) && UU::is_legit(options$columnDefs)) {
     out$x$options$columnDefs <- append(out$x$options$columnDefs, options$columnDefs)
     options$columnDefs <- NULL
   }
   if (UU::is_legit(options))
     out$x$options <- purrr::list_modify(out$x$options, !!!options)
+  
   out
 }
+
+#' @title Add \link[DT]{styleColorBar} or `styleDivergentBar` to datatable
+#'
+#' @inheritParams DT::formatStyle
+#' @inheritDotParams DT::formatStyle
+#' @inheritDotParams DT::styleColorBar
+#' @inheritDotParams styleDivergentBar
+#' @param divergent \code{(logical)} Whether to use `styleDivergentBar`
+#'
+#' @return \code{(datatable)}
+#' @export
+
+datatable_add_bars <- function(table, columns, valueColumns, ..., divergent = FALSE) {
+  .args <- rlang::dots_list(..., .named = TRUE)
+  .args$table <- table
+  .data <- table$x$data
+  .data_nms <- names(.data)
+  
+  if (missing(columns) && divergent)
+    .args$columns = stringr::str_which(.data_nms, stringr::regex("frequency", ignore_case = TRUE))
+  else
+    .args$columns <- columns
+  
+  if (missing(valueColumns) && divergent)
+    .args$valueColumns = stringr::str_which(.data_nms, stringr::regex("rank|from_mean", ignore_case = TRUE))
+  else
+    .args$valueColumns <- valueColumns
+  
+  if (divergent)
+    bar_args <- purrr::list_modify(.args[names(.args) %in% c("color_pos", "color_neg")], color_pos = "#28a745", color_neg = "#dc3545")
+  else
+    bar_args <- .args[names(.args) %in% c("data", "color", "angle")]
+    
+  .args$background <- purrr::map(.args$valueColumns, ~rlang::exec(purrr::when(divergent, . ~ styleDivergentBar, ~ DT::styleColorBar), range(.data[[.x]]), !!!bar_args)) |> 
+    {\(x) {purrr::when(length(x), . == 1 ~ x[[1]], ~ x)}}()
+  
+  rlang::exec(DT::formatStyle, !!!.args)
+}
+
+
 
 server_debounce <- function(..., wait = 1500, e = rlang::caller_env()) {
   ex <- rlang::enexprs(..., .named = TRUE)
