@@ -42,33 +42,6 @@ at full hands from an excellent post on StackOverflow -
 https://stackoverflow.com/questions/33521828/stylecolorbar-center-and-shift-left-right-dependent-on-sign/33524422#33524422
 }
 \examples{
-
-data(res_de_macrophage, package = "GeneTonic")
-res_df <- deseqresult2df(res_macrophage_IFNg_vs_naive)
-library("magrittr")
-library("DT")
-DT::datatable(res_df[1:50, ],
-  options = list(
-    pageLength = 25,
-    columnDefs = list(
-      list(className = "dt-center", targets = "_all")
-    )
-  )
-) \%>\%
-  formatRound(columns = c("log2FoldChange"), digits = 3) \%>\%
-  formatStyle(
-    "log2FoldChange",
-    background = styleColorBar_divergent(
-      res_df$log2FoldChange,
-      scales::alpha("navyblue", 0.4),
-      scales::alpha("darkred", 0.4)
-    ),
-    backgroundSize = "100\% 90\%",
-    backgroundRepeat = "no-repeat",
-    backgroundPosition = "center"
-  )
-
-
 simplest_df <- data.frame(
   a = c(rep("a", 9)),
   value = c(-4, -3, -2, -1, 0, 1, 2, 3, 4)

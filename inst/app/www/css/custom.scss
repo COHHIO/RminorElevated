@@ -14,6 +14,21 @@
   margin-top: 31px;
 }
 
+// Align search and buttons on DTs
+.dt-buttons.btn-group {
+  float:left;
+}
+
+#body-body_dq_system_summary-summary {
+  & .col-md-6 {
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+  & .card-body {
+    padding: .5rem;
+  }
+}
+
 // Fix the alignment of sidebar text & hide it when minimized
 .sidebar-mini {
   & .nav-sidebar .nav-link {

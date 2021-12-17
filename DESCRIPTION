@@ -54,7 +54,6 @@ Collate:
     'mod_body_dq_provider_level.R'
     'mod_body_dq_region_level.R'
     'mod_body_dq_system_summary.R'
-    'mod_body_dq_system_wide.R'
     'mod_body_dq_timeliness.R'
     'mod_body_dq_unsheltered.R'
     'mod_body_prioritization.R'

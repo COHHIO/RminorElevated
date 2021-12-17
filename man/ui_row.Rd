@@ -26,8 +26,7 @@ ui_row(
   dropdownMenu = NULL,
   sidebar = NULL,
   id = NULL,
-  box = TRUE,
-  columns = FALSE
+  box = TRUE
 )
 }
 \arguments{

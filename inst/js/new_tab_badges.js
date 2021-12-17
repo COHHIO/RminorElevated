@@ -1,5 +1,5 @@
 $( '#sidebar' ).ready(function() {
-  var new_els = ['dq_provider_level', 'dq_timeliness', 'dq_region_level','client_counts', 'utilization', 'prioritization', 'vet_active_list']
+  var new_els = ['dq_provider_level', 'dq_timeliness', 'dq_region_level','client_counts', 'utilization', 'prioritization', 'vet_active_list', 'dq_system_summary']
   new_els.map(function(id) {
     var checkExist = setInterval(function() {
    if ($('#'+"tab-"+ id).length) {

@@ -4,7 +4,7 @@
 \alias{datatable_options_update}
 \title{Update datatable options}
 \usage{
-datatable_options_update(x, options)
+datatable_options_update(x, options, hide_cols)
 }
 \arguments{
 \item{x}{\code{(datatables)}}

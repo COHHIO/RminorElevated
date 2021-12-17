@@ -15,6 +15,7 @@ datatable_default(
   extensions = "Buttons",
   style = "bootstrap4",
   elementId = NULL,
+  add_options,
   ...
 )
 }

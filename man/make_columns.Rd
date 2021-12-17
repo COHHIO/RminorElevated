@@ -5,7 +5,7 @@
 \title{Make columns from assorted shiny.tag elements
 Sorts shiny.tags into columns based on the maximum number of columns (`max_cols`) per row}
 \usage{
-make_columns(x, max_cols = TRUE)
+make_columns(x, max_cols = TRUE, fn = list(bs4Dash::box, bs4Dash::column)[[1]])
 }
 \arguments{
 \item{x}{\code{(shiny.tags)}}
