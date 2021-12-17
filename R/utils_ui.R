@@ -170,23 +170,13 @@ ui_row <- function(...,
                 sidebar = sidebar,
                 id = id)
   
-  if (UU::is_legit(.cols) && !columns) {
+  if (UU::is_legit(.dots)) {
     out <- shiny::fluidRow(class = "ui_row", eval(
       rlang::call2(
         purrr::when(box, . ~ bs4Dash::box, ~ shiny::tagList),
-        !!!purrr::when(box,. && UU::is_legit(.cols) ~ append(.args, .cols), . ~ .args,  ~ .cols)
+        !!!purrr::when(box,. && UU::is_legit(.dots) ~ append(.args, .dots), . ~ .args,  ~ .dots)
       )
     ))
-  } else if (UU::is_legit(.cols) && columns) {
-    out <- do.call(tagList, purrr::map(.cols, ~{
-      shiny::fluidRow(class = "ui_row", eval(
-        rlang::call2(
-          purrr::when(box, . ~ bs4Dash::box, ~ shiny::tagList),
-          !!!purrr::when(box,. && UU::is_legit(.cols) ~ append(.args, .x), . ~ .args,  ~ .x)
-        )
-      ))
-    }))
-    
   } else
     out <- NULL
   out
