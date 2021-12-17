@@ -146,10 +146,9 @@ ui_row <- function(...,
                        dropdownMenu = NULL,
                        sidebar = NULL,
                        id = NULL,
-                       box = TRUE,
-                       columns = FALSE) {
+                       box = TRUE
+                       ) {
   .dots <- rlang::dots_list(...)
-  .cols <- make_columns(.dots, columns)
   .args <- list(title = title,
                 footer = footer,
                 status = status,
