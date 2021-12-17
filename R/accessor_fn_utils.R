@@ -21,18 +21,23 @@ clean_null <- function(files) {
 }
 
 create_accessors <- function(path = "data", dropbox_folder = file.path("RminorElevated")) {
+  
   files <- clean_null(UU::list.files2(path)) |> 
     stringr::str_subset("\\.png^", negate = TRUE)
-  db_files <- rdrop2::drop_dir("RminorElevated") |> 
-    dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
-                  file_time = file.info(file.path(path, name))$mtime,
-                  needs_update = file_time < client_modified)
-  files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
-  if (nrow(files_to_download)) {
-    if (!dir.exists(path))
-      UU::mkpath(path)
-    apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
+  db_files <- rdrop2::drop_dir("RminorElevated")
+  if (nrow(db_files)) {
+    db_files <- db_files |> 
+      dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
+                    file_time = file.info(file.path(path, name))$mtime,
+                    needs_update = file_time < client_modified)
+    files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
+    if (nrow(files_to_download)) {
+      if (!dir.exists(path))
+        UU::mkpath(path)
+      apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
+    }
   }
+    
   purrr::map(UU::list.files2(path), accessor_create)
 }
 
