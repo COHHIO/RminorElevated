@@ -30,9 +30,55 @@
 }
 
 // Fix the alignment of sidebar text & hide it when minimized
+@mixin sidebar {
+  & .badge {
+      display: block;
+    }
+  & #logOut, #data_refresh {
+    display: inherit;
+    width: fit-content;
+  }
+  & .nav-sidebar {
+    & .nav-item {
+      width: 100%;
+      &.has-treeview.menu-is-opening.menu-open {
+        & .nav-link {
+          width: 100%;
+        }
+        & ul.nav.nav-treeview {
+          display: inline-flex !important; 
+          flex-direction: row;
+          width: 100%;
+          & .nav-item {
+            display: inline-flex;
+          }
+        }
+      } 
+    } 
+  }
+}
+  
+.sidebar-mini.sidebar-collapse .main-sidebar {
+  &:hover {
+    @include sidebar  
+  }
+  &:not(:hover) .badge, #logOut, #data_refresh {
+      display: none;
+  }
+  
+}
+
+
+.layout-fixed .main-sidebar {
+  @include sidebar  
+}
+/*
 .sidebar-mini {
-  & .nav-sidebar .nav-link {
-    white-space: normal;
+  & .nav-sidebar {
+    white-space: inherit;
+    & .nav-link {
+    width: 100%;
+    white-space: inherit;
     word-wrap: break-word;
     display: inline-flex;
     align-items: center;
@@ -49,10 +95,15 @@
         white-space: normal;
         word-wrap: break-word;
       }
+      & .nav-link p {
+        width: auto;
+      }
     }
   }
+  }
+  
 }
-
+*/
 .info-box-icon {
   font-size: 12px;
 }
