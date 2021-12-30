@@ -49,7 +49,7 @@ mod_sidebar_ui <- function(id){
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "Bed & Unit Utilization",
+          text = "Bed & Unit Use",
           tabName = "utilization", #utilizationTab
           icon = shiny::icon("bed")
         ),
@@ -80,8 +80,8 @@ mod_sidebar_ui <- function(id){
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "Ending Veteran Homelessness",
-          tabName = "vet_active_list", # cocCompetitionTab
+          text = "Veterans",
+          tabName = "vet_active_list", 
           icon = shiny::icon("medal")
         ),
         bs4Dash::bs4SidebarMenuItem(
@@ -90,41 +90,44 @@ mod_sidebar_ui <- function(id){
           icon = shiny::icon("flag-checkered")
         ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "Quarterly Performance Report",
+          text = "Quarterly Performance",
           icon = shiny::icon("file-medical-alt"),
           tabName = "qpr",
           bs4Dash::bs4SidebarMenuSubItem(
-            text = "Community Need",
-            tabName = "qpr_community_need" #spdatTab
-            # need to determne how to re-structure to remove another layer of nesting here
+            text = "Permanent Housing Need",
+            tabName = "qpr_community_need_ph" #spdat1Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Literally Homeless Need",
+            tabName = "qpr_community_need_lh" #spdat2Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Length of Stay",
             tabName = "qpr_length_of_stay" # LoS-Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Exits to Permanent Housing",
             tabName = "qpr_permanent_housing" # PHTab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Non-Cash Benefits at Exit",
             tabName = "qpr_noncash_benefits" # NCB-Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Health Insurance at Exit",
             tabName = "qpr_health_insurance" # HI-Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Income Growth",
             tabName = "qpr_income_growth" # income-Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "Rapid Placement for RRH",
             tabName = "qpr_rrh_placement" # rapid-Tab
           ),
-          bs4Dash::bs4SidebarMenuItem(
+          bs4Dash::bs4SidebarMenuSubItem(
             text = "RRH Spending",
-            tabName = "qpr_rrh_spending" # rapid-Tab
+            tabName = "qpr_rrh_spending" # spending-Tab
           )
         ),
         actionButton(
@@ -132,16 +135,24 @@ mod_sidebar_ui <- function(id){
           label = "Log Out",
           onclick =
             "window.open(window.location.href + '__logout__/', '_self')"
-        ),
-        tags$small(paste0("Data refreshed: ", refreshed), style = paste0("color:", purrr::when(refreshed, 
-                                                                                               . > Sys.Date() ~ "#28a745",
-                                                                                               . > Sys.Date() - 7 ~ "#ffc107",
-                                                                                               ~ "#dc3545"), ";"),  id = "dataRefresh")
+        )
+        , bs4Alert(
+          tags$strong("Data refreshed: ",tags$br(), refreshed),
+          id = "data_refresh",
+          status = purrr::when(
+            refreshed,
+            . > Sys.Date() ~ "success",
+            . > Sys.Date() - 7 ~ "warning",
+            ~ "danger"
+          ),
+          width = 12
+        )
       )
       
     )
 }
     
+
 #' sidebar Server Functions
 #'
 #' @noRd 
