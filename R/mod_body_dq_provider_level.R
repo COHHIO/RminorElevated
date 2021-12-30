@@ -233,9 +233,9 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_Ineligible <- renderUI({
-      req(dq_main_time_proj())
+      req(input$project, input$date_range, project(), date_range())
     Ineligible <- eligibility_detail |> 
-        dq_filter_between() |> 
+        dq_filter_between(ProjectID %in% project(), date_range = date_range()) |> 
         dplyr::mutate(
           PreviousStreetESSH = dplyr::if_else(PreviousStreetESSH == 1, "Yes", "No")
         )  |> 
@@ -269,8 +269,9 @@ mod_body_dq_provider_level_server <- function(id){
     
     
     output$dq_OverlappingEEs <- renderUI({
-      req(dq_main_time_proj())
-      OverlappingEEs <- dq_overlaps() |>
+      req(input$project, input$date_range, project(), date_range())
+      OverlappingEEs <- dq_overlaps() |> 
+        dq_filter_between(ProjectID %in% project(), date_range = date_range()) |> 
         dq_select_cols(
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
