@@ -306,3 +306,17 @@ simpleCard <- function(..., style = NULL, width = 4) {
 icons = list(vet_active = ui_icons(name = c("check", "times",
                                           "question-circle", "exclamation-triangle"),
                                    style = glue::glue_data(list(color = c("teal", "tomato", "grey", "goldenrod"), fontsize = "150%"), "color: {color}; font-size: {fontsize}")) |> rlang::set_names(c("pass", "fail", "unknown", "alert")))
+
+
+#' @title Create a bootstrap 4 Alert box
+#' 
+#' @param style \code{(character)} Inline style parameters to add
+#' @inherit bs4Dash::bs4Card params return
+#' @export
+
+bs4Alert <- function(..., status = "primary", style = NULL, id = NULL, width = 6) {
+  bs4Dash:::validateStatus(status)
+  status <- UU::match_letters(status, n = 2, bs4Dash:::validStatuses)
+  
+   shiny::tags$div(class = paste0("alert alert-",status), role = "alert", ..., style = paste0("margin: 6px 5px 6px 15px;", ifelse(grepl(";$", style), style, paste0(style, ";"))), id = id)
+}
