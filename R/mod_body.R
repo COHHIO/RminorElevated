@@ -28,7 +28,7 @@ mod_body_server <- function(id){
       req(active$ui)
       message("Tab: ", active$tab)
       if (exists(active$server))
-        rlang::exec(active$server, id = paste0("body_", isolate(active$tab)), .env = e)
+        rlang::exec(active$server, id = paste0("body_", active$tab), .env = e)
       # Render the body UIs here
       if (exists(active$ui)) {
         rlang::exec(active$ui, id = paste0(ns("body_"), active$tab))
