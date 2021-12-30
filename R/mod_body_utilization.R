@@ -85,7 +85,7 @@ mod_body_utilization_server <- function(id){
     uc_selected <- reactive({
       utilization_clients() |>
         HMIS::served_between(ReportStart(), ReportEnd()) |> 
-        dplyr::filter(ProjectID == input$project) |>
+        dplyr::filter(ProjectID %in% input$project) |>
         dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
                                                 MoveInDateAdjust, EntryDate)) |>
         dplyr::select(UniqueID, BedStart, ExitDate, dplyr::all_of(col_nm()))
@@ -93,7 +93,7 @@ mod_body_utilization_server <- function(id){
     bed_count <- reactive({
       Beds() |> 
         HMIS::beds_available_between(ReportStart(), ReportEnd()) |> 
-        dplyr::filter(ProjectID == input$project) |>
+        dplyr::filter(ProjectID %in% input$project) |>
         dplyr::group_by(ProjectID) |>
         dplyr::summarise(BedCount = sum(BedInventory), .groups = "drop") |>
         dplyr::pull(BedCount)
