@@ -28,7 +28,7 @@ Remotes:
     COHHIO/HMIS,
     yogat3ch/UU,
     karthik/rdrop2,
-    Martin-McCoy/bs4Dash
+    RinteRface/bs4Dash
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
 LazyData: true
@@ -48,7 +48,6 @@ Collate:
     'golem_utils_ui.R'
     'mod_DQIncorrectEEType.R'
     'mod_DQunshIncorrectEEType.R'
-    'mod_QPR_tabitem.R'
     'mod_body.R'
     'mod_body_client_counts.R'
     'mod_body_dq_provider_level.R'
@@ -57,22 +56,34 @@ Collate:
     'mod_body_dq_timeliness.R'
     'mod_body_dq_unsheltered.R'
     'mod_body_prioritization.R'
+    'mod_body_qpr_community_need_lh.R'
+    'mod_body_qpr_community_need_ph.R'
+    'mod_body_qpr_health_insurance.R'
+    'mod_body_qpr_income_growth.R'
+    'mod_body_qpr_length_of_stay.R'
+    'mod_body_qpr_noncash_benefits.R'
+    'mod_body_qpr_permanent_housing.R'
+    'mod_body_qpr_rrh_placement.R'
+    'mod_body_qpr_rrh_spending.R'
     'mod_body_utilization.R'
     'mod_body_vet_active_list.R'
     'mod_coming_soon.R'
     'mod_data_quality.R'
     'mod_navbar.R'
+    'mod_qpr.R'
     'mod_sidebar.R'
     'mod_theme.R'
     'mod_welcome.R'
     'qpr_expr_0.R'
-    'qpr_expr_HI.R'
-    'qpr_expr_LoS.R'
-    'qpr_expr_NCB.R'
-    'qpr_expr_income.R'
-    'qpr_expr_rapid.R'
-    'qpr_expr_spdat1.R'
-    'qpr_expr_spdat2.R'
+    'qpr_expr_community_need_lh.R'
+    'qpr_expr_community_need_ph.R'
+    'qpr_expr_health_insurance.R'
+    'qpr_expr_income_growth.R'
+    'qpr_expr_length_of_stay.R'
+    'qpr_expr_noncash_benefits.R'
+    'qpr_expr_permanent_housing.R'
+    'qpr_expr_rrh_placement.R'
+    'qpr_expr_rrh_spending.R'
     'run_app.R'
     'utils_dq.R'
     'utils_server.R'

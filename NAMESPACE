@@ -2,6 +2,7 @@
 
 S3method(which_cols,character)
 S3method(which_cols,numeric)
+export(bs4Alert)
 export(datatable_add_bars)
 export(datatable_default)
 export(datatable_options_update)

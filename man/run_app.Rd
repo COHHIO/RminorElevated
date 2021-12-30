@@ -6,7 +6,7 @@
 \usage{
 run_app(
   onStart = NULL,
-  options = list(),
+  options = rlang::list2(!!!getOption("browser_config")),
   enableBookmarking = NULL,
   uiPattern = "/",
   ...
