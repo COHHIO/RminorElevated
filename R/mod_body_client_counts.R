@@ -47,7 +47,7 @@ mod_body_client_counts_server <- function(id){
       
         validation()  |> 
           HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-          dplyr::filter(ProjectID == input$project) |>
+          dplyr::filter(ProjectID %in% input$project) |>
           dplyr::mutate(
             RelationshipToHoH = dplyr::case_when(
               RelationshipToHoH == 1 ~ "Head of Household",
@@ -100,7 +100,7 @@ mod_body_client_counts_server <- function(id){
       
       hhs <- validation() |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectID == input$project) |>
+        dplyr::filter(ProjectID %in% input$project) |>
         dplyr::select(HouseholdID,
                       ProjectType,
                       EntryDate,
@@ -135,7 +135,7 @@ mod_body_client_counts_server <- function(id){
       
       clients <- validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectID == input$project) |>
+        dplyr::filter(ProjectID %in% input$project) |>
         dplyr::select(ProjectType,
                       EntryDate,
                       MoveInDateAdjust,
