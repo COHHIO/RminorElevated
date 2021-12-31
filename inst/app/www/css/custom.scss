@@ -14,11 +14,13 @@
   margin-top: 31px;
 }
 
-// Align search and buttons on DTs
+// Data tables
 .dt-buttons.btn-group {
   float:left;
 }
-
+div.dataTables_wrapper div.dataTables_length label {
+  margin-left: 10px;
+}
 #body-body_dq_system_summary-summary {
   & .col-md-6 {
     padding-left: 1px;
@@ -26,6 +28,18 @@
   }
   & .card-body {
     padding: .5rem;
+  }
+}
+
+// bs4Dash progress bar 
+@mixin hf {
+  height: 3rem;font-size: 1.5rem;
+}
+
+.progress {
+  @include hf
+  & .progress-bar {
+    @include hf
   }
 }
 
