@@ -280,6 +280,53 @@ ui_list <- function(x, ..., l_style = NULL, ordered = FALSE) {
   )
 }
 
+
+
+#' @title Iterative generate output functions
+#'
+#' @param x \code{(list)} of items to iterate over
+#' @param fn \code{(fn)} output function to apply
+#' @param outputId \code{(character)} The namespace ID (1,2,3 will be appended for each iteration)
+#' @param header_names \code{(logical)} Whether to create \link[shiny]{h4} headers above each item using the name
+#' @param ns \code{(function)} ns function from the enclosing shiny context
+#' @param ... Further arguments passed on to `fn`
+#' @return \code{(shiny.tag.list)}
+#' @export
+
+iterate <- function(x, fn, outputId, env = rlang::caller_env(), output, ..., rc = shiny::getDefaultReactiveDomain()) {
+  is_ui <- missing(output)
+  if (UU::is_legit(x)) {
+    if (rlang::is_list(x))
+      .x <- x
+    else
+      .x <- list(x)
+    
+    if (is_ui) {
+      out <- list()
+    } else {
+      out <- output
+    }
+      
+    
+    for (i in seq_along(.x)) {
+      if (UU::is_legit(names(.x)))
+        out[[paste0("header", i)]] <- h4(names(.x[i]))
+      .args <- list(
+        purrr::when(is_ui, . ~ env$ns(paste0(outputId, i)), ~ .x[[i]]),
+        ...
+      )
+      
+      out[[paste0(outputId, i)]] <- do.call(fn, .args, envir = env)
+    }
+  }
+  
+  
+  if (is_ui)
+    do.call(tagList, out)
+  else
+    out
+}
+
 #' @title Iterative generation of icons
 #'
 #' @inheritParams shiny::icon
