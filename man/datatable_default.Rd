@@ -7,8 +7,10 @@
 datatable_default(
   data,
   rownames = FALSE,
-  options = list(dom = "Bfrtip", buttons = c("copy", "excel", "csvHtml5"), responsive =
-    TRUE, lengthMenu = c(10, 25, 50, 75, 100), lengthChange = TRUE, pageLength = 50),
+  options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+    list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+    list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+    75, 100), lengthChange = TRUE, pageLength = 10),
   filter = list(position = "top", clear = TRUE, plain = FALSE),
   width = "100\%",
   height = "auto",
@@ -16,6 +18,7 @@ datatable_default(
   style = "bootstrap4",
   elementId = NULL,
   add_options,
+  add_extensions,
   ...
 )
 }
@@ -65,6 +68,10 @@ that only one unique `style` value is used on the same page, if multiple
 DT tables exist, as different styling resources may conflict with each other.}
 
 \item{elementId}{An id for the widget (a random string by default).}
+
+\item{add_options}{Options to add to the existing defaults}
+
+\item{add_extensions}{Extensions to add to the existing defaults}
 
 \item{...}{
   Arguments passed on to \code{\link[DT:datatable]{DT::datatable}}

@@ -11,7 +11,7 @@ qpr_infobox(
   color = "purple",
   value = .data$AvgScore,
   icon = shiny::icon("shopping-cart"),
-  subtitle = paste(.data$Increased, "out of", .data$TotalHHs, "households served"),
+  subtitle = "See table below for detail.",
   ...
 )
 }

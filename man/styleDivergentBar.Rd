@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_server.R
 \name{styleDivergentBar}
 \alias{styleDivergentBar}
-\title{Style DT divergent color bar 
+\title{Style DT divergent color bar
 
 Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}}
 \usage{
@@ -23,7 +23,7 @@ This function generates JavaScript and CSS code from the values
 specified in R, to be used in DT tables formatting.
 }
 \description{
-Style DT divergent color bar 
+Style DT divergent color bar
 
 Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
 }
