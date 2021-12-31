@@ -10,10 +10,29 @@ spending_filter <- function(x, date_range, region, ProjectType) {
 qpr_expr$rrh_spending$expr <- rlang::expr({
   .data <- qpr_spending()
   list(
-    rrh = spending_filter(.data, input$date_range, input$region, 13),
-    hp = spending_filter(.data, input$date_range, input$region, 12)
+    rrh = spending_dt(spending_filter(.data, input$date_range, input$region, 13)),
+    hp = spending_dt(spending_filter(.data, input$date_range, input$region, 12))
     )
 })
+
+qpr_expr$rrh_spending$infobox <- list(
+  rlang::expr({
+    qpr_infobox(
+      data_env(),
+      title = "RRH Spending",
+      color = "success",
+      value = scales::dollar(sum(.data$rrh$Amount)) 
+    )
+  }),
+  rlang::expr({
+    qpr_infobox(
+      data_env(),
+      title = "HP Spending",
+      color = "success",
+      value = scales::dollar(sum(.data$hp$Amount))
+    )
+  })
+)
 
 spending_dt <- function(x) {
   x |> 
@@ -26,15 +45,15 @@ spending_dt <- function(x) {
       "Service Date" = ServiceStartDate,
       Description = ServiceItemName,
       Amount
-    ) |> 
-    datatable_default(escape = FALSE)
+    )
+    
 }
 
 qpr_expr$rrh_spending$datatable <- list(
   `Rapid Rehousing Spending` = rlang::expr({
-    spending_dt(data_env()$rrh)
+    datatable_default(data_env()$rrh, escape = FALSE)
   }),
   `Homeless Prevention Spending` = rlang::expr({
-    spending_dt(data_env()$hp)
+    datatable_default(data_env()$hp, escape = FALSE)
   })
 )
