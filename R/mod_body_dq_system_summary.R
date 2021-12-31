@@ -41,7 +41,7 @@ mod_body_dq_system_summary_server <- function(id){
     output$ce <- renderUI({
       ui_row(title = "Coordinated Entry", 
              dq_APs() |> 
-               {\(x) {bs4Dash::bs4MultiProgressBar(value = x$percent, min = 0, max = 1, status = c("danger", "success"), striped = c(TRUE, FALSE), animated = rep(FALSE, length(x$percent)), label = paste0(x$category, ": ", x$count, " (", scales::percent(x$percent),")"), style= "height: 3rem;font-size: 1.5rem;")}}(),
+               {\(x) {bs4Dash::bs4MultiProgressBar(value = x$percent * 100, status = c("danger", "success"), striped = c(TRUE, FALSE), animated = rep(FALSE, length(x$percent)), label = paste0(x$category, ": ", x$count, " (", scales::percent(x$percent),")"))}}(),
              fluidRow(
                bs4Dash::column(6,
                                datatable_default(dq_aps_no_referrals, add_options = list(pageLength = 20))
