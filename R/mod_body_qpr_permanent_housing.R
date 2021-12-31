@@ -9,19 +9,14 @@
 #' @importFrom shiny NS tagList 
 mod_body_qpr_permanent_housing_ui <- function(id){
   ns <- NS(id)
-  tagList(
- 
-  )
+  mod_qpr_ui(id)
 }
     
 #' body_permanent_housing Server Functions
 #'
 #' @noRd 
 mod_body_qpr_permanent_housing_server <- function(id){
-  moduleServer( id, function(input, output, session){
-    ns <- session$ns
- 
-  })
+  moduleServer( id, mod_qpr_server(id, "Successful Placement Detail"))
 }
     
 ## To be copied in the UI
