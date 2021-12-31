@@ -31,18 +31,31 @@ server_header <- function(title, ..., project, date_range, region, county) {
 #'
 #' @inheritParams DT::datatable
 #' @inheritDotParams DT::datatable
-#'
+#' @param add_options Options to add to the existing defaults
+#' @param add_extensions Extensions to add to the existing defaults
 #' @return \code{(shiny.tag)}
 #' @export
 
 datatable_default <- function(data,
                               rownames = FALSE,
-                              options = list(dom = 'Bfrtip',
-                                             buttons = c('copy', 'excel', 'csvHtml5'),
-                                             responsive = TRUE,
-                                             lengthMenu = c(10, 25, 50, 75, 100),
-                                             lengthChange = TRUE,
-                                             pageLength = 50),
+                              options = list(
+                                dom = 'Blfrtip',
+                                buttons = list(
+                                  'copy',
+                                  'excel',
+                                  "csvHtml5",
+                                  list(
+                                    extend = "csvHtml5",
+                                    text = "Full CSV",
+                                    filename = "data_full",
+                                    exportOptions = list(modifier = list(page = "all"))
+                                  )
+                                ),
+                                responsive = TRUE,
+                                lengthMenu = c(10, 25, 50, 75, 100),
+                                lengthChange = TRUE,
+                                pageLength = 10
+                              ),
                               filter = list(position = 'top',
                                             clear = TRUE,
                                             plain = FALSE),
@@ -52,15 +65,13 @@ datatable_default <- function(data,
                               style = "bootstrap4",
                               elementId = NULL,
                               add_options,
+                              add_extensions,
                               ...) {
-  #TODO datatable option to download entire table instead of what is visible
-  options <- purrr::list_modify(eval(rlang::fn_fmls()$options), !!!options)
+  
   if (!missing(add_options))
     options <- purrr::list_modify(options, !!!add_options)
-  if (!"Buttons" %in% extensions)
-    extentions <- c(extensions, "Buttons")
-  if (!"buttons" %in% names(options))
-    options$buttons = c('copy', 'excel', 'csvHtml5')
+  if (!missing(add_extensions))
+    extensions <- c(extensions, add_extensions)
   
   DT::datatable(
     data,
@@ -84,10 +95,13 @@ datatable_default <- function(data,
 #' @return
 #' @export
 
-which_cols <- function(x, .data) {UseMethod("which_cols")}
+which_cols <- function(x, .data) {
+  UseMethod("which_cols")
+}
 
 #' @export
-which_cols.numeric <- function(x, .data) x
+which_cols.numeric <- function(x, .data)
+  x
 
 #' @export
 which_cols.character <- function(x, .data) {
@@ -108,16 +122,20 @@ datatable_options_update <- function(x, options, hide_cols) {
   if (missing(options))
     options <- out$x$options
   if (!missing(hide_cols))
-    options <- append(options, list(columnDefs = list(list(
-      visible = FALSE,
-      targets = which_cols(hide_cols, x$x$data) - 1 # js numbers start with 0
-    ))))
-  if (UU::is_legit(out$x$options$columnDefs) && UU::is_legit(options$columnDefs)) {
-    out$x$options$columnDefs <- append(out$x$options$columnDefs, options$columnDefs)
+    options <- append(options, list(columnDefs = list(
+      list(
+        visible = FALSE,
+        targets = which_cols(hide_cols, x$x$data) - 1 # js numbers start with 0
+      )
+    )))
+  if (UU::is_legit(out$x$options$columnDefs) &&
+      UU::is_legit(options$columnDefs)) {
+    out$x$options$columnDefs <-
+      append(out$x$options$columnDefs, options$columnDefs)
     options$columnDefs <- NULL
   }
   if (UU::is_legit(options))
-    out$x$options <- purrr::list_modify(out$x$options, !!!options)
+    out$x$options <- purrr::list_modify(out$x$options,!!!options)
   
   out
 }
@@ -133,52 +151,80 @@ datatable_options_update <- function(x, options, hide_cols) {
 #' @return \code{(datatable)}
 #' @export
 
-datatable_add_bars <- function(table, columns, valueColumns, ..., divergent = FALSE) {
-  .args <- rlang::dots_list(..., .named = TRUE)
-  .args$table <- table
-  .data <- table$x$data
-  .data_nms <- names(.data)
-  
-  if (missing(columns) && divergent)
-    .args$columns = stringr::str_which(.data_nms, stringr::regex("frequency", ignore_case = TRUE))
-  else
-    .args$columns <- columns
-  
-  if (missing(valueColumns) && divergent)
-    .args$valueColumns = stringr::str_which(.data_nms, stringr::regex("rank|from_mean", ignore_case = TRUE))
-  else
-    .args$valueColumns <- valueColumns
-  
-  if (divergent)
-    bar_args <- purrr::list_modify(.args[names(.args) %in% c("color_pos", "color_neg")], color_pos = "#28a745", color_neg = "#dc3545")
-  else
-    bar_args <- .args[names(.args) %in% c("data", "color", "angle")]
+datatable_add_bars <-
+  function(table,
+           columns,
+           valueColumns,
+           ...,
+           divergent = FALSE) {
+    .args <- rlang::dots_list(..., .named = TRUE)
+    .args$table <- table
+    .data <- table$x$data
+    .data_nms <- names(.data)
     
-  .args$background <- purrr::map(.args$valueColumns, ~rlang::exec(purrr::when(divergent, . ~ styleDivergentBar, ~ DT::styleColorBar), range(.data[[.x]]), !!!bar_args)) |> 
-    {\(x) {purrr::when(length(x), . == 1 ~ x[[1]], ~ x)}}()
-  
-  rlang::exec(DT::formatStyle, !!!.args)
-}
+    if (missing(columns) && divergent)
+      .args$columns = stringr::str_which(.data_nms, stringr::regex("frequency", ignore_case = TRUE))
+    else
+      .args$columns <- columns
+    
+    if (missing(valueColumns) && divergent)
+      .args$valueColumns = stringr::str_which(.data_nms,
+                                              stringr::regex("rank|from_mean", ignore_case = TRUE))
+    else
+      .args$valueColumns <- valueColumns
+    
+    if (divergent)
+      bar_args <-
+      purrr::list_modify(.args[names(.args) %in% c("color_pos", "color_neg")], color_pos = "#28a745", color_neg = "#dc3545")
+    else
+      bar_args <- .args[names(.args) %in% c("data", "color", "angle")]
+    
+    .args$background <-
+      purrr::map(.args$valueColumns,
+                 ~ rlang::exec(
+                   purrr::when(divergent, . ~ styleDivergentBar, ~ DT::styleColorBar),
+                   range(.data[[.x]]),
+                   !!!bar_args
+                 )) |>
+      {
+        \(x) {
+          purrr::when(length(x), . == 1 ~ x[[1]], ~ x)
+        }
+      }()
+    
+    rlang::exec(DT::formatStyle,!!!.args)
+  }
 
 
 
-server_debounce <- function(..., wait = 1500, e = rlang::caller_env()) {
-  ex <- rlang::enexprs(..., .named = TRUE)
-  exs <- purrr::imap(ex, ~{
+server_debounce <-
+  function(...,
+           wait = 1500,
+           e = rlang::caller_env()) {
+    ex <- rlang::enexprs(..., .named = TRUE)
+    exs <- purrr::imap(ex, ~ {
       ex <- rlang::expr({
-        `<<-`(!!rlang::sym(stringr::str_remove(.y, "^input\\$")), shiny::debounce(shiny::eventReactive(!!.x, !!.x), !!wait))
-      })  
+        `<<-`(
+          !!rlang::sym(stringr::str_remove(.y, "^input\\$")),
+          shiny::debounce(shiny::eventReactive(!!.x,!!.x),!!wait)
+        )
+      })
     })
-  insts <- purrr::imap(ex, ~rlang::expr(`<-`(!!rlang::sym(stringr::str_remove(.y, "^input\\$")), function() { })))
-  inst <- rlang::expr({!!!insts})
-  ob <- rlang::expr(observeEvent(!!ex[[1]], {
-    !!!exs
-  }, ignoreInit = TRUE))
-  purrr::map(list(inst, ob), rlang::eval_bare, env = e)
-}
+    insts <-
+      purrr::imap(ex, ~ rlang::expr(`<-`(!!rlang::sym(stringr::str_remove(.y, "^input\\$")), function() {
+        
+      })))
+    inst <- rlang::expr({
+      !!!insts
+    })
+    ob <- rlang::expr(observeEvent(!!ex[[1]], {
+      !!!exs
+    }, ignoreInit = TRUE))
+    purrr::map(list(inst, ob), rlang::eval_bare, env = e)
+  }
 
 
-#' @title Style DT divergent color bar 
+#' @title Style DT divergent color bar
 #'
 #' Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
 #'
@@ -227,13 +273,20 @@ server_debounce <- function(..., wait = 1500, e = rlang::caller_env()) {
 #'     backgroundPosition = "center"
 #'   )
 styleDivergentBar <- function(data,
-                                    color_pos,
-                                    color_neg) {
+                              color_pos,
+                              color_neg) {
   max_val <- max(abs(data))
   htmlwidgets::JS(
     sprintf(
       "isNaN(parseFloat(value)) || value < 0 ? 'linear-gradient(90deg, transparent, transparent ' + (50 + value/%s * 50) + '%%, %s ' + (50 + value/%s * 50) + '%%,%s  50%%,transparent 50%%)': 'linear-gradient(90deg, transparent, transparent 50%%, %s 50%%, %s ' + (50 + value/%s * 50) + '%%, transparent ' + (50 + value/%s * 50) + '%%)'",
-      max_val, color_pos, max_val, color_pos, color_neg, color_neg, max_val, max_val
+      max_val,
+      color_pos,
+      max_val,
+      color_pos,
+      color_neg,
+      color_neg,
+      max_val,
+      max_val
     )
   )
 }
