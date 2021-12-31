@@ -57,7 +57,6 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
     })
   }
   # tabItem Output ----
-  
   shiny::tagList(
     ui_header_row(ns("header")),
     ui_row(
@@ -69,22 +68,12 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
     )
     ,
     ui_row(
-      if (UU::is_legit(qpr_expr[[.id]]$infobox))
-        bs4Dash::infoBoxOutput(ns("ib_summary"), width = 12)
+      iterate(qpr_expr[[.id]]$infobox, bs4Dash::infoBoxOutput, "ib_summary", width = 12)
       ,
-      if (length(qpr_expr[[.id]]$datatable) > 1) {
-        tagList(h4(names(qpr_expr[[.id]]$datatable[1])),
-        DT::dataTableOutput(ns("dt_detail")),
-        h4(names(qpr_expr[[.id]]$datatable[2])),
-        DT::dataTableOutput(ns("dt_detail2")))
-      } else {
-        DT::dataTableOutput(ns("dt_detail"))
-      }
-        
+      iterate(qpr_expr[[.id]]$datatable, DT::DTOutput, "dt_detail")
     )
   )
   
-    
 }
 
 #' @family QPR
@@ -115,15 +104,25 @@ mod_qpr_server <- function(id, header){
     
     # Process Data
     data_env <- shiny::reactive(qpr_expr[[.id]]$expr, quoted = TRUE)
-    output$ib_summary <- bs4Dash::renderbs4InfoBox(qpr_expr[[.id]]$infobox, 
-                                                       quoted = TRUE)
+    if (UU::is_legit(qpr_expr[[.id]]$infobox)) {
+      if (rlang::is_list(qpr_expr[[.id]]$infobox))
+        x <- qpr_expr[[.id]]$infobox
+      else
+        x <- list(qpr_expr[[.id]]$infobox)
+      for (i in seq_along(x)) {
+        output[[paste0("ib_summary",i)]] <- bs4Dash::renderbs4InfoBox(x[[i]], quoted = TRUE)
+      }  
+    }
+      # output$ib_summary1 <- bs4Dash::renderbs4InfoBox(qpr_expr[[.id]]$infobox, 
+      #                                                  quoted = TRUE)
     
     
-    if (length(qpr_expr[[.id]]$datatable) > 1) {
-      output$dt_detail <- DT::renderDT(qpr_expr[[.id]]$datatable[[1]], quoted = TRUE)
-      output$dt_detail2 <- DT::renderDT(qpr_expr[[.id]]$datatable[[2]], quoted = TRUE)
+    if (rlang::is_list(qpr_expr[[.id]]$datatable)) {
+      for (i in seq_along(qpr_expr[[.id]]$datatable)) {
+        output[[paste0("dt_detail",i)]] <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable[[i]], quoted = TRUE)
+      }
     } else {
-      output$dt_detail <- DT::renderDT(qpr_expr[[.id]]$datatable, quoted = TRUE)
+      output$dt_detail1 <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable, quoted = TRUE)
     }
       
   }
