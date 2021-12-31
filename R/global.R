@@ -76,41 +76,42 @@ if (exists("Regions")) {
     dplyr::distinct(Region, RegionName) |> 
     {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
   counties <- sort(Regions()$County)
+  qpr_tab_choices <- regions |>
+    {\(x) {list(
+      community_need_ph = list(
+        choices = x
+      ),
+      community_need_lh = list(
+        choices = x
+      ),
+      length_of_stay = list(
+        choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(1, 2, 8, 13)])
+      ),
+      permanent_housing = list(
+        choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(1:4, 8:9, 12:13)])
+      ),
+      noncash_benefits = list(
+        choices = unique(qpr_benefits()$ProjectName)
+      ),
+      health_insurance = list(
+        choices = unique(qpr_benefits()$ProjectName)
+      ),
+      income_growth = list(
+        choices = unique(qpr_income()$ProjectName)
+      ),
+      rrh_placement = list(
+        choices = unique(sort(
+          qpr_rrh_enterers()$ProjectName
+        ))
+      ),
+      rrh_spending = list(
+        choices = unique(sort(
+          qpr_spending()$OrganizationName
+        ))
+      )
+    )}}()
+  
 }
 
 
-qpr_tab_choices <- unique(Regions()$RegionName) |>
-{\(x) {list(
-  community_need_ph = list(
-    choices = x
-  ),
-  community_need_lh = list(
-    choices = x
-  ),
-  length_of_stay = list(
-    choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(1, 2, 8, 13)])
-  ),
-  permanent_housing = list(
-    choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(1:4, 8:9, 12:13)])
-  ),
-  noncash_benefits = list(
-    choices = unique(qpr_benefits()$ProjectName)
-  ),
-  health_insurance = list(
-    choices = unique(qpr_benefits()$ProjectName)
-  ),
-  income_growth = list(
-    choices = unique(qpr_income()$ProjectName)
-  ),
-  rrh_placement = list(
-    choices = unique(sort(
-      qpr_rrh_enterers()$ProjectName
-    ))
-  ),
-  rrh_spending = list(
-    choices = unique(sort(
-      qpr_spending()$OrganizationName
-    ))
-  )
-)}}()
 
