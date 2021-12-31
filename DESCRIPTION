@@ -1,6 +1,6 @@
 Package: RminorElevated
 Title: RminorElevated
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: c(person('Stephen', 'Holsenbeck', email = 'hmisdataanalyst@cohhio.org', role = c('cre', 'aut')),
   person('Genelle', 'Denzin', email = 'genelledenzin@cohhio.org', role = c('aut')), person('Stephen', 'Holsenbeck', email = 'sholsen@alumni.emory.edu', role = c('ctb')))
 Description: An open-source HMIS custom reporting Shiny app
