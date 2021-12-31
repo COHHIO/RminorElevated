@@ -5,14 +5,13 @@ qpr_expr$community_need_lh$expr <- rlang::expr({
   qpr_spdats_county() |>
     HMIS::served_between(input$date_range[1],
                    input$date_range[2]) |>
-    dplyr::left_join(Regions(), by = c("CountyServed" = "County")) |>
-    dplyr::filter(RegionName == input$region)
+    dplyr::filter(Region == input$region)
   
 })
 
 qpr_expr$community_need_lh$infobox <- rlang::expr({
   data_env() |>
-    dplyr::group_by(RegionName) |>
+    dplyr::group_by(Region) |>
     dplyr::summarise(AvgScore = round(mean(Score), 0), .groups = "drop_last") |> 
     qpr_infobox(icon = "shoe-prints",
                 subtitle = "Literally Homeless Households in the Selected Region"

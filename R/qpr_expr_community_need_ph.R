@@ -5,21 +5,22 @@ qpr_expr$community_need_ph$expr <- rlang::expr({
   qpr_spdats_project() |>
     HMIS::entered_between(input$date_range[1],
                           input$date_range[2]) |>
-    dplyr::left_join(Regions(), by = c("CountyServed" = "County")) |>
-    dplyr::filter(RegionName %in% input$region)
+    dplyr::filter(Region %in% input$region)
   
   
 })
 
 qpr_expr$community_need_ph$infobox <- rlang::expr({
+  req(data_env())
   data_env() |> 
-    dplyr::group_by(RegionName) |>
+    dplyr::group_by(Region) |>
     dplyr::summarise(AvgScore = round(mean(ScoreAdjusted), 0), .groups = "drop_last") |> 
     qpr_infobox(icon = "parachute-box",
                 subtitle = "Households who were Housed in RRH or PSH in the Selected Region")
 })
 
 qpr_expr$community_need_ph$datatable <- rlang::expr({
+  req(data_env())
   data_env() |> 
     dplyr::arrange(dplyr::desc(ScoreAdjusted)) |>
     dplyr::select(
