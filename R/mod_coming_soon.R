@@ -12,7 +12,7 @@ mod_coming_soon_ui <- function(id){
   tagList(
    tags$div(class = "text-center",
             tags$h1("Coming Soon", icon("tools")),
-            tags$h4("Currently working tabs have a green ",tags$span(class = "badge badge-success", "New")," badge")
+            tags$h4("Currently working tabs have a ",tags$span(class = "text-success", shiny::icon("star", class = "text-success"), "green icon", shiny::icon("star", class = "text-success")))
             )
   )
 }
