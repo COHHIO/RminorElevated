@@ -91,7 +91,7 @@ mod_body_utilization_server <- function(id){
         dplyr::select(UniqueID, BedStart, ExitDate, dplyr::all_of(col_nm()))
     })
     bed_count <- reactive({
-      Beds() |> 
+       utilization_beds() |> 
         HMIS::beds_available_between(ReportStart(), ReportEnd()) |> 
         dplyr::filter(ProjectID %in% input$project) |>
         dplyr::group_by(ProjectID) |>

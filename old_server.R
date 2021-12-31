@@ -2495,11 +2495,11 @@ old_server <- function( input, output, session ) {
   
   output$pe_ProjectSummary <-
     DT::renderDataTable({
-      ptc <- summary_pe_final_scoring() %>%
+      ptc <- pe_summary_final_scoring() %>%
         filter(AltProjectName == input$pe_provider) %>%
         pull(ProjectType)
       
-      summary_pe_final_scoring <- summary_pe_final_scoring() %>%
+      pe_summary_final_scoring <- pe_summary_final_scoring() %>%
         mutate(
           ExitsToPHMath = str_replace(ExitsToPHMath, "/", "÷"),
           # OwnHousingMath = str_replace(OwnHousingMath, "/", "÷"),
@@ -2517,7 +2517,7 @@ old_server <- function( input, output, session ) {
           ChronicPrioritizationMath = str_replace(ChronicPrioritizationMath, "/", "÷")
         )
       
-      a <- summary_pe_final_scoring %>%
+      a <- pe_summary_final_scoring %>%
         filter(AltProjectName == input$pe_provider) %>%
         select(
           "Exits to Permanent Housing" = ExitsToPHPoints,
@@ -2539,7 +2539,7 @@ old_server <- function( input, output, session ) {
                      names_to = "Measure",
                      values_to = "Estimated Score")
       
-      b <- summary_pe_final_scoring %>%
+      b <- pe_summary_final_scoring %>%
         filter(AltProjectName == input$pe_provider) %>%
         select(
           "Exits to Permanent Housing" = ExitsToPHDQ,
@@ -2559,7 +2559,7 @@ old_server <- function( input, output, session ) {
                      names_to = "Measure",
                      values_to = "DQflag")
       
-      c <- summary_pe_final_scoring %>%
+      c <- pe_summary_final_scoring %>%
         filter(AltProjectName == input$pe_provider) %>%
         select(
           "Exits to Permanent Housing" = ExitsToPHPossible,
@@ -2582,7 +2582,7 @@ old_server <- function( input, output, session ) {
                      names_to = "Measure",
                      values_to = "Possible Score")
       
-      d <- summary_pe_final_scoring %>%
+      d <- pe_summary_final_scoring %>%
         filter(AltProjectName == input$pe_provider) %>%
         select(
           "Exits to Permanent Housing" = ExitsToPHMath,

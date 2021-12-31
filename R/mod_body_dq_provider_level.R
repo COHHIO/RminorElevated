@@ -77,7 +77,7 @@ mod_body_dq_provider_level_server <- function(id){
     guidance <- guidance()
     
     
-    eligibility_detail <- eligibility_detail()
+    eligibility_detail <- dq_eligibility_detail()
     server_debounce(input$project, input$date_range)
     
     dq_p <- dq_main()
