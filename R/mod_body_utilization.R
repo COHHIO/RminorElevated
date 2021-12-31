@@ -102,7 +102,7 @@ mod_body_utilization_server <- function(id){
     daysInMonth <- reactive(lubridate::days_in_month(input$date_range))
     
     output$detail <-
-      DT::renderDataTable({
+      DT::renderDT(server = FALSE, {
         uc_selected() |> 
           rlang::set_names(c("Unique ID", "Bed Start", "Exit Date", paste("Bed Nights in", format(ReportStart(), "%B %Y")))) |> 
           datatable_default(escape = FALSE)

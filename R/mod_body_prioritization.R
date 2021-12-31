@@ -39,7 +39,7 @@ mod_body_prioritization_server <- function(id){
    
    region <- eventReactive(input$region, {input$region}) |> debounce(1500)
    pc <- prioritization_colors()
-   output$summary <- DT::renderDataTable({
+   output$summary <- DT::renderDT(server = FALSE, {
      req(region())
 
      prioritization() |>
