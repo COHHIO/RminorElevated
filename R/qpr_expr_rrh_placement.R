@@ -11,10 +11,9 @@ qpr_expr$rrh_placement$infobox <- rlang::expr({
     dplyr::summarise(AvgDaysToHouse = round(mean(DaysToHouse), 0), .groups = "drop_last") |> 
     qpr_infobox(
       title = "Average Days to House",
-      color = "purple",
+      color = "indigo",
       icon = "hourglass-half",
       value = .data$AvgDaysToHouse,
-      subtitle = "See table below for detail."
     )
 })
 

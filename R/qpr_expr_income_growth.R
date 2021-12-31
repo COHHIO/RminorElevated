@@ -26,13 +26,10 @@ qpr_expr$income_growth$infobox <- rlang::expr({
   if (nrow(.data) > 0) {
     .args <- list(.data = .data,
                   title = "Households Increasing Their Income",
-                  color = "green",
+                  color = "success",
                   icon = "hand-holding-usd",
                   value = scales::percent(.data$Percent),
-                  subtitle = paste(.data$Increased, 
-                                   "out of",
-                                   .data$TotalHHs, 
-                                   "households served")
+                  subtitle = paste(.data$Increased, "out of", .data$TotalHHs, "households served")
     )
   } else {
     .args <- list(title = HTML("Something's wrong- email us at <a href='mailto:hmis@cohhio.org' target='_blank'>hmis@cohhio.org</a>!"), .replace = TRUE)
@@ -52,7 +49,7 @@ qpr_expr$income_growth$datatable <- rlang::expr({
       ExitDate,
       "Income at Entry" = EntryIncome,
       "Most Recent Income" = RecentIncome,
-      "Increase Amount" = Difference
+      "Income Difference" = Difference
     ) |> 
     datatable_default(escape = FALSE)
 })

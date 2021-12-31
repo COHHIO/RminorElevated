@@ -2,7 +2,7 @@ qpr_expr$noncash_benefits <- list()
 qpr_expr$noncash_benefits$expr <- rlang::expr({
   req(input$date_range, input$region)
   qpr_benefits() |>
-    HMIS::exited_between(input$date_range[1], input$date_range[2])
+    HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ProjectName == input$region)
 })
 
@@ -17,7 +17,7 @@ qpr_expr$noncash_benefits$infobox <- rlang::expr({
       dplyr::filter(BenefitsFromAnySource == 1) |> 
       dplyr::group_by(ProjectName) |>
       dplyr::summarise(BenefitsAtExit = dplyr::n(), .groups = "drop_last"),
-    by = c("ProjectName")
+    by = "ProjectName"
   ) |> 
     {\(x) {tidyr::replace_na(x, rlang::set_names(as.list(rep(0, length(x))), nm = names(x)))}}() |> 
     dplyr::mutate(Percent = BenefitsAtExit / TotalHHs)
