@@ -54,14 +54,14 @@ qpr_infobox <- function(.data,
                         color = "purple",
                         value = .data$AvgScore,
                         icon = shiny::icon("shopping-cart"),
-                        subtitle = paste(.data$Increased, "out of", .data$TotalHHs, "households served"),
+                        subtitle = "See table below for detail.",
                         ...
 ) {
   
   .ib_opts <- rlang::fn_fmls()
   .ib_opts <- .ib_opts[!grepl("^\\.", names(.ib_opts))]
   .user <- rlang::call_args(match.call())
-  .user <- append(.user[!grepl("^\\.", names(.user))], rlang::dots_list(...))
+  .user <- append(.user[!grepl("^\\.", names(.user))], rlang::dots_list(..., .named = TRUE))
   if (inherits(.user$icon, "character")) .user$icon <- shiny::icon(.user$icon)
   if (.replace) {
     .ib_opts <- .user
