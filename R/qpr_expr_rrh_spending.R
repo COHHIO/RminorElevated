@@ -45,7 +45,8 @@ spending_dt <- function(x) {
       "Service Date" = ServiceStartDate,
       Description = ServiceItemName,
       Amount
-    )
+    ) |> 
+    dplyr::arrange(dplyr::desc(Amount))
     
 }
 
