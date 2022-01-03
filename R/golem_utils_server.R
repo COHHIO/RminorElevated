@@ -43,15 +43,8 @@ drop_nulls <- function(x){
 #' 
 #' @noRd
 #' 
-#' @examples
-#' NA %||% 1
-"%|NA|%" <- function(x, y){
-  if (is.na(x)) {
-    y
-  } else {
-    x
-  }
-}
+#' @importFrom rlang `%|%` `%||%`
+`%|%` <- rlang::`%|%`
 
 #' Typing reactiveValues is too long
 #' 
