@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 mod_sidebar_ui <- function(id){
   ns <- NS(id)
-  refreshed <- purrr::map(list.files(path = "data", full.names = TRUE), ~file.info(.x)$mtime) |> {\(x) {do.call(c, x)}}() |> mean()
+  refreshed <- purrr::map(list.files(path = "data", full.names = TRUE), ~file.info(.x)$mtime) |> {\(x) {do.call(c, x)}}() |> max()
   bs4Dash::bs4DashSidebar(
     id = "sidebar",
     status = "white",
