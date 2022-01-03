@@ -7,6 +7,7 @@ Description: An open-source HMIS custom reporting Shiny app
 License: AGPL (>= 3)
 Imports: 
     bs4Dash,
+    clarity.looker,
     config (>= 0.3.1),
     dplyr,
     DT,
@@ -26,6 +27,7 @@ Imports:
     UU
 Remotes:
     COHHIO/HMIS,
+    COHHIO/clarity.looker,
     yogat3ch/UU,
     karthik/rdrop2,
     RinteRface/bs4Dash
@@ -36,6 +38,7 @@ RoxygenNote: 7.1.2
 URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
+    'golem_utils_server.R'
     'accessor_fn_utils.R'
     'app_config.R'
     'app_server.R'
@@ -44,7 +47,6 @@ Collate:
     'find_instances.R'
     'utils_helpers.R'
     'global.R'
-    'golem_utils_server.R'
     'golem_utils_ui.R'
     'mod_DQIncorrectEEType.R'
     'mod_DQunshIncorrectEEType.R'
