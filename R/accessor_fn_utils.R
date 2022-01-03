@@ -20,20 +20,36 @@ clean_null <- function(files) {
   files[!files %in% .rds[.sizes == 44]]
 }
 
-create_accessors <- function(path = "data", dropbox_folder = file.path("RminorElevated")) {
+#' @title Create accessor functions
+#'
+#' @param path \code{(character)} path to directory where dependencies will be saved
+#' @param app_nm  \code{(character)} name of this app
+#'
+#' @export
+#'
+#' @include golem_utils_server.R
+create_accessors <- function(path = "data", app_nm = "RminorElevated") {
   
   files <- clean_null(UU::list.files2(path)) |> 
     stringr::str_subset("\\.png^", negate = TRUE)
-  db_files <- rdrop2::drop_dir("RminorElevated")
-  if (nrow(db_files)) {
+  db_files <- rdrop2::drop_dir() |> 
+    dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())))
+  # Find the list of dependencies, download & open
+  deps <- stringr::str_subset(db_files$path_display, app_nm)
+  if (file.info(paste0(path, deps))$mtime < db_files$client_modified[db_files$path_display == deps])
+    rdrop2::drop_download(deps, file.path(path, deps), overwrite = TRUE)
+  deps <- readRDS(paste0(path, deps))
+  to_dl <- UU::ext(db_files$name, strip = TRUE) %in% deps
+  if (any(to_dl)) {
     db_files <- db_files |> 
-      dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())),
-                    file_time = file.info(file.path(path, name))$mtime,
-                    needs_update = file_time < client_modified)
-    files_to_download <- dplyr::filter(db_files, !name %in% basename(files) |  needs_update)
+      dplyr::mutate(
+        to_dl = to_dl,
+        file_time = file.info(file.path(path, name))$mtime,
+        needs_update = (file_time < client_modified) %|% FALSE
+      )
+    files_to_download <- dplyr::filter(db_files, to_dl &  needs_update)
     if (nrow(files_to_download)) {
-      if (!dir.exists(path))
-        UU::mkpath(path)
+      UU::mkpath(path)
       apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))
     }
   }
