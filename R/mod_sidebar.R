@@ -58,8 +58,8 @@ mod_sidebar_ui <- function(id){
           tabName = "dq",
           icon = shiny::icon("database"),
           bs4Dash::bs4SidebarMenuSubItem(
-            text = "Provider-level",
-            tabName = "dq_provider_level" #dqTab
+            text = "Program-level",
+            tabName = "dq_program_level" #dqTab
           ),
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Data Entry Timeliness",

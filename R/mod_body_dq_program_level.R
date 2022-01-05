@@ -1,4 +1,4 @@
-#' body_dq_provider_level UI Function
+#' body_dq_program_level UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_body_dq_provider_level_ui <- function(id){
+mod_body_dq_program_level_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
@@ -65,10 +65,10 @@ mod_body_dq_provider_level_ui <- function(id){
   )
 }
     
-#' body_dq_provider_level Server Functions
+#' body_dq_program_level Server Functions
 #'
 #' @noRd 
-mod_body_dq_provider_level_server <- function(id){
+mod_body_dq_program_level_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     output$header <- renderUI({
@@ -379,7 +379,7 @@ mod_body_dq_provider_level_server <- function(id){
 }
     
 ## To be copied in the UI
-# mod_body_dq_provider_level_ui("body_dq_provider_level_1")
+# mod_body_dq_program_level_ui("body_dq_program_level_1")
     
 ## To be copied in the server
-# mod_body_dq_provider_level_server("body_dq_provider_level_1")
+# mod_body_dq_program_level_server("body_dq_program_level_1")
