@@ -52,7 +52,7 @@ Collate:
     'mod_DQunshIncorrectEEType.R'
     'mod_body.R'
     'mod_body_client_counts.R'
-    'mod_body_dq_provider_level.R'
+    'mod_body_dq_program_level.R'
     'mod_body_dq_region_level.R'
     'mod_body_dq_system_summary.R'
     'mod_body_dq_timeliness.R'

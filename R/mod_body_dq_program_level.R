@@ -7,13 +7,14 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+
 mod_body_dq_program_level_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
     ui_row(
       ui_picker_project(
-        choices = projects[projects %in% dq_providers()],
+        choices = dq_providers(),
         options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
         liveSearchStyle = 'contains',
@@ -242,7 +243,7 @@ mod_body_dq_program_level_server <- function(id){
         dplyr::select(
           "Unique ID" = UniqueID,
           "Entry Date" = EntryDate,
-          "Residence Prior" = ResidencePrior,
+          "Prior Living Situation" = LivingSituation,
           "Length of Stay" = LengthOfStay,
           "Literally Homeless Prior" = PreviousStreetESSH
         )
