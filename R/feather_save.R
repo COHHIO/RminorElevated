@@ -18,10 +18,10 @@ data2feather <- function(path = "data/db", data = "data/Rme_old.RData", new_data
   objects$all_df_nms <- all_df_nms
   purrr::iwalk(obj_list[.is_df], ~{
     message(.y)
-    feather::write_feather(.x, path = file.path(path, paste0(.y, ".feather")))
+    arrow::write_feather(.x, path = file.path(path, paste0(.y, ".feather")))
   })
   purrr::iwalk(all_df_nms, ~{
-    assign(.x, function() get_feather(as.character(match.call()[[1]])), objects)
+    assign(.x, function() arrow::read_feather(as.character(match.call()[[1]])), objects)
   })
   save(list = ls(envir = objects), file = new_data, envir = objects)
 }

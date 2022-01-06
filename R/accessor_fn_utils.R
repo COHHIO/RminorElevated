@@ -47,7 +47,7 @@ create_accessors <- function(path = "data", app_nm = "RminorElevated") {
         file_time = file.info(file.path(path, name))$mtime,
         needs_update = (file_time < client_modified) %|% FALSE
       )
-    files_to_download <- dplyr::filter(db_files, to_dl &  needs_update)
+    files_to_download <- dplyr::filter(db_files, to_dl & needs_update)
     if (nrow(files_to_download)) {
       UU::mkpath(path)
       apply(files_to_download, 1, rlang::as_function(~rdrop2::drop_download(.x["path_display"], file.path(path, .x["name"]), overwrite = TRUE)))

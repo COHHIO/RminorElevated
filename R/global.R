@@ -14,19 +14,7 @@
 #' @include accessor_fn_utils.R utils_helpers.R
 Sys.setenv(TZ = "America/New_York")
 
-# library(tidyverse)
-# library(shinydashboard)
-# library(shiny)
-# library(shinyWidgets)
-# library(lubridate)
-# library(scales)
-# library(plotly)
-# library(zoo)
-# library(DT)
-# library(writexl)
-# library(viridis)
-# library(HMIS)
-# library(feather)
+
 db_auth()
 # Create accessor functions
 do_assignment(create_accessors("data"))
