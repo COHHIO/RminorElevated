@@ -11,7 +11,7 @@ mod_body_prioritization_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
-    ui_picker_project(
+    ui_picker_program(
       inputId = ns("region"),
       label = "Select County/-ies",
       multiple = TRUE,

@@ -22,7 +22,7 @@ mod_body_utilization_ui <- function(id) {
   shiny::fluidPage(
     ui_header_row(),
     ui_row(
-      ui_picker_project(choices = choices,
+      ui_picker_program(choices = choices,
                         multiple = FALSE),
       shinyWidgets::airDatepickerInput(
         inputId = ns("date_range"),
@@ -82,21 +82,21 @@ mod_body_utilization_server <- function(id){
       ReportStart() |>
         format(format = "%b%Y")
     })
-    server_debounce(input$project)
+    server_debounce(input$program)
     uc_selected <- reactive({
-      req(project(), ReportStart(), ReportEnd(), input$project)
+      req(program(), ReportStart(), ReportEnd(), input$program)
       utilization_clients() |>
         HMIS::served_between(ReportStart(), ReportEnd()) |> 
-        dplyr::filter(ProjectID %in% project()) |>
+        dplyr::filter(ProjectID %in% program()) |>
         dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
                                                 MoveInDateAdjust, EntryDate)) |>
         dplyr::select(UniqueID, BedStart, ExitDate, dplyr::all_of(col_nm()))
     })
     bed_count <- reactive({
-      req(project(), ReportStart(), ReportEnd())
+      req(program(), ReportStart(), ReportEnd())
        utilization_beds() |> 
         HMIS::beds_available_between(ReportStart(), ReportEnd()) |> 
-        dplyr::filter(ProjectID %in% project()) |>
+        dplyr::filter(ProjectID %in% program()) |>
         dplyr::group_by(ProjectID) |>
         dplyr::summarise(BedCount = sum(BedInventory), .groups = "drop") |>
         dplyr::pull(BedCount)
@@ -106,7 +106,7 @@ mod_body_utilization_server <- function(id){
     
     output$detail <-
       DT::renderDT(server = FALSE, {
-        req(input$project, uc_selected())
+        req(input$program, uc_selected())
         uc_selected() |> 
           rlang::set_names(c("Unique ID", "Bed Start", "Exit Date", paste("Bed Nights in", format(ReportStart(), "%B %Y")))) |> 
           datatable_default(escape = FALSE)
@@ -114,7 +114,7 @@ mod_body_utilization_server <- function(id){
     
     output$infobox_bn_served <-
       bs4Dash::renderInfoBox({
-        req(input$project, uc_selected())
+        req(input$program, uc_selected())
         bs4Dash::infoBox(
           title = "Total Bed Nights Served",
           color = "purple",
@@ -127,7 +127,7 @@ mod_body_utilization_server <- function(id){
     
     output$infobox_pbn_available <-
       bs4Dash::renderInfoBox({
-        req(input$project, bed_count(), daysInMonth())
+        req(input$program, bed_count(), daysInMonth())
         bs4Dash::infoBox(
           title = "Possible Bed Nights",
           color = "purple",
@@ -148,7 +148,7 @@ mod_body_utilization_server <- function(id){
     
     output$infobox_utilization <-
       bs4Dash::renderInfoBox({
-        req(input$project, uc_selected(), bed_count(), daysInMonth())
+        req(input$program, uc_selected(), bed_count(), daysInMonth())
         
         bedUtilization <- scales::percent(sum(uc_selected()[[col_nm()]]) / sum(bed_count() * daysInMonth()))
         bs4Dash::infoBox(

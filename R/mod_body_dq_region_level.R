@@ -12,7 +12,7 @@ mod_body_dq_region_level_ui <- function(id) {
   tagList(
     ui_header_row(),
     ui_row(
-      ui_picker_project(
+      ui_picker_program(
         inputId = ns("region"),
         choices = regions,
         width = "70%"

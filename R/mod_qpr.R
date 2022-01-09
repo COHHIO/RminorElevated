@@ -64,7 +64,7 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
         do.call(ui_date_range, .defaults$Dates)
       ,
       if (shiny::isTruthy(.defaults$Regions))
-        do.call(ui_picker_project, .defaults$Regions)
+        do.call(ui_picker_program, .defaults$Regions)
     )
     ,
     ui_row(

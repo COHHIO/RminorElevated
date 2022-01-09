@@ -1,17 +1,17 @@
 #' @title Create a default header block
 #'
 #' @param title \code{(character)} Title to be wrapped in \link[shiny]{h2}
-#' @param project \code{(character)} Project name to be wrapped in \link[shiny]{h4}
+#' @param program \code{(character)} Program name to be wrapped in \link[shiny]{h4}
 #' @param date_range \code{(Date)} vector to be collapsed with `" - "` in \link[shiny]{h4}
 #'
 #' @return \code{shiny.tag.list}
 #' @export
 
-server_header <- function(title, ..., project, date_range, region, county) {
+server_header <- function(title, ..., program, date_range, region, county) {
   out <- list()
   out$header <- shiny::h2(title)
-  if (!missing(project))
-    out$project <- shiny::h4(names(projects)[projects %in% project])
+  if (!missing(program))
+    out$program <- shiny::h4(names(programs)[programs %in% program])
   if (!missing(region))
     out$region <- shiny::h4("Region(s):", paste0(names(regions)[regions %in% region], collapse = ", "))
   if (!missing(county))

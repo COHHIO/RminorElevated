@@ -1,4 +1,4 @@
-#' @title A pickerInput that provides active projects to select from
+#' @title A pickerInput that provides active programs to select from
 #'
 #' @param inputId \code{(namespaced character)} A character vector wrapped in `ns` from the parent environment.
 #' @inherit shinyWidgets::pickerInput params return
@@ -8,10 +8,10 @@
 
 #' @export
 
-ui_picker_project <- function(
-  label = "Select Project",
-  inputId = rlang::caller_env()$ns("project"),
-  choices = projects, 
+ui_picker_program <- function(
+  label = "Select Program",
+  inputId = rlang::caller_env()$ns("program"),
+  choices = programs, 
   selected = NULL,
   multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE,

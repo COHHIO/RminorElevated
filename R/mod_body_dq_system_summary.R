@@ -33,7 +33,7 @@ mod_body_dq_system_summary_server <- function(id){
                     date_range = c(rm_dates()$hc$check_dq_back_to, Sys.Date()))
     })
     dq_aps_no_referrals <- dq_aps_no_referrals()
-    dq_aps_referrals <- projects |> 
+    dq_aps_referrals <- programs |> 
       {\(x) {tibble::tibble(ProjectID = x, ProjectName = names(x))}}() |> 
       dplyr::filter(stringr::str_detect(ProjectName, "^zz", negate = TRUE) & stringr::str_detect(ProjectName, "\\sAP\\s?") & !ProjectID %in% dq_aps_no_referrals$ProjectID) 
       
@@ -58,10 +58,10 @@ mod_body_dq_system_summary_server <- function(id){
       ~ title,
       ~ status,
       "projects_errors",
-      "High Priority Issues & Errors by Program",
+      "High Priority Issues & Errors by Project",
       "danger",
       "projects_warnings",
-      "Warnings by Program",
+      "Warnings by Project",
       "warning",
       "error_types",
       "Error Types",
@@ -70,16 +70,16 @@ mod_body_dq_system_summary_server <- function(id){
       "Warning Types",
       "warning",
       "hh_issues",
-      "Household Errors by Program",
+      "Household Errors by Project",
       "danger",
       "outstanding_referrals",
-      "Old Referrals by Program",
+      "Old Referrals by Project",
       "warning",
       "eligibility",
-      "Eligibility Issues by Program",
+      "Eligibility Issues by Project",
       "warning",
       "clients_without_spdat",
-      "Households without SPDAT by Program",
+      "Households without SPDAT by Project",
       "warning"
     )
     dq_summary_args <- dq_summary_args |>

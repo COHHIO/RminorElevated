@@ -25,7 +25,7 @@ qpr_expr$length_of_stay$infobox <- rlang::expr({
                               .data$Median,
                               "days"),
                 title = "Average and Median Length of Stay",
-                subtitle = "Length of Stay in Project's Housing"
+                subtitle = "Length of Stay in Program's Housing"
     )
 })
 
@@ -36,7 +36,7 @@ qpr_expr$length_of_stay$datatable <- rlang::expr({
       UniqueID,
       "Bed Start" = EntryAdjust,
       ExitDate,
-      "Days in Project" = DaysinProject
+      "Days in Program" = DaysinProject
     ) |> 
     datatable_default(escape = FALSE)
 })

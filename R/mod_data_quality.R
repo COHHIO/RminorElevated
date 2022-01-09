@@ -190,7 +190,7 @@ mod_data_quality_ui <- function(id){
     tabName = "dqCoC",
     fluidRow(box(htmlOutput(ns("headerCocDQ")), width = 12)),
     # list(
-    #   dq_plot_projects_errors =
+    #   dq_plot_programs_errors =
     #     list(status = "danger",
     #          title = "Providers with the Most High Priority Issues and Errors"),
     #   dq_plot_hh_errors =
@@ -199,7 +199,7 @@ mod_data_quality_ui <- function(id){
     #   dq_plot_unsheltered_high =
     #     list(status = "danger",
     #          title = "Unsheltered High Priority Issues (User's Default Provider)"),
-    #   dq_plot_projects_warnings =
+    #   dq_plot_programs_warnings =
     #     list(status = "warning",
     #          title = "Providers with the Most Data Quality Warnings"),
     #   DeskTimePlotCoC =

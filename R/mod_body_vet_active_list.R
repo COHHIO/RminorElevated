@@ -23,9 +23,9 @@ mod_body_vet_active_list_ui <- function(id) {
             l_style = "list-style-type:none;margin-left: 0px;
     padding-left: 0px;",
             text = c(
-              "Housing Project",
-              "Literally Homeless Project",
-              "Other Project"
+              "Housing Program",
+              "Literally Homeless Program",
+              "Other Program"
             ),
             style = glue::glue_data("background-color: {color};", .x = list(
               color = c("lavenderblush", "lightgoldenrodyellow", "paleturquoise")
@@ -71,7 +71,7 @@ mod_body_vet_active_list_ui <- function(id) {
       fluidRow(
         column(
           3,
-          ui_picker_project(
+          ui_picker_program(
             label = "Select County(ies)",
             inputId = ns("county"),
             choices = counties,
@@ -80,7 +80,7 @@ mod_body_vet_active_list_ui <- function(id) {
         ),
         column(
           3,
-          ui_picker_project(
+          ui_picker_program(
             label = "Select Eligibility",
             inputId = ns("vet_status"),
             choices = val$ListStatus |>
@@ -94,7 +94,7 @@ mod_body_vet_active_list_ui <- function(id) {
         ),
         column(
           3,
-          ui_picker_project(
+          ui_picker_program(
             label = "Select Chronic Status",
             inputId = ns("chronic_status"),
             choices = chronic_status,

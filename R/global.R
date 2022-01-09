@@ -21,7 +21,7 @@ do_assignment(create_accessors("data"))
 
 
 if (exists("validation")) {
-  projects <- validation() |>
+  programs <- validation() |>
     dplyr::distinct(ProjectID, ProjectName) |>
     dplyr::arrange(ProjectName) |> 
       {\(x) {rlang::set_names(x$ProjectID, x$ProjectName)}}()

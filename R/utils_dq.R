@@ -1,7 +1,8 @@
 #' @title Filter data.frame with default filters for DQ
-#' @description Filters by `input$project` & `input$date_range`
+#' @description Filters by `input$program` & `input$date_range`
 #' @param x \code{(data.frame)} with `ProjectName`, `EntryDate`, `ExitDate` 
 #' @param ... \code{(character)} Expressions passed on to \link[dplyr]{filter}
+#' @param program Program ID to filter for
 #' @param env \code{(environment)} The parent environment from which to retrieve input reactiveValues
 #'
 #' @return \code{(data.frame)} filtered accordingly
@@ -12,14 +13,14 @@
 dq_filter_between <- function(x,
   ...,
   date_range,
-  project
+  program
 ) {
   out <- x
   if (!missing(date_range) && UU::is_legit(date_range))
     out <- out |>
       HMIS::served_between(date_range[1], date_range[2])
-  if (!missing(project) && UU::is_legit(project))
-    out <- dplyr::filter(out, ProjectID %in% project)
+  if (!missing(program) && UU::is_legit(program))
+    out <- dplyr::filter(out, ProjectID %in% program)
   
   
   .dots <- rlang::enquos(...)
@@ -58,7 +59,7 @@ dq_select_cols <- function(x, ..., default = list("UniqueID",
 
 dq_see_guidance <- function() tags$span("See ", tags$a(href = "#dq_box_dq_summary", "Guidance below"), " for instructions on how to fix these errors.")
 
-dq_performance <- function(.data, .join_data, groups = c("ProjectID", "ProjectName"), join = FALSE, suffix = c("_issue", "_client"), date_range = NULL, project = NULL) {
+dq_performance <- function(.data, .join_data, groups = c("ProjectID", "ProjectName"), join = FALSE, suffix = c("_issue", "_client"), date_range = NULL, program = NULL) {
   .groups <- purrr::map(groups, rlang::sym)
   
   obs <- list(
@@ -77,7 +78,7 @@ dq_performance <- function(.data, .join_data, groups = c("ProjectID", "ProjectNa
     if ("n" %in% names(.x) || !UU::is_legit(.x)) {
       out <- dplyr::rename(.x, !!nm := n)
     } else {
-      dq_filter_between(.x, date_range = date_range, project = project) |> 
+      dq_filter_between(.x, date_range = date_range, program = program) |> 
         dplyr::group_by(!!!.groups) |>
         dplyr::summarise(!!rlang::sym(nm) := dplyr::n(), .groups = "drop") |>
         dplyr::arrange(dplyr::desc(!!nm))

@@ -13,7 +13,7 @@ mod_body_dq_program_level_ui <- function(id){
   tagList(
     ui_header_row(),
     ui_row(
-      ui_picker_project(
+      ui_picker_program(
         choices = dq_providers(),
         options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
@@ -25,7 +25,8 @@ mod_body_dq_program_level_ui <- function(id){
       selected = "none"),
       ui_date_range(start = lubridate::ymd("2019-01-01")),
       width = 12,
-      headerBorder = FALSE
+      headerBorder = FALSE,
+      p("If you have questions please email ", strong(a(href = "mailto:hmis@cohhio.org?subject=RminorElevated DQ Question", target = "_blank", "hmis@cohhio.org")), " and please include the selected Program name.")
     ),
     shiny::fluidRow(uiOutput(ns("dq_APsNoReferrals"))),
     shiny::fluidRow(
@@ -79,7 +80,7 @@ mod_body_dq_program_level_server <- function(id){
     
     
     eligibility_detail <- dq_eligibility_detail()
-    server_debounce(input$project, input$date_range)
+    server_debounce(input$program, input$date_range)
     
     dq_p <- dq_main()
     dq_main_time <- eventReactive(input$date_range, {
@@ -89,10 +90,10 @@ mod_body_dq_program_level_server <- function(id){
         
     }) |> 
       debounce(1500)
-    dq_main_time_proj <- eventReactive(input$project, {
-      req(input$project, dq_main_time())
+    dq_main_time_proj <- eventReactive(input$program, {
+      req(input$program, dq_main_time())
       dq_main_time() |> 
-        dq_filter_between(project = input$project)
+        dq_filter_between(program = input$program)
     }) |> 
       debounce(1500)
     co_clients <- co_clients_served()
@@ -106,9 +107,9 @@ mod_body_dq_program_level_server <- function(id){
     
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
-      req(input$project, project())
+      req(input$program, program())
       AP_no_referrals <- dq_aps_no_referrals()  |> 
-        dplyr::filter(ProjectID %in% project())
+        dplyr::filter(ProjectID %in% program())
       
       if (nrow(AP_no_referrals) > 0) {
         ui_solid_box(
@@ -190,9 +191,9 @@ mod_body_dq_program_level_server <- function(id){
 
     # Deprecated in Clarity
     # output$dq_MissingLocation <- renderUI({
-    #   req(project())
+    #   req(program())
     #   HHIssues <- dq_main_time_proj |> 
-    #     dq_filter_between(date_range = input$date_range, project = project(), Issue == "Missing Client Location") |> 
+    #     dq_filter_between(date_range = input$date_range, program = program(), Issue == "Missing Client Location") |> 
     #     dq_select_cols()
     #   
     #   
@@ -234,9 +235,9 @@ mod_body_dq_program_level_server <- function(id){
     
     
     output$dq_Ineligible <- renderUI({
-      req(input$project, input$date_range, project(), date_range())
+      req(input$program, input$date_range, program(), date_range())
     Ineligible <- eligibility_detail |> 
-        dq_filter_between(ProjectID %in% project(), date_range = date_range()) |> 
+        dq_filter_between(ProjectID %in% program(), date_range = date_range()) |> 
         dplyr::mutate(
           PreviousStreetESSH = dplyr::if_else(PreviousStreetESSH == 1, "Yes", "No")
         )  |> 
@@ -270,9 +271,9 @@ mod_body_dq_program_level_server <- function(id){
     
     
     output$dq_OverlappingEEs <- renderUI({
-      req(input$project, input$date_range, project(), date_range())
+      req(input$program, input$date_range, program(), date_range())
       OverlappingEEs <- dq_overlaps() |> 
-        dq_filter_between(ProjectID %in% project(), date_range = date_range()) |> 
+        dq_filter_between(ProjectID %in% program(), date_range = date_range()) |> 
         dq_select_cols(
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -286,7 +287,7 @@ mod_body_dq_program_level_server <- function(id){
       if (nrow(OverlappingEEs)) {
         ui_solid_box(
           id = "overlappers",
-          title = "Overlapping Project Stays",
+          title = "Overlapping Program Stays",
           status = "warning",
           width = 12,
           datatable_default(OverlappingEEs, escape = FALSE),
@@ -306,7 +307,7 @@ mod_body_dq_program_level_server <- function(id){
             "Missing Relationship to Head of Household",
             "No Head of Household",
             "Children Only Household",
-            "Overlapping Project Stays",
+            "Overlapping Program Stays",
             "Duplicate Entry Exits",
             "Access Point with Entry Exits"
           )  &
@@ -325,7 +326,7 @@ mod_body_dq_program_level_server <- function(id){
             "Missing Relationship to Head of Household",
             "No Head of Household",
             "Children Only Household",
-            "Overlapping Project Stays",
+            "Overlapping Program Stays",
             "Duplicate Entry Exits",
             "Check Eligibility"
           ) &
@@ -336,7 +337,7 @@ mod_body_dq_program_level_server <- function(id){
 
     })
     
-    issues_by_project <- reactive({
+    issues_by_program <- reactive({
       req(dq_main_time(), clients())
       dq_performance(dq_performance(dq_main_time(), groups = c("Issue", "ProjectID")), dq_performance(clients()), join = T) |> 
         dplyr::group_by(Issue) |> 
@@ -346,7 +347,7 @@ mod_body_dq_program_level_server <- function(id){
     })
       
     output$dq_summary <- DT::renderDT(server = FALSE, {
-      req(input$project, issues_by_project(), dq_main_time_proj())
+      req(input$program, issues_by_program(), dq_main_time_proj())
       
       
       out <- dq_main_time_proj() |>
@@ -356,7 +357,7 @@ mod_body_dq_program_level_server <- function(id){
                                               "Error",
                                               "Warning"))) |>
         dplyr::arrange(Type) |>
-        dplyr::left_join(issues_by_project(), by = c("ProjectID", "Issue")) |> 
+        dplyr::left_join(issues_by_program(), by = c("ProjectID", "Issue")) |> 
         dplyr::mutate(p = round(p, 3),
                       ProjectID = NULL) |> 
         dplyr::rename(`# of Issues` = n,

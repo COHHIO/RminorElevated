@@ -1,7 +1,8 @@
 
 
 qpr_expr$income_growth <- list()
-
+# input <- list(date_range = c(lubridate::ymd("2021-07-01"), lubridate::ymd("2022-01-01")),
+#               region = "Adams - Adams County Shelter for the Homeless - AP")
 qpr_expr$income_growth$expr <- rlang::expr({
   qpr_income() |>
     HMIS::stayed_between(input$date_range[1], input$date_range[2]) |> 
@@ -32,7 +33,7 @@ qpr_expr$income_growth$infobox <- rlang::expr({
                   subtitle = paste(.data$Increased, "out of", .data$TotalHHs, "households served")
     )
   } else {
-    .args <- list(title = HTML("Something's wrong- email us at <a href='mailto:hmis@cohhio.org' target='_blank'>hmis@cohhio.org</a>!"), .replace = TRUE)
+    .args <- list(title = HTML("No clients in date range. If you think this is inaccurate, please email <a href='mailto:hmis@cohhio.org' target='_blank'>hmis@cohhio.org</a>!"), .replace = TRUE)
   }
   
   do.call(qpr_infobox, .args)

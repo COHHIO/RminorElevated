@@ -12,7 +12,7 @@ mod_body_client_counts_ui <- function(id){
   shiny::tagList(
     ui_header_row(),
     ui_row(
-      ui_picker_project(),
+      ui_picker_program(),
       ui_date_range(start = Sys.Date() - lubridate::days(90)),
       headerBorder = FALSE
     ),
@@ -38,7 +38,7 @@ mod_body_client_counts_server <- function(id){
     output$header <- shiny::renderUI({
            server_header(
              title = "Client Counts Report",
-             project = input$project,
+             program = input$program,
              date_range = input$date_range
              )
     })
@@ -47,7 +47,7 @@ mod_body_client_counts_server <- function(id){
       
         validation()  |> 
           HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-          dplyr::filter(ProjectID %in% input$project) |>
+          dplyr::filter(ProjectID %in% input$program) |>
           dplyr::mutate(
             RelationshipToHoH = dplyr::case_when(
               RelationshipToHoH == 1 ~ "Head of Household",
@@ -75,11 +75,11 @@ mod_body_client_counts_server <- function(id){
                 !is.na(MoveInDateAdjust) &
                 !is.na(ExitDate) ~ "Exited with Move-In",
               !ProjectType %in% c(3, 13) &
-                is.na(ExitDate) ~ paste0("Currently in project (",
+                is.na(ExitDate) ~ paste0("Currently in program (",
                                          lubridate::today() - EntryDate, 
                                          " days)"),
               !ProjectType %in% c(3, 13) &
-                !is.na(ExitDate) ~ "Exited project",
+                !is.na(ExitDate) ~ "Exited program",
             ),
             sort = lubridate::today() - EntryDate
           ) |>
@@ -100,7 +100,7 @@ mod_body_client_counts_server <- function(id){
       
       hhs <- validation() |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectID %in% input$project) |>
+        dplyr::filter(ProjectID %in% input$program) |>
         dplyr::select(HouseholdID,
                       ProjectType,
                       EntryDate,
@@ -125,9 +125,9 @@ mod_body_client_counts_server <- function(id){
               !is.na(MoveInDateAdjust) &
               !is.na(ExitDate) ~ "Exited with Move-In",
             !ProjectType %in% c(3, 13) &
-              is.na(ExitDate) ~ "Currently in project",
+              is.na(ExitDate) ~ "Currently in program",
             !ProjectType %in% c(3, 13) &
-              !is.na(ExitDate) ~ "Exited project",
+              !is.na(ExitDate) ~ "Exited program",
           )
         ) |>
         dplyr::group_by(Status) |>
@@ -135,7 +135,7 @@ mod_body_client_counts_server <- function(id){
       
       clients <- validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-        dplyr::filter(ProjectID %in% input$project) |>
+        dplyr::filter(ProjectID %in% input$program) |>
         dplyr::select(ProjectType,
                       EntryDate,
                       MoveInDateAdjust,
@@ -156,9 +156,9 @@ mod_body_client_counts_server <- function(id){
               !is.na(MoveInDateAdjust) &
               !is.na(ExitDate) ~ "Exited with Move-In",
             !ProjectType %in% c(3, 13) &
-              is.na(ExitDate) ~ "Currently in project",
+              is.na(ExitDate) ~ "Currently in program",
             !ProjectType %in% c(3, 13) &
-              !is.na(ExitDate) ~ "Exited project",
+              !is.na(ExitDate) ~ "Exited program",
           )
         ) |>
         dplyr::group_by(Status) |>
