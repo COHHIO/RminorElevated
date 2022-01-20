@@ -1,3 +1,30 @@
+
+dt_time <- validation() |>
+  dplyr::filter(ProjectType %in% c(1, 2, 3, 4, 8, 9, 12, 13)) |>
+  dplyr::mutate(
+    DateCreated = lubridate::as_date(DateCreated, tz = NULL),
+    DeskTime = as.integer(
+      difftime(DateCreated,
+               EntryDate,
+               units = "days")
+    ),
+    GoalMet = dplyr::if_else(DeskTime > 5 |
+                               DeskTime < 0,
+                             "orangered",
+                             "forestgreen")
+  ) |>
+  dplyr::select(HouseholdID,
+                UniqueID,
+                ProjectName,
+                ProjectID,
+                EntryDate,
+                ExitDate,
+                DateCreated,
+                DeskTime,
+                GoalMet) 
+
+desk_time_providers <- rlang::set_names(dt_time$ProjectID |> unique(), dt_time$ProjectName |> unique())
+
 #' body_dq_timeliness UI Function
 #'
 #' @description A shiny Module.
@@ -11,7 +38,10 @@ mod_body_dq_timeliness_ui <- function(id){
   ns <- shiny::NS(id)
   shiny::tagList(
     ui_header_row(),
-    ui_picker_program(choices = desk_time_providers),
+    ui_picker_program(choices = desk_time_providers,
+                      multiple = FALSE,
+                      width = "100%"),
+    ui_date_range(start = rm_dates()$hc$check_dq_back_to),
     ui_row(shiny::plotOutput(ns("detail")),
                                title = "Detail"),
     ui_row(title = "Guidance", shiny::HTML("
@@ -44,48 +74,68 @@ mod_body_dq_timeliness_server <- function(id){
   shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    ReportStart <- Sys.Date() - lubridate::years(1)
-    ReportEnd <- Sys.Date()
-    output$header <- shiny::renderUI(RminorElevated::server_header("Data Entry Timeliness", shiny::h3(paste0("Fixed Date Range: ", ReportStart, " to ", ReportEnd))))
+    
+    output$header <- shiny::renderUI(RminorElevated::server_header("Data Entry Timeliness"))
     
     
-    server_debounce(input$program)
+    
+    
+    desk_time <- eventReactive(c(input$date_range, input$program), {
+      req(input$date_range, input$program)
+      dq_filter_between(dt_time, date_range = input$date_range, program = input$program)
+    })
+    
+    
+    
+    
+    
     
     
     output$detail <- shiny::renderPlot({
-      req(input$program)
-      req(program())
+      req(input$program, input$date_range, desk_time())
       
-      dt_median <- desk_time_medians |> 
-        dplyr::filter(ProjectName == program())
-      desk_time <- desk_time |> 
-        dplyr::filter(ProjectName == program())
+      dt_median <- desk_time() |>
+        dplyr::group_by(ProjectName) |>
+        dplyr::summarise(MedianDeskTime = stats::median(DeskTime, na.rm = TRUE),
+                         TotalEntered = dplyr::n(), .groups = "drop")
       
       p <- ggplot2::ggplot(
-        desk_time,
+        desk_time(),
         ggplot2::aes(y = DeskTime)
       )
-      if (any(desk_time$GoalMet == "orangered", na.rm = TRUE))
-        p <- p + ggplot2::geom_linerange(data = desk_time |> dplyr::filter(GoalMet == "orangered"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, xmin = EntryDate, xmax = DateCreated), show.legend = FALSE)
-      if (any(desk_time$GoalMet == "forestgreen", na.rm = TRUE))
-        p <- p + ggplot2::geom_point(data = desk_time |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated), show.legend = FALSE) 
-        p + ggplot2::scale_color_identity() +
-        ggplot2::geom_hline(yintercept = 5, color = "forestgreen") +
-        ggplot2::geom_hline(yintercept = dt_median$MedianDeskTime, color = "black") +
-        ggplot2::scale_x_date(date_breaks = "1 month", limits = c(ReportStart, ReportEnd), date_labels = "%b %y") + 
-        ggplot2::geom_label(x = ReportEnd - lubridate::days(180),
-                            y = dt_median$MedianDeskTime,
-                            label = paste("Median:", 
-                                          dt_median$MedianDeskTime,
-                                          "days | Total Clients:",
-                                          dt_median$TotalEntered)) +
-        ggplot2::geom_label(x = ReportEnd - lubridate::days(300),
-                            y = 5,
-                            label = "DQ Standards (5d or less)") +
-        ggplot2::labs(x = "Entry Date",
-                      y = "Data Entry Delay (in days)") +
-        ggplot2::theme_minimal(base_size = 18) + 
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45)) 
+      
+      label_x <- as.numeric(difftime(input$date_range[2], input$date_range[1], units = "days"))
+      label_.2 <- round(label_x * .75)
+      label_.5 <- round(label_x * .50)
+      if (any(desk_time()$GoalMet == "orangered", na.rm = TRUE))
+        p <- p + ggplot2::geom_linerange(data = desk_time() |> dplyr::filter(GoalMet == "orangered"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, xmin = EntryDate, xmax = DateCreated), show.legend = FALSE)
+      if (any(desk_time()$GoalMet == "forestgreen", na.rm = TRUE))
+        p <- p + ggplot2::geom_point(data = desk_time() |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated), show.legend = FALSE) 
+      
+        p <- p +
+          ggplot2::labs(x = "Entry Date",
+                        y = "Data Entry Delay (in days)") +
+          ggplot2::theme_minimal(base_size = 18) + 
+          ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45)) + 
+          ggplot2::scale_color_identity() +
+          ggplot2::scale_x_date(date_breaks = ifelse(label_x < 90, "1 week", "1 month"), limits = c(input$date_range[1], input$date_range[2]), date_labels = "%b %y")
+        
+        for (i in 1:nrow(dt_median)) {
+          p <- p + ggplot2::geom_hline(yintercept = 5, color = "forestgreen") +
+            ggplot2::geom_hline(yintercept = dt_median[i,]$MedianDeskTime, color = "black") + 
+            ggplot2::geom_label(x = input$date_range[2] - label_.2,
+                                y = dt_median[i,]$MedianDeskTime,
+                                label = paste(dt_median[i,]$ProjectName,
+                                              "Median:", 
+                                              dt_median[i,]$MedianDeskTime,
+                                              "days | Total Clients:",
+                                              dt_median[i,]$TotalEntered)) +
+            ggplot2::geom_label(x = input$date_range[2] - label_.5,
+                                y = 5,
+                                label = "DQ Standards (5d or less)")
+        }
+        p
+        
     })
     
   })

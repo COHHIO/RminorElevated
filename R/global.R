@@ -26,36 +26,7 @@ if (exists("validation")) {
     dplyr::arrange(ProjectName) |> 
       {\(x) {rlang::set_names(x$ProjectID, x$ProjectName)}}()
   
-  desk_time <- validation() |>
-    HMIS::entered_between(Sys.Date() - lubridate::years(1),
-                          Sys.Date()) |>
-    dplyr::filter(ProjectType %in% c(1, 2, 3, 4, 8, 9, 12, 13)) |>
-    dplyr::select(ProjectName, UniqueID, HouseholdID, EntryDate, DateCreated) |>
-    dplyr::mutate(
-      DateCreated = lubridate::as_date(DateCreated, tz = NULL),
-      DeskTime = as.integer(
-        difftime(DateCreated,
-                 EntryDate,
-                 units = "days")
-      ),
-      GoalMet = dplyr::if_else(DeskTime > 5 |
-                                 DeskTime < 0,
-                               "orangered",
-                               "forestgreen")
-    ) |>
-    dplyr::select(HouseholdID,
-                  UniqueID,
-                  ProjectName,
-                  EntryDate,
-                  DateCreated,
-                  DeskTime,
-                  GoalMet) 
-  desk_time_providers <- desk_time$ProjectName |> unique()
-  
-  desk_time_medians <- desk_time |>
-    dplyr::group_by(ProjectName) |>
-    dplyr::summarise(MedianDeskTime = stats::median(DeskTime),
-              TotalEntered = dplyr::n(), .groups = "drop")  
+    
   
 }
   
