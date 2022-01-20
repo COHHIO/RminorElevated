@@ -113,7 +113,7 @@ which_cols.character <- function(x, .data) {
 #' @param x \code{(datatables)}
 #' @param options \code{(list)} of options to replace
 #'
-#' @return \code({datatables})
+#' @return \code{(datatables)}
 #' @export
 
 datatable_options_update <- function(x, options, hide_cols) {

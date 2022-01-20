@@ -4,12 +4,12 @@
 \alias{server_header}
 \title{Create a default header block}
 \usage{
-server_header(title, ..., project, date_range, region, county)
+server_header(title, ..., program, date_range, region, county)
 }
 \arguments{
 \item{title}{\code{(character)} Title to be wrapped in \link[shiny]{h2}}
 
-\item{project}{\code{(character)} Project name to be wrapped in \link[shiny]{h4}}
+\item{program}{\code{(character)} Program name to be wrapped in \link[shiny]{h4}}
 
 \item{date_range}{\code{(Date)} vector to be collapsed with `" - "` in \link[shiny]{h4}}
 }

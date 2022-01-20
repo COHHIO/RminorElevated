@@ -4,12 +4,14 @@
 \alias{dq_filter_between}
 \title{Filter data.frame with default filters for DQ}
 \usage{
-dq_filter_between(x, ..., date_range, project)
+dq_filter_between(x, ..., date_range, program)
 }
 \arguments{
 \item{x}{\code{(data.frame)} with `ProjectName`, `EntryDate`, `ExitDate`}
 
 \item{...}{\code{(character)} Expressions passed on to \link[dplyr]{filter}}
+
+\item{program}{Program ID to filter for}
 
 \item{env}{\code{(environment)} The parent environment from which to retrieve input reactiveValues}
 }
@@ -17,7 +19,7 @@ dq_filter_between(x, ..., date_range, project)
 \code{(data.frame)} filtered accordingly
 }
 \description{
-Filters by `input$project` & `input$date_range`
+Filters by `input$program` & `input$date_range`
 }
 \examples{
 test <- data.frame(Issue = 1:5, Type = sample(c("Warning", "Error"), 5, TRUE), ProjectName = letters[1:5], EntryDate = seq.Date(lubridate::floor_date(lubridate::today() - 4, "month"), Sys.Date(), length.out = 5), ExitDate = seq.Date(lubridate::today() - 4, Sys.Date(), by = "day"))

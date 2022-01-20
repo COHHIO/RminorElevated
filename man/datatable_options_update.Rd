@@ -12,7 +12,7 @@ datatable_options_update(x, options, hide_cols)
 \item{options}{\code{(list)} of options to replace}
 }
 \value{
-\code({datatables})
+\code{(datatables)}
 }
 \description{
 Update datatable options
