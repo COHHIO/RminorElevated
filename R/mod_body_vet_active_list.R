@@ -102,7 +102,7 @@ mod_body_vet_active_list_ui <- function(id) {
             add_options = list(actionsBox = TRUE)
           )
         ),
-        column(3, downloadButton("downloadVeteranActiveList", "Download Active List"))
+        column(3, downloadButton(ns("download"), "Download Active List"))
       )
     ),
     ui_solid_box(title = "Veteran Active List", status = "info",
@@ -111,6 +111,13 @@ mod_body_vet_active_list_ui <- function(id) {
   )
 }
 
+
+make_factor_regex <- function(x, levels = c("fa-check", "fa-exclamation-triangle", "fa-question-circle", "fa-times"), ordered = is.ordered(x)) {
+  factor(x, 
+         levels = do.call(c, purrr::map(levels, ~unique(stringr::str_subset(x, .x)))),
+         ordered = ordered)
+  
+}
 #' body_vet_active_list Server Functions
 #'
 #' @noRd
@@ -133,8 +140,9 @@ mod_body_vet_active_list_server <- function(id) {
     val <- veteran_active_list()
   
     output$detail <- DT::renderDT(server = FALSE, {
-      req(input$county)
-      req(county())
+      req(input$county, input$vet_status, input$chronic_status, county(), vet_status(), chronic_status())
+      
+      
       
       vet_active_list <- val |>
         dplyr::filter(
@@ -167,7 +175,6 @@ mod_body_vet_active_list_server <- function(id) {
             )
           )
         ) |>
-        dplyr::group_by(PersonalID) |>
         dplyr::select(
           "SSVF Responsible Provider" = SSVFServiceArea,
           "Unique ID" = UniqueID,
@@ -190,12 +197,12 @@ mod_body_vet_active_list_server <- function(id) {
                           ))
     })
     
-    output$downloadVeteranActiveList <- shiny::downloadHandler(
-      filename = function () "veteran_active_list.csv",
+    output$download <- shiny::downloadHandler(
+      filename = "veteran_active_list.csv",
       content = function(file) {
         write.csv(
           val |>
-            dplyr::filter(County %in% county() |
+            dplyr::filter(County %in% input$county |
                             is.na(County)) |>
             dplyr::mutate(DisablingCondition = HMIS::hud_translations$`1.8 No_Yes_Reasons for Missing Data`(DisablingCondition)) |>
             clarity.looker::make_linked_df(UniqueID, unlink = TRUE) |> 
@@ -233,7 +240,7 @@ mod_body_vet_active_list_server <- function(id) {
               MostRecentOffer,
               HousingPlan
             ) |> unique(),
-          path = file
+          file = file
         )
       }
     )
