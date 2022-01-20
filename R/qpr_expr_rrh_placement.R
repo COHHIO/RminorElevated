@@ -19,7 +19,7 @@ qpr_expr$rrh_placement$infobox <- rlang::expr({
 
 qpr_expr$rrh_placement$datatable <- rlang::expr({
   data_env() |>
-    dplyr::arrange(DaysToHouse) |>
+    dplyr::arrange(dplyr::desc(DaysToHouse)) |>
     dplyr::select(
       UniqueID,
       EntryDate,
