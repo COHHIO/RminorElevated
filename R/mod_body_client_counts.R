@@ -36,64 +36,64 @@ mod_body_client_counts_server <- function(id){
     ns <- session$ns
     
     output$header <- shiny::renderUI({
-           server_header(
-             title = "Client Counts Report",
-             program = input$program,
-             date_range = input$date_range
-             )
+      server_header(
+        title = "Client Counts Report",
+        program = input$program,
+        date_range = input$date_range
+      )
     })
     
     output$dt_output <- DT::renderDT(server = FALSE, {
       
-        validation()  |> 
-          HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
-          dplyr::filter(ProjectID %in% input$program) |>
-          dplyr::mutate(
-            RelationshipToHoH = dplyr::case_when(
-              RelationshipToHoH == 1 ~ "Head of Household",
-              RelationshipToHoH == 2 ~ "Child",
-              RelationshipToHoH == 3 ~ "Spouse or Partner",
-              RelationshipToHoH == 4 ~ "Other relative",
-              RelationshipToHoH == 5 ~ "Unrelated household member",
-              RelationshipToHoH == 99 ~ "Data not collected (please correct)"
-            ),
-            Status = dplyr::case_when(
-              ProjectType %in% c(3, 13) &
-                is.na(MoveInDateAdjust) &
-                is.na(ExitDate) ~ paste0("Currently Awaiting Housing (", 
-                                         lubridate::today() - EntryDate,
-                                         " days)"),
-              ProjectType %in% c(3, 13) &
-                !is.na(MoveInDateAdjust) &
-                is.na(ExitDate) ~ paste0("Currently Moved In (",
-                                         lubridate::today() - MoveInDateAdjust,
-                                         " days)"),
-              ProjectType %in% c(3, 13) &
-                is.na(MoveInDateAdjust) &
-                !is.na(ExitDate) ~ "Exited No Move-In",
-              ProjectType %in% c(3, 13) &
-                !is.na(MoveInDateAdjust) &
-                !is.na(ExitDate) ~ "Exited with Move-In",
-              !ProjectType %in% c(3, 13) &
-                is.na(ExitDate) ~ paste0("Currently in program (",
-                                         lubridate::today() - EntryDate, 
-                                         " days)"),
-              !ProjectType %in% c(3, 13) &
-                !is.na(ExitDate) ~ "Exited program",
-            ),
-            sort = lubridate::today() - EntryDate
-          ) |>
-          dplyr::arrange(dplyr::desc(sort), HouseholdID) |>
-          dplyr::select(
-            "County" = CountyServed,
-            "Unique ID" = UniqueID,
-            "Relationship to Head of Household" = RelationshipToHoH,
-            "Entry Date" = EntryDate,
-            "Move In Date (RRH/PSH Only)" = MoveInDateAdjust,
-            "Exit Date" = ExitDate,
-            Status
-          ) |> 
-            datatable_default(escape = FALSE)
+      validation()  |> 
+        HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
+        dplyr::filter(ProjectID %in% input$program) |>
+        dplyr::mutate(
+          RelationshipToHoH = dplyr::case_when(
+            RelationshipToHoH == 1 ~ "Head of Household",
+            RelationshipToHoH == 2 ~ "Child",
+            RelationshipToHoH == 3 ~ "Spouse or Partner",
+            RelationshipToHoH == 4 ~ "Other relative",
+            RelationshipToHoH == 5 ~ "Unrelated household member",
+            RelationshipToHoH == 99 ~ "Data not collected (please correct)"
+          ),
+          Status = dplyr::case_when(
+            ProjectType %in% c(3, 13) &
+              is.na(MoveInDateAdjust) &
+              is.na(ExitDate) ~ paste0("Currently Awaiting Housing (", 
+                                       lubridate::today() - EntryDate,
+                                       " days)"),
+            ProjectType %in% c(3, 13) &
+              !is.na(MoveInDateAdjust) &
+              is.na(ExitDate) ~ paste0("Currently Moved In (",
+                                       lubridate::today() - MoveInDateAdjust,
+                                       " days)"),
+            ProjectType %in% c(3, 13) &
+              is.na(MoveInDateAdjust) &
+              !is.na(ExitDate) ~ "Exited No Move-In",
+            ProjectType %in% c(3, 13) &
+              !is.na(MoveInDateAdjust) &
+              !is.na(ExitDate) ~ "Exited with Move-In",
+            !ProjectType %in% c(3, 13) &
+              is.na(ExitDate) ~ paste0("Currently in program (",
+                                       lubridate::today() - EntryDate, 
+                                       " days)"),
+            !ProjectType %in% c(3, 13) &
+              !is.na(ExitDate) ~ "Exited program",
+          ),
+          sort = lubridate::today() - EntryDate
+        ) |>
+        dplyr::arrange(dplyr::desc(sort), HouseholdID) |>
+        dplyr::select(
+          "County" = CountyServed,
+          "Unique ID" = UniqueID,
+          "Relationship to Head of Household" = RelationshipToHoH,
+          "Entry Date" = EntryDate,
+          "Move In Date (RRH/PSH Only)" = MoveInDateAdjust,
+          "Exit Date" = ExitDate,
+          Status
+        ) |> 
+        datatable_default(escape = FALSE)
     })
     
     output$summary <- DT::renderDT(server = FALSE, {
@@ -170,9 +170,9 @@ mod_body_client_counts_server <- function(id){
     })
   })
 }
-    
+
 ## To be copied in the UI
 # mod_body_client_counts_ui("body_client_counts_1")
-    
+
 ## To be copied in the server
 # mod_body_client_counts_server("body_client_counts_1")
