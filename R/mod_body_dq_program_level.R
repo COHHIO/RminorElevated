@@ -90,8 +90,8 @@ mod_body_dq_program_level_server <- function(id){
         
     }) |> 
       debounce(1500)
-    dq_main_time_proj <- eventReactive(input$program, {
-      req(input$program, dq_main_time())
+    dq_main_time_proj <- eventReactive(c(input$date_range, input$program), {
+      req(input$program, input$date_range, dq_main_time())
       dq_main_time() |> 
         dq_filter_between(program = input$program)
     }) |> 
@@ -224,7 +224,7 @@ mod_body_dq_program_level_server <- function(id){
           id = "location",
           title = "Missing Contact (PATH)",
           status = "warning",
-          datatable_default(MissingPATHContact, escape = FALSE),
+          datatable_default(MissingPathContact, escape = FALSE),
           HTML(guidance$missing_path_contact)
         )
       }
