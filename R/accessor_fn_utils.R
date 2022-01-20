@@ -1,14 +1,17 @@
 accessor_create <- function(.x) rlang::new_function(args = 
                       rlang::pairlist2(
                         path = rlang::expr(!!.x),
-                        dropbox_folder = file.path("RminorElevated"),
                         ... = ,
                       ),
                     body = base::quote({
-                      last_modified <- file.info(path)$mtime
-                      md <- try(rdrop2::drop_get_metadata(file.path(dropbox_folder, basename(path))), silent = TRUE)
-                      if (UU::is_legit(md) && last_modified < lubridate::floor_date(Sys.time(), "day") && lubridate::as_datetime(md$client_modified) > last_modified)
-                        rdrop2::drop_download(file.path(dropbox_folder, basename(path)), local_path = path, overwrite = TRUE)
+                      last_modified <- file.info(path)$mtime %|% 0
+                      md <- try(rdrop2::drop_get_metadata(basename(path)), silent = TRUE)
+                      if (UU::is_legit(md) && last_modified < lubridate::floor_date(Sys.time(), "day") && lubridate::as_datetime(md$client_modified) > last_modified) {
+                        .f <- rdrop2::drop_download(basename(path), overwrite = TRUE)
+                        if (.f)
+                          fs::file_move(basename(path), path)
+                      }
+                        
                       UU::file_fn(path)(path, ...)
                       
                     }))
@@ -35,10 +38,16 @@ create_accessors <- function(path = "data", app_nm = "RminorElevated") {
   db_files <- rdrop2::drop_dir() |> 
     dplyr::mutate(client_modified = suppressMessages(lubridate::as_datetime(client_modified, tz = Sys.timezone())))
   # Find the list of dependencies, download & open
-  deps <- stringr::str_subset(db_files$path_display, app_nm)
-  if (file.info(paste0(path, deps))$mtime < db_files$client_modified[db_files$path_display == deps])
-    rdrop2::drop_download(deps, file.path(path, deps), overwrite = TRUE)
-  deps <- readRDS(paste0(path, deps))
+  deps_nm <- paste0("deps_", app_nm, ".rds")
+  deps <- stringr::str_subset(db_files$path_display, deps_nm)
+  if (UU::is_legit(deps)) {
+    deps_updated <- file.info(file.path(path, deps_nm))$mtime %|% 0
+    deps_needs_update <- deps_updated < db_files$client_modified[db_files$path_display == deps]  
+    if (UU::is_legit(deps_updated) && deps_needs_update)
+      rdrop2::drop_download(deps, file.path(path, deps), overwrite = TRUE)
+  } 
+  
+  deps <- readRDS(file.path(path, deps_nm))
   to_dl <- UU::ext(db_files$name, strip = TRUE) %in% deps
   if (any(to_dl)) {
     db_files <- db_files |> 
