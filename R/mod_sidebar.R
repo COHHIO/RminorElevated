@@ -130,6 +130,11 @@ mod_sidebar_ui <- function(id){
             tabName = "qpr_rrh_spending" # spending-Tab
           )
         ),
+        bs4Dash::bs4SidebarMenuItem(
+          text = "Agency & Program Lookup",
+          tabName = "program_lookup",
+          icon = shiny::icon("search")
+        ),
         actionButton(
           inputId = "logOut",
           label = "Log Out",
