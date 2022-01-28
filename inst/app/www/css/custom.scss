@@ -9,6 +9,11 @@
     opacity: 1;
   }
 }
+
+// Datatables need darker link so it's visible when row is selected
+.dataTables_wrapper a {
+    color: blue;
+}
 // Align the vet_active_list download button
 #body-body_vet_active_list-download {
   margin-top: 31px;
