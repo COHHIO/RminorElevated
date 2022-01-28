@@ -112,7 +112,7 @@ mod_body_dq_timeliness_server <- function(id){
       if (any(desk_time()$GoalMet == "orangered", na.rm = TRUE))
         p <- p + ggplot2::geom_linerange(data = desk_time() |> dplyr::filter(GoalMet == "orangered"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, xmin = EntryDate, xmax = DateCreated), show.legend = FALSE)
       if (any(desk_time()$GoalMet == "forestgreen", na.rm = TRUE))
-        p <- p + ggplot2::geom_point(data = desk_time() |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated), show.legend = FALSE) 
+        p <- p + ggplot2::geom_point(data = desk_time() |> dplyr::filter(GoalMet == "forestgreen"), ggplot2::aes(color = GoalMet, size = 8, alpha = .2, x = DateCreated, y = DeskTime), show.legend = FALSE) 
       
         p <- p +
           ggplot2::labs(x = "Entry Date",
@@ -127,14 +127,15 @@ mod_body_dq_timeliness_server <- function(id){
             ggplot2::geom_hline(yintercept = dt_median[i,]$MedianDeskTime, color = "black") + 
             ggplot2::geom_label(x = input$date_range[2] - label_.2,
                                 y = dt_median[i,]$MedianDeskTime,
-                                label = paste(dt_median[i,]$ProjectName,
-                                              "Median:", 
+                                alpha = .5,
+                                label = paste("Median:", 
                                               dt_median[i,]$MedianDeskTime,
                                               "days | Total Clients:",
-                                              dt_median[i,]$TotalEntered)) +
+                                              dt_median[i,]$TotalEntered),
+                                ) +
             ggplot2::geom_label(x = input$date_range[2] - label_.5,
                                 y = 5,
-                                label = "DQ Standards (5d or less)")
+                                label = "DQ Standards (< 5d)")
         }
         p
         
