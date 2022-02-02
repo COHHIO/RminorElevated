@@ -12,14 +12,12 @@ mod_body_dq_system_summary_ui <- function(id){
   tagList(
     ui_header_row(),
     uiOutput(ns("ce")),
-    uiOutput(ns("summary"))
-    
+    uiOutput(ns("summary")),
+    uiOutput(ns("overlaps"))
   )
 }
-ui_args <- list(
-  
-)
-c("High Priority Issues & Errors by Program", "Error Types", "Warnings by Program", "Warning Types", "Household Errors by Program", "Old Referrals by Program", "Eligibility Issues by Program", "Clients without SPDAT by Program")
+
+c("High Priority Issues & Errors by Program", "Error Types", "Warnings by Program", "Warning Types", "Household Errors by Program", "Old Referrals by Program", "Eligibility Issues by Program", "Clients without SPDAT by Program", "Programs with Overlaps")
 
 #' body_dq_system_summary Server Functions
 #'
@@ -80,6 +78,18 @@ mod_body_dq_system_summary_server <- function(id){
       "warning",
       "clients_without_spdat",
       "Households without SPDAT by Project",
+      "warning",
+      "overlaps",
+      "Overlapping Enrollments by Project",
+      "danger",
+      "long_stayer",
+      "Long Stayers by Project",
+      "warning",
+      "psh_destination",
+      "Incorrect PSH Destination by Project",
+      "danger",
+      "incorrect_destination",
+      "Incorrect Destinations by Project",
       "warning"
     )
     dq_summary_args <- dq_summary_args |>
@@ -126,6 +136,7 @@ mod_body_dq_system_summary_server <- function(id){
         theme_minimal(base_size = 18)
     })
   })
+  
 }
     
 ## To be copied in the UI
