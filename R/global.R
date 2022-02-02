@@ -11,13 +11,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details at
 # <https://www.gnu.org/licenses/>.
-#' @include accessor_fn_utils.R utils_helpers.R
+#' @include utils_helpers.R
 Sys.setenv(TZ = "America/New_York")
 
-
-db_auth()
+.time <- system.time({
+  maleta::create_accessors("data")
+})
 # Create accessor functions
-do_assignment(create_accessors("data"))
+
 
 
 if (exists("validation")) {
