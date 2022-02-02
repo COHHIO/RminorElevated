@@ -13,7 +13,7 @@ mod_body_program_lookup_ui <- function(id){
    ui_header_row(),
    ui_row(
      tags$ul(
-       tags$li(tags$span(style = "color:#28a745", "Green"), " Program or Agency Name indicates it's active.")
+       tags$li(tags$span(style = "color:#FFB2B6", "Red"), " Program or Agency Name indicates it's inactive.")
      ),
      DT::dataTableOutput(ns("detail"))
    )
@@ -37,7 +37,7 @@ mod_body_program_lookup_server <- function(id){
           c("AgencyName", "ProgramName"),
           c("AgencyActive", "ProgramActive"),
           target = "cell",
-          backgroundColor = DT::styleEqual(TRUE, "#28a745")
+          backgroundColor = DT::styleEqual(FALSE, "#FFB2B6")
         ) |> 
         datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive"))
       })
