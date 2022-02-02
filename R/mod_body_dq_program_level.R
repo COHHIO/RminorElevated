@@ -23,7 +23,7 @@ mod_body_dq_program_level_ui <- function(id){
       multiple = TRUE,
       width = "100%",
       selected = "none"),
-      ui_date_range(start = lubridate::ymd("2019-01-01")),
+      ui_date_range(start = rm_dates()$hc$check_dq_back_to),
       width = 12,
       headerBorder = FALSE,
       p("If you have questions please email ", strong(a(href = "mailto:hmis@cohhio.org?subject=RminorElevated DQ Question", target = "_blank", "hmis@cohhio.org")), " and please include the selected Program name.")
@@ -143,6 +143,7 @@ mod_body_dq_program_level_server <- function(id){
         dq_select_cols(
           `A UniqueID in the HH` = UniqueID,
           `Move-in Date` = "MoveInDateAdjust",
+          !!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL),
           default = list(`Entry Date` = "EntryDate",
                          "Type",
                          "Issue")
@@ -169,6 +170,7 @@ mod_body_dq_program_level_server <- function(id){
       DuplicateEEs <- dq_main_time_proj()  |> 
         dq_filter_between(Issue == "Duplicate Entry Exits")  |> 
         dq_select_cols(
+          !!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL),
           "Exit Date" = ExitDate
         ) 
       
@@ -217,7 +219,7 @@ mod_body_dq_program_level_server <- function(id){
       req(dq_main_time_proj())
       MissingPathContact <- dq_main_time_proj()  |> 
         dq_filter_between(Issue == "Missing PATH Contact") |> 
-        dq_select_cols()
+        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL))
       
       if (nrow(MissingPathContact)) {
         ui_solid_box(
@@ -244,6 +246,7 @@ mod_body_dq_program_level_server <- function(id){
         dplyr::select(
           "Unique ID" = UniqueID,
           "Entry Date" = EntryDate,
+          !!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL),
           "Prior Living Situation" = LivingSituation,
           "Length of Stay" = LengthOfStay,
           "Literally Homeless Prior" = PreviousStreetESSH
@@ -300,6 +303,7 @@ mod_body_dq_program_level_server <- function(id){
     
     output$dq_Errors <- DT::renderDT(server = FALSE, {
       req(dq_main_time_proj())
+      
       dq_main_time_proj() |>
         dq_filter_between(
           !Issue %in% c(
@@ -313,7 +317,7 @@ mod_body_dq_program_level_server <- function(id){
           )  &
             Type == "Error"
         ) |>
-        dq_select_cols() |> 
+        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL)) |> 
         datatable_default(escape = FALSE)
     })
     
@@ -332,7 +336,7 @@ mod_body_dq_program_level_server <- function(id){
           ) &
             Type == "Warning"
         ) |>
-        dq_select_cols() |> 
+        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL)) |> 
         datatable_default(escape = FALSE)
 
     })
