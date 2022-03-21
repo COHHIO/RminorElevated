@@ -29,3 +29,5 @@ inst/auth
 inst/app/www/css/custom.min.css
 
 reprex/
+
+inst/vault/
