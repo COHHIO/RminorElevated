@@ -19,7 +19,6 @@ Imports:
     pkgload,
     plotly,
     purrr,
-    rdrop2,
     rlang,
     sass,
     scales,
@@ -31,7 +30,6 @@ Remotes:
     COHHIO/clarity.looker,
     yogat3ch/UU,
     yogat3ch/maleta,
-    yogat3ch/rdrop2,
     RinteRface/bs4Dash
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
