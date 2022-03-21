@@ -15,7 +15,8 @@ ui_picker_program <- function(
   selected = NULL,
   multiple = TRUE,
   options = shinyWidgets::pickerOptions(liveSearch = TRUE,
-                                        liveSearchStyle = 'contains'),
+                                        liveSearchStyle = 'contains',
+                                        actionsBox = TRUE),
   
   ...,
   add_options) {
