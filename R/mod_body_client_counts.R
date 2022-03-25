@@ -25,7 +25,10 @@ mod_body_client_counts_ui <- function(id){
       title = "Client Details",
       DT::dataTableOutput(ns("dt_output")),
       width = 12
-    )
+    ),
+    ui_row(title = "PATH & Mental Health",
+          fluidRow(col_6(DT::dataTableOutput(ns("path"))), col_6(DT::dataTableOutput(ns("mh")))),
+           width = 12)
   )
 }
 
@@ -39,7 +42,6 @@ mod_body_client_counts_server <- function(id){
     output$header <- shiny::renderUI({
       server_header(
         title = "Client Counts Report",
-        program = input$program,
         date_range = input$date_range
       )
     })
@@ -168,6 +170,24 @@ mod_body_client_counts_server <- function(id){
       final <- dplyr::full_join(clients, hhs, by = "Status")
       
       datatable_default(final)
+    })
+    
+    output$path <- DT::renderDT({
+      path_referrals() |> 
+        dplyr::rename(
+          "Project Type" = "rrhpsh",
+          "# of Clients" = "n",
+          "% of Total PATH Clients" = "PctPATH"
+        ) |> 
+        datatable_default()
+    })
+    output$mh <- DT::renderDT({
+      mental_health_unsheltered() |> 
+        dplyr::rename(
+          "Disability Type" = "DisabilityType",
+          "# of Clients" = "n"
+        ) |> 
+        datatable_default()
     })
   })
 }
