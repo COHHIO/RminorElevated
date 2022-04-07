@@ -10,78 +10,55 @@
 mod_body_coc_competition_ui <- function(id){
   ns <- NS(id)
   tagList(
-    tabItem(
-      tabName = "cocCompetitionTab",
-      fluidRow(box(
-        htmlOutput("headerCoCCompetitionProjectLevel"),
-        width = 12
-      )),
-      fluidRow(box(
-        pickerInput(
-          inputId = "pe_provider",
+    ui_picker_program(
+          inputId = ns("pe_provider"),
           label = "Select your CoC-funded Provider",
-          choices = sort(pe_validation_summary()$AltProjectName) %>%
-            unique(),
-          selected = pe_validation_summary()$AltProjectName[1],
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = 'contains'),
-          width = "100%"
+          choices = sort(pe_summary_validation()$AltProjectName) |> unique(),
+          selected = pe_summary_validation()$AltProjectName[1],
+          options = shinyWidgets::pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = 'contains')
         ),
-        width = 12
-      )),
-      fluidRow(
-        box(
-          DT::dataTableOutput("pe_ProjectSummary"),
-          width = 12,
-          title = "Score Summary",
-          status = "info",
-          solidHeader = TRUE,
-          collapsible = TRUE
-        )
+    ui_row(
+      title = "Score Summary",
+      DT::dataTableOutput(ns("pe_ProjectSummary")),
+      status = "info",
+      solidHeader = TRUE,
+      collapsible = TRUE
       ),
-      fluidRow(
-        tabBox(
-          id = "tabs",
+    ui_row(
+          inputId = ns("tabs"),
           # title = "Client Detail",
           tabPanel(
             "Exits to Permanent Housing",
-            DT::dataTableOutput("pe_ExitsToPH")
+            DT::dataTableOutput(ns("pe_ExitsToPH"))
           ),
-          # tabPanel("Moved into Own Housing",
-          #          DT::dataTableOutput("pe_OwnHousing")),
-          # tabPanel(
-          #   "Increased Income",
-          #   DT::dataTableOutput("pe_IncreasedIncome")
-          # ),
           tabPanel(
             "Benefits & Health Insurance at Exit",
-            DT::dataTableOutput("pe_BenefitsAtExit")
+            DT::dataTableOutput(ns("pe_BenefitsAtExit"))
           ),
           tabPanel(
             "Living Situation at Entry",
-            DT::dataTableOutput("pe_LivingSituationAtEntry")
+            DT::dataTableOutput(ns("pe_LivingSituationAtEntry"))
           ),
           tabPanel(
             "No Income at Entry",
-            DT::dataTableOutput("pe_NoIncomeAtEntry")
+            DT::dataTableOutput(ns("pe_NoIncomeAtEntry"))
           ),
           tabPanel("Length of Stay",
-                   DT::dataTableOutput("pe_LengthOfStay")),
+                   DT::dataTableOutput(ns("pe_LengthOfStay"))
+          ),
           tabPanel(
             "Median Homeless History Index",
-            DT::dataTableOutput("pe_MedianHHI")
+            DT::dataTableOutput(ns("pe_MedianHHI"))
           ),
           tabPanel(
             "Long Term Homeless",
-            DT::dataTableOutput("pe_LongTermHomeless")
+            DT::dataTableOutput(ns("pe_LongTermHomeless"))
           ),
           tabPanel(
             "VISPDAT Score Completion",
-            DT::dataTableOutput("pe_ScoredAtPHEntry")
+            DT::dataTableOutput(ns("pe_ScoredAtPHEntry"))
           ),
-          width = 12
-        )
-      )
     )
   )
 }
@@ -92,80 +69,20 @@ mod_body_coc_competition_ui <- function(id){
 mod_body_coc_competition_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
- 
-    output$headerCoCCompetitionProjectLevel <- renderUI({
-      # Remove these dates
-      next_thing_due <- tribble(
-        ~ DueDate, ~ Event,
-        ymd(rm_dates()$hc$project_eval_docs_due), "Projects submit program documents to evidence 
-      best practices and CE Prioritization compliance",
-      ymd("20210506"), "All HMIS data corrections must be complete by 11:59pm",
-      ymd("20210507"), "Project Evaluation data is saved as final data for scoring",
-      ymd("20210527"), "CoC staff post online preliminary renewal project ranking",
-      ymd("20210604"), "Recipients submit appeals of project evaluation results and 
-      ranking to ohioboscoc@cohhio.org.",
-      ymd("20210625"), "Final CoC project ranking released"
-      ) %>%
-        mutate(
-          ShowStart = lag(ymd(DueDate), n = 1L, order_by = DueDate),
-          ShowStart = if_else(is.na(ShowStart), today(), ShowStart + days(1)),
-          ShowEnd = ymd(DueDate),
-          DateRange = interval(ShowStart, ShowEnd)
-        ) %>%
-        filter(today() %within% DateRange) %>%
-        select(Event, DueDate)
-      
-      list(
-        h2("2021 BoS CoC Competition: Project Evaluation"), 
-        h4(paste("Fixed Date Range:", 
-                 format.Date(rm_dates()$hc$project_eval_start, "%B %d, %Y"), 
-                 "to",
-                 format.Date(rm_dates()$hc$project_eval_end, "%B %d, %Y"))),
-        # h4(strong("THE DATA ON THIS TAB DOES NOT SHOW CHANGES MADE ON OR AFTER
-        #           5-7-2021.")),
-        h4(input$pe_provider),
-        hr(),
-        h5(strong("Next Due Date:"),
-           format(ymd(next_thing_due$DueDate), "%A %b %e, %Y"),
-           "| ",
-           next_thing_due$Event),
-        p("Please consult the", 
-          a("CoC Program",
-            href = "https://cohhio.org/boscoc/coc-program/", target="_blank"), 
-          "page for complete specifications and timeline.")
-      )
-    })
     
     output$pe_ProjectSummary <-
       DT::renderDataTable({
-        ptc <- pe_summary_final_scoring() %>%
-          filter(AltProjectName == input$pe_provider) %>%
-          pull(ProjectType)
+        ptc <- pe_summary_final_scoring() |>
+          dplyr::filter(AltProjectName == input$pe_provider) |>
+          dplyr::pull(ProjectType)
+
+        pe_summary_final_scoring <- pe_summary_final_scoring()  |> 
+          dplyr::mutate_all(function(x) gsub("/", "÷", x))
         
-        pe_summary_final_scoring <- pe_summary_final_scoring() %>%
-          mutate(
-            ExitsToPHMath = str_replace(ExitsToPHMath, "/", "÷"),
-            # OwnHousingMath = str_replace(OwnHousingMath, "/", "÷"),
-            # IncreasedIncomeMath = str_replace(IncreasedIncomeMath, "/", "÷"),
-            BenefitsAtExitMath = str_replace(BenefitsAtExitMath, "/", "÷"),
-            AverageLoSMath = str_replace(AverageLoSMath, "/", "÷"),
-            LHResPriorMath = str_replace(LHResPriorMath, "/", "÷"),
-            NoIncomeAtEntryMath = str_replace(NoIncomeAtEntryMath, "/", "÷"),
-            MedianHHIMath = str_replace(MedianHHIMath, "/", "÷"),
-            LongTermHomelessMath = str_replace(LongTermHomelessMath, "/", "÷"),
-            ScoredAtEntryMath = str_replace(ScoredAtEntryMath, "/", "÷"),
-            DQMath = str_replace(DQMath, "/", "÷"),
-            PrioritizationWorkgroupMath = str_replace(PrioritizationWorkgroupMath, "/", "÷"),
-            HousingFirstMath = str_replace(HousingFirstMath, "/", "÷"),
-            ChronicPrioritizationMath = str_replace(ChronicPrioritizationMath, "/", "÷")
-          )
-        
-        a <- pe_summary_final_scoring %>%
-          filter(AltProjectName == input$pe_provider) %>%
-          select(
+        estimated_score <- pe_summary_final_scoring |>
+          dplyr::filter(AltProjectName == input$pe_provider) |>
+          dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHPoints,
-            # "Moved into Own Housing" = OwnHousingPoints,
-            # "Increased Income" = IncreasedIncomePoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
             "Average Length of Stay" = AverageLoSPoints,
             "Living Situation at Entry" = LHResPriorPoints,
@@ -177,17 +94,15 @@ mod_body_coc_competition_server <- function(id){
             "Prioritization Workgroup" = PrioritizationWorkgroupScore,
             "Housing First" = HousingFirstScore,
             "Prioritization of Chronic" = ChronicPrioritizationScore
-          ) %>%
-          pivot_longer(cols = everything(),
+          ) |>
+          tidyr::pivot_longer(cols = everything(),
                        names_to = "Measure",
                        values_to = "Estimated Score")
         
-        b <- pe_summary_final_scoring %>%
-          filter(AltProjectName == input$pe_provider) %>%
-          select(
+        dq <- pe_summary_final_scoring |>
+          dplyr::filter(AltProjectName == input$pe_provider) |>
+          dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHDQ,
-            # "Moved into Own Housing" = OwnHousingDQ,
-            # "Increased Income" = IncreasedIncomeDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
             "Average Length of Stay" = AverageLoSDQ,
             "Living Situation at Entry" = LHResPriorDQ,
@@ -197,17 +112,15 @@ mod_body_coc_competition_server <- function(id){
             "VISPDAT Completion at Entry" = ScoredAtEntryDQ,
             "Housing First" = HousingFirstDQ,
             "Prioritization of Chronic" = ChronicPrioritizationDQ
-          ) %>%
-          pivot_longer(cols = everything(),
+          ) |>
+          tidyr::pivot_longer(cols = everything(),
                        names_to = "Measure",
                        values_to = "DQflag")
         
-        c <- pe_summary_final_scoring %>%
-          filter(AltProjectName == input$pe_provider) %>%
-          select(
+        possible_score <- pe_summary_final_scoring |>
+          dplyr::filter(AltProjectName == input$pe_provider) |>
+          dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHPossible,
-            # "Moved into Own Housing" = OwnHousingPossible,
-            # "Increased Income" = IncreasedIncomePossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
             "Average Length of Stay" = AverageLoSPossible,
             "Living Situation at Entry" = LHResPriorPossible,
@@ -220,17 +133,15 @@ mod_body_coc_competition_server <- function(id){
             "Prioritization Workgroup" = PrioritizationWorkgroupPossible,
             "Housing First" = HousingFirstPossible,
             "Prioritization of Chronic" = ChronicPrioritizationPossible
-          ) %>%
-          pivot_longer(cols = everything(),
+          ) |>
+          tidyr::pivot_longer(cols = everything(),
                        names_to = "Measure",
                        values_to = "Possible Score")
         
-        d <- pe_summary_final_scoring %>%
-          filter(AltProjectName == input$pe_provider) %>%
-          select(
+        calculation <- pe_summary_final_scoring |>
+          dplyr::filter(AltProjectName == input$pe_provider) |>
+          dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHMath,
-            # "Moved into Own Housing" = OwnHousingMath,
-            # "Increased Income" = IncreasedIncomeMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
             "Average Length of Stay" = AverageLoSMath,
             "Living Situation at Entry" = LHResPriorMath,
@@ -240,20 +151,20 @@ mod_body_coc_competition_server <- function(id){
             "VISPDAT Completion at Entry" =
               ScoredAtEntryMath,
             "Data Quality" = DQMath,
-            "Prioritization Workgroup" = PrioritizationWorkgroupMath,
-            "Housing First" = HousingFirstMath,
-            "Prioritization of Chronic" = ChronicPrioritizationMath
-          ) %>%
-          pivot_longer(cols = everything(),
+            # "Prioritization Workgroup" = PrioritizationWorkgroupMath,
+            # "Housing First" = HousingFirstMath,
+            # "Prioritization of Chronic" = ChronicPrioritizationMath
+          ) |>
+          tidyr::pivot_longer(cols = everything(),
                        names_to = "Measure",
                        values_to = "Calculation")
         
-        psh <- a %>% left_join(b, by = "Measure") %>%
-          ungroup() %>%
-          left_join(c, by = "Measure") %>%
-          left_join(d, by = "Measure") %>%
-          mutate(
-            DQ = case_when(
+        psh <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
+          dplyr::ungroup() |>
+          dplyr::left_join(possible_score, by = "Measure") |>
+          dplyr::left_join(calculation, by = "Measure") |>
+          dplyr::mutate(
+            DQ = dplyr::case_when(
               DQflag == 0 ~ "Data Quality passes",
               DQflag == 1 ~ "Please correct your Data Quality issues so this item
             can be scored",
@@ -262,17 +173,17 @@ mod_body_coc_competition_server <- function(id){
             DQflag == 4 ~ "", # "CoC Error",
             DQflag == 5 ~ "" # "Docs received past the due date"
             )
-          ) %>%
-          filter(!Measure %in% c("Moved into Own Housing",
-                                 "Average Length of Stay")) %>%
-          select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+          ) |>
+          dplyr::filter(!Measure %in% c("Moved into Own Housing",
+                                 "Average Length of Stay")) |>
+          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
-        rrh <- a %>% left_join(b, by = "Measure") %>%
-          ungroup() %>%
-          left_join(c, by = "Measure") %>%
-          left_join(d, by = "Measure") %>%
-          mutate(
-            DQ = case_when(
+        rrh <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
+          dplyr::ungroup() |>
+          dplyr::left_join(possible_score, by = "Measure") |>
+          dplyr::left_join(calculation, by = "Measure") |>
+          dplyr::mutate(
+            DQ = dplyr::case_when(
               DQflag == 0 ~ "Data Quality passes",
               DQflag == 1 ~ "Please correct your Data Quality issues so this item
             can be scored",
@@ -281,19 +192,19 @@ mod_body_coc_competition_server <- function(id){
             DQflag == 4 ~ "", # "CoC Error",
             DQflag == 5 ~ "" # "Docs received past the due date"
             )
-          ) %>%
-          filter(!Measure %in%
+          ) |>
+          dplyr::filter(!Measure %in%
                    c("Long Term Homeless",
                      "Prioritization of Chronic",
-                     "Prioritization Workgroup")) %>%
-          select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+                     "Prioritization Workgroup")) |>
+          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
-        th <- a %>% left_join(b, by = "Measure") %>%
-          ungroup() %>%
-          left_join(c, by = "Measure") %>%
-          left_join(d, by = "Measure") %>%
-          mutate(
-            DQ = case_when(
+        th <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
+          dplyr::ungroup() |>
+          dplyr::left_join(possible_score, by = "Measure") |>
+          dplyr::left_join(calculation, by = "Measure") |>
+          dplyr::mutate(
+            DQ = dplyr::case_when(
               DQflag == 1 ~ "Please correct your Data Quality issues so this item
             can be scored",
             DQflag == 0 ~ "Data Quality passes",
@@ -302,15 +213,15 @@ mod_body_coc_competition_server <- function(id){
             DQflag == 4 ~ "", # "CoC Error",
             DQflag == 5 ~ "" # "Docs received past the due date"
             )
-          ) %>%
-          filter(!Measure %in% c(
+          ) |>
+          dplyr::filter(!Measure %in% c(
             "Long Term Homeless",
             "Prioritization of Chronic",
             "Prioritization Workgroup"
-          )) %>%
-          select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
-        
-        datatable(
+          )) |>
+          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+
+        DT::datatable(
           if (ptc == 3) {
             psh
           } else if (ptc == 13) {
@@ -325,11 +236,11 @@ mod_body_coc_competition_server <- function(id){
       })
     
     output$pe_ExitsToPH <- DT::renderDataTable({
-      a <- pe_exits_to_ph() %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No"),
-               Destination = living_situation(Destination)) %>%
-        select("Client ID" = PersonalID,
+      a <- pe_exits_to_ph() |>
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
+               Destination = living_situation(Destination)) |>
+        dplyr::select("Client ID" = PersonalID,
                "Entry Date" = EntryDate,
                "Move In Date" = MoveInDateAdjust,
                "Exit Date" = ExitDate,
@@ -337,7 +248,7 @@ mod_body_coc_competition_server <- function(id){
                "Destination Group" = DestinationGroup,
                "Meets Objective" = MeetsObjective)    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -346,46 +257,22 @@ mod_body_coc_competition_server <- function(id){
       
     })
     
-    # output$pe_OwnHousing <- DT::renderDataTable({
-    #   
-    #   a <- pe_own_housing() %>%
-    #     filter(AltProjectName == input$pe_provider) %>%
-    #     mutate(MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No"),
-    #            Destination = living_situation(Destination)) %>%
-    #     select(
-    #       "Client ID" = PersonalID,
-    #       "Entry Date" = EntryDate,
-    #       "Exit Date" = ExitDate,
-    #       Destination,
-    #       "Destination Group" = DestinationGroup,
-    #       "Meets Objective" = MeetsObjective
-    #     )    
-    #   
-    #   datatable(a,
-    #             rownames = FALSE,
-    #             filter = 'top',
-    #             options = list(dom = 'ltpi'),
-    #             caption = "RRH, TH, SH: Heads of Household Leavers who moved into 
-    #             the project's housing")
-    #   
-    # })
-    
     output$pe_BenefitsAtExit <- DT::renderDataTable({
-      a <- pe_benefits_at_exit() %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(
-          BenefitsFromAnySource = case_when(
+      a <- pe_benefits_at_exit() |>
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(
+          BenefitsFromAnySource = dplyr::case_when(
             BenefitsFromAnySource == 1 ~ "Yes", 
             BenefitsFromAnySource == 0 ~ "No",
             is.na(BenefitsFromAnySource) ~ "Missing"),
-          InsuranceFromAnySource = case_when(
+          InsuranceFromAnySource = dplyr::case_when(
             InsuranceFromAnySource == 1 ~ "Yes",
             InsuranceFromAnySource == 0 ~ "No",
             is.na(InsuranceFromAnySource) ~ "Missing"
           ),
           MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No")
-        ) %>%
-        select(
+        ) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Move-In Date" = MoveInDateAdjust,
@@ -395,7 +282,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -404,41 +291,14 @@ mod_body_coc_competition_server <- function(id){
       
     })
     
-    # output$pe_IncreasedIncome <- DT::renderDataTable({
-    #   a <- pe_increase_income() %>%
-    #     filter(AltProjectName == input$pe_provider) %>%
-    #     mutate(
-    #       IncomeDifference = IncomeMostRecent - IncomeAtEntry,
-    #       MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No")
-    #     ) %>%
-    #     select(
-    #       "Client ID" = PersonalID,
-    #       "Entry Date" = EntryDate,
-    #       "Move-In Date" = MoveInDateAdjust,
-    #       "Exit Date" = ExitDate,
-    #       "Income at Entry" = IncomeAtEntry,
-    #       "Most Recent Income" = IncomeMostRecent,
-    #       "Increase/Decrease" = IncomeDifference,
-    #       "Meets Objective" = MeetsObjective
-    #     )    
-    #   
-    #   datatable(a,
-    #             rownames = FALSE,
-    #             filter = 'top',
-    #             options = list(dom = 'ltpi'),
-    #             caption = "ALL Project Types: Adults who moved into the project's
-    #             housing")
-    #   
-    # })
-    
     output$pe_LivingSituationAtEntry <- DT::renderDataTable({
-      a <- pe_res_prior() %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(
+      a <- pe_res_prior() |>
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(
           LivingSituation = living_situation(LivingSituation),
-          MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No")
-        ) %>%
-        select(
+          MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
+        ) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -446,7 +306,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -456,17 +316,17 @@ mod_body_coc_competition_server <- function(id){
     })
     
     output$pe_NoIncomeAtEntry <- DT::renderDataTable({
-      a <- pe_entries_no_income() %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(
-          MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No"),
-          IncomeFromAnySource = case_when(
+      a <- pe_entries_no_income() |>
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(
+          MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
+          IncomeFromAnySource = dplyr::case_when(
             IncomeFromAnySource == 1 ~ "Yes", 
             IncomeFromAnySource == 0 ~ "No",
             IncomeFromAnySource %in% c(8, 9) ~ "Don't Know/Refused",
             IncomeFromAnySource == 99 ~ "Missing")
-        ) %>%
-        select(
+        ) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -474,7 +334,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -484,10 +344,10 @@ mod_body_coc_competition_server <- function(id){
     })
     
     output$pe_LengthOfStay <- DT::renderDataTable({
-      a <- pe_length_of_stay() %>%
-        filter(AltProjectName == input$pe_provider &
-                 ProjectType %in% c(2, 8, 13)) %>%
-        select(
+      a <- pe_length_of_stay() |>
+        dplyr::filter(AltProjectName == input$pe_provider &
+                 ProjectType %in% c(2, 8, 13)) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Move-In Date" = MoveInDateAdjust,
@@ -495,7 +355,7 @@ mod_body_coc_competition_server <- function(id){
           "Days in Project" = DaysInProject
         )    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -506,27 +366,23 @@ mod_body_coc_competition_server <- function(id){
     
     output$pe_MedianHHI <- DT::renderDataTable({
       
-      times <- HUD_specs() %>%
-        filter(DataElement == "TimesHomelessPastThreeYears") %>%
-        select(ReferenceNo, Description)
+      times <- HUD_specs() |>
+        dplyr::filter(DataElement == "TimesHomelessPastThreeYears") |>
+        dplyr::select(ReferenceNo, Description)
       
-      months <- HUD_specs() %>%
-        filter(DataElement == "MonthsHomelessPastThreeYears") %>%
-        select(ReferenceNo, Description)
+      months <- HUD_specs() |>
+        dplyr::filter(DataElement == "MonthsHomelessPastThreeYears") |>
+        dplyr::select(ReferenceNo, Description)
       
-      a <- pe_homeless_history_index() %>%
-        left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) %>%
-        mutate(TimesHomelessPastThreeYears = Description) %>%
-        select(-Description)
-      
-      b <- a %>%
-        left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) %>%
-        mutate(MonthsHomelessPastThreeYears = Description) %>%
-        select(-Description)
-      
-      c <- b %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        select(
+      a <- pe_homeless_history_index() |>
+        dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
+        dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
+        dplyr::select(-Description) |> 
+        dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
+        dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
+        dplyr::select(-Description) |> 
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -537,7 +393,7 @@ mod_body_coc_competition_server <- function(id){
           "Homeless Hisory Index" = HHI
         )    
       
-      datatable(c,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -548,29 +404,25 @@ mod_body_coc_competition_server <- function(id){
     
     output$pe_LongTermHomeless <- DT::renderDataTable({
       
-      times <- HUD_specs() %>%
-        filter(DataElement == "TimesHomelessPastThreeYears") %>%
-        select(ReferenceNo, Description)
+      times <- HUD_specs() |>
+        dplyr::filter(DataElement == "TimesHomelessPastThreeYears") |>
+        dplyr::select(ReferenceNo, Description)
       
-      months <- HUD_specs() %>%
-        filter(DataElement == "MonthsHomelessPastThreeYears") %>%
-        select(ReferenceNo, Description)
+      months <- HUD_specs() |>
+        dplyr::filter(DataElement == "MonthsHomelessPastThreeYears") |>
+        dplyr::select(ReferenceNo, Description)
       
-      a <- pe_long_term_homeless() %>%
-        filter(ProjectType == 3) %>%
-        left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) %>%
-        mutate(TimesHomelessPastThreeYears = Description) %>%
-        select(-Description)
-      
-      b <- a %>%
-        left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) %>%
-        mutate(MonthsHomelessPastThreeYears = Description) %>%
-        select(-Description)
-      
-      c <- b %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No")) %>%
-        select(
+      a <- pe_long_term_homeless() |>
+        dplyr::filter(ProjectType == 3) |>
+        dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
+        dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
+        dplyr::select(-Description) |> 
+        dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
+        dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
+        dplyr::select(-Description) |> 
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
@@ -581,7 +433,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      datatable(c,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
@@ -592,17 +444,17 @@ mod_body_coc_competition_server <- function(id){
     
     output$pe_ScoredAtPHEntry <- DT::renderDataTable({
       
-      a <- pe_scored_at_ph_entry() %>%
-        filter(AltProjectName == input$pe_provider) %>%
-        mutate(MeetsObjective = if_else(MeetsObjective == 1, "Yes", "No")) %>%
-        select(
+      a <- pe_scored_at_ph_entry() |>
+        dplyr::filter(AltProjectName == input$pe_provider) |>
+        dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")) |>
+        dplyr::select(
           "Client ID" = PersonalID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Meets Objective" = MeetsObjective
         )    
       
-      datatable(a,
+      DT::datatable(a,
                 rownames = FALSE,
                 filter = 'top',
                 options = list(dom = 'ltpi'),
