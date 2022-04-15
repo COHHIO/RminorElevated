@@ -45,7 +45,7 @@ mod_body_prioritization_server <- function(id){
      prioritization() |>
        dplyr::filter(CountyServed %in% region() |
                 is.na(CountyServed)) |>
-       dplyr::arrange(dplyr::desc(C19Priority), dplyr::desc(Situation_col)) |>
+       dplyr::arrange(dplyr::desc(C19Priority), dplyr::desc(HousingStatus)) |>
        dplyr::select(
          "HoH Unique ID" = UniqueID,
          "Project Name" = ProjectName,
@@ -64,7 +64,7 @@ mod_body_prioritization_server <- function(id){
          Score,
          HH_DQ_Issue,
          CountyGuessed,
-         Situation_col
+         HousingStatus
        ) |> 
      datatable_default(
        rownames = FALSE,
@@ -86,7 +86,7 @@ mod_body_prioritization_server <- function(id){
        ) |> 
        DT::formatStyle(
          "Current Situation (Entry, Referral, Perm Housing Track)",
-         "Situation_col",
+         "HousingStatus",
          target = "cell",
          backgroundColor = DT::styleEqual(names(pc), pc)
        ) |> 
