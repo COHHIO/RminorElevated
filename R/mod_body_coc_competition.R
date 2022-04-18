@@ -9,56 +9,45 @@
 #' @importFrom shiny NS tagList 
 mod_body_coc_competition_ui <- function(id){
   ns <- NS(id)
+  pe_sum_val <- pe_summary_validation()
   tagList(
     ui_picker_program(
           inputId = ns("pe_provider"),
           label = "Select your CoC-funded Provider",
-          choices = sort(pe_summary_validation()$AltProjectName) |> unique(),
-          selected = pe_summary_validation()$AltProjectName[1],
-          options = shinyWidgets::pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = 'contains')
+          choices = sort(pe_sum_val$AltProjectName) |> unique(),
+          selected = pe_sum_val$AltProjectName[1]
         ),
     ui_row(
       title = "Score Summary",
       DT::dataTableOutput(ns("pe_ProjectSummary")),
       status = "info",
-      solidHeader = TRUE,
-      collapsible = TRUE
+      solidHeader = TRUE
       ),
     ui_row(
-          inputId = ns("tabs"),
           # title = "Client Detail",
-          tabPanel(
             "Exits to Permanent Housing",
-            DT::dataTableOutput(ns("pe_ExitsToPH"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_ExitsToPH")),
+
             "Benefits & Health Insurance at Exit",
-            DT::dataTableOutput(ns("pe_BenefitsAtExit"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_BenefitsAtExit")),
+            
             "Living Situation at Entry",
-            DT::dataTableOutput(ns("pe_LivingSituationAtEntry"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_LivingSituationAtEntry")),
+            
             "No Income at Entry",
-            DT::dataTableOutput(ns("pe_NoIncomeAtEntry"))
-          ),
-          tabPanel("Length of Stay",
-                   DT::dataTableOutput(ns("pe_LengthOfStay"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_NoIncomeAtEntry")),
+            
+            "Length of Stay",
+            DT::dataTableOutput(ns("pe_LengthOfStay")),
+            
             "Median Homeless History Index",
-            DT::dataTableOutput(ns("pe_MedianHHI"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_MedianHHI")),
+            
             "Long Term Homeless",
-            DT::dataTableOutput(ns("pe_LongTermHomeless"))
-          ),
-          tabPanel(
+            DT::dataTableOutput(ns("pe_LongTermHomeless")),
+            
             "VISPDAT Score Completion",
             DT::dataTableOutput(ns("pe_ScoredAtPHEntry"))
-          ),
     )
   )
 }
@@ -76,11 +65,12 @@ mod_body_coc_competition_server <- function(id){
           dplyr::filter(AltProjectName == input$pe_provider) |>
           dplyr::pull(ProjectType)
 
-        pe_summary_final_scoring <- pe_summary_final_scoring()  |> 
-          dplyr::mutate_all(function(x) gsub("/", "÷", x))
+        pe_summary_final_filter <- pe_summary_final_scoring()  |> 
+          dplyr::mutate(dplyr::across(tidyselect::everything(),
+                                      function(x) gsub("/", "÷", x))) |>
+          dplyr::filter(AltProjectName == input$pe_provider)
         
-        estimated_score <- pe_summary_final_scoring |>
-          dplyr::filter(AltProjectName == input$pe_provider) |>
+        estimated_score <- pe_summary_final_filter |>
           dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
@@ -97,10 +87,9 @@ mod_body_coc_competition_server <- function(id){
           ) |>
           tidyr::pivot_longer(cols = everything(),
                        names_to = "Measure",
-                       values_to = "Estimated Score")
+                       values_to = "Estimated Score") 
         
-        dq <- pe_summary_final_scoring |>
-          dplyr::filter(AltProjectName == input$pe_provider) |>
+        dq <- pe_summary_final_filter |>
           dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
@@ -113,12 +102,11 @@ mod_body_coc_competition_server <- function(id){
             "Housing First" = HousingFirstDQ,
             "Prioritization of Chronic" = ChronicPrioritizationDQ
           ) |>
-          tidyr::pivot_longer(cols = everything(),
+          tidyr::pivot_longer(cols = tidyselect::everything(),
                        names_to = "Measure",
                        values_to = "DQflag")
         
-        possible_score <- pe_summary_final_scoring |>
-          dplyr::filter(AltProjectName == input$pe_provider) |>
+        possible_score <- pe_summary_final_filter |>
           dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
@@ -134,12 +122,11 @@ mod_body_coc_competition_server <- function(id){
             "Housing First" = HousingFirstPossible,
             "Prioritization of Chronic" = ChronicPrioritizationPossible
           ) |>
-          tidyr::pivot_longer(cols = everything(),
+          tidyr::pivot_longer(cols = tidyselect::everything(),
                        names_to = "Measure",
                        values_to = "Possible Score")
         
-        calculation <- pe_summary_final_scoring |>
-          dplyr::filter(AltProjectName == input$pe_provider) |>
+        calculation <- pe_summary_final_filter |>
           dplyr::select(
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
@@ -155,65 +142,39 @@ mod_body_coc_competition_server <- function(id){
             # "Housing First" = HousingFirstMath,
             # "Prioritization of Chronic" = ChronicPrioritizationMath
           ) |>
-          tidyr::pivot_longer(cols = everything(),
+          tidyr::pivot_longer(cols = tidyselect::everything(),
                        names_to = "Measure",
                        values_to = "Calculation")
         
-        psh <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
+        estimated_score_dq <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
           dplyr::ungroup() |>
           dplyr::left_join(possible_score, by = "Measure") |>
           dplyr::left_join(calculation, by = "Measure") |>
           dplyr::mutate(
             DQ = dplyr::case_when(
-              DQflag == 0 ~ "Data Quality passes",
               DQflag == 1 ~ "Please correct your Data Quality issues so this item
             can be scored",
-            DQflag == 2 ~ "", # "Documents not yet received",
-            DQflag == 3 ~ "", # "Docs received, not yet scored",
-            DQflag == 4 ~ "", # "CoC Error",
-            DQflag == 5 ~ "" # "Docs received past the due date"
+              DQflag == 0 ~ "Data Quality passes",
+              DQflag == 2 ~ "", # "Documents not yet received",
+              DQflag == 3 ~ "", # "Docs received, not yet scored",
+              DQflag == 4 ~ "", # "CoC Error",
+              DQflag == 5 ~ "" # "Docs received past the due date"
             )
-          ) |>
+          )
+        
+        psh <-  estimated_score_dq |>
           dplyr::filter(!Measure %in% c("Moved into Own Housing",
                                  "Average Length of Stay")) |>
           dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
-        rrh <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
-          dplyr::ungroup() |>
-          dplyr::left_join(possible_score, by = "Measure") |>
-          dplyr::left_join(calculation, by = "Measure") |>
-          dplyr::mutate(
-            DQ = dplyr::case_when(
-              DQflag == 0 ~ "Data Quality passes",
-              DQflag == 1 ~ "Please correct your Data Quality issues so this item
-            can be scored",
-            DQflag == 2 ~ "", # "Documents not yet received",
-            DQflag == 3 ~ "", # "Docs received, not yet scored",
-            DQflag == 4 ~ "", # "CoC Error",
-            DQflag == 5 ~ "" # "Docs received past the due date"
-            )
-          ) |>
+        rrh <- estimated_score_dq |>
           dplyr::filter(!Measure %in%
                    c("Long Term Homeless",
                      "Prioritization of Chronic",
                      "Prioritization Workgroup")) |>
           dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
-        th <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
-          dplyr::ungroup() |>
-          dplyr::left_join(possible_score, by = "Measure") |>
-          dplyr::left_join(calculation, by = "Measure") |>
-          dplyr::mutate(
-            DQ = dplyr::case_when(
-              DQflag == 1 ~ "Please correct your Data Quality issues so this item
-            can be scored",
-            DQflag == 0 ~ "Data Quality passes",
-            DQflag == 2 ~ "", # "Documents not yet received",
-            DQflag == 3 ~ "", # "Docs received, not yet scored",
-            DQflag == 4 ~ "", # "CoC Error",
-            DQflag == 5 ~ "" # "Docs received past the due date"
-            )
-          ) |>
+        th <- estimated_score_dq |>
           dplyr::filter(!Measure %in% c(
             "Long Term Homeless",
             "Prioritization of Chronic",
@@ -221,17 +182,14 @@ mod_body_coc_competition_server <- function(id){
           )) |>
           dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
 
-        DT::datatable(
+        datatable_default(
           if (ptc == 3) {
             psh
           } else if (ptc == 13) {
             rrh
           } else if(ptc == 2) {
             th
-          },
-          rownames = FALSE,
-          options = list(dom = 't',
-                         pageLength = 100)
+          }
         )
       })
     
@@ -248,10 +206,7 @@ mod_body_coc_competition_server <- function(id){
                "Destination Group" = DestinationGroup,
                "Meets Objective" = MeetsObjective)    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "PSH: Heads of Household | 
               TH, RRH: Heads of Household Leavers")
       
@@ -282,10 +237,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "ALL Project Types: Adult Leavers who moved into the
               project's housing")
       
@@ -306,10 +258,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "ALL Project Types: Adults who entered the project
               during the reporting period")
       
@@ -334,10 +283,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "ALL Project Types: Adults who entered the project
               during the reporting period")
       
@@ -355,10 +301,7 @@ mod_body_coc_competition_server <- function(id){
           "Days in Project" = DaysInProject
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "RRH, TH: Client Leavers who moved into the project's 
               housing")
       
@@ -393,10 +336,7 @@ mod_body_coc_competition_server <- function(id){
           "Homeless Hisory Index" = HHI
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "ALL Project Types: Adults who entered the project 
               during the reporting period")
       
@@ -433,10 +373,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "PSH: Adults who entered the project during the 
               reporting period")
       
@@ -454,10 +391,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         )    
       
-      DT::datatable(a,
-                rownames = FALSE,
-                filter = 'top',
-                options = list(dom = 'ltpi'),
+      datatable_default(a,
                 caption = "All Project Types: Heads of Household who entered the 
               project during the reporting period")
       
