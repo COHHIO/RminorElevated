@@ -31,3 +31,5 @@ inst/app/www/css/custom.min.css
 reprex/
 
 inst/vault/
+
+inst/app/www/css/.sass_cache_keys

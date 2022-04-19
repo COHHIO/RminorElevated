@@ -5,4 +5,4 @@ default:
 production:
   app_prod: yes
 dev:
-  golem_wd: C:/Users/Administrator/Documents/R/Contributor_Repos/COHHIO/RminorElevated
+  golem_wd: !expr getwd()
