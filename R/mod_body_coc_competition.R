@@ -283,15 +283,15 @@ mod_body_coc_competition_server <- function(id){
 
     })
     
-    pe_entries <- pe_entries_no_income()
-    #   dplyr::mutate(
-    #     MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
-    #     IncomeFromAnySource = dplyr::case_when(
-    #       IncomeFromAnySource == 1 ~ "Yes",
-    #       IncomeFromAnySource == 0 ~ "No",
-    #       IncomeFromAnySource %in% c(8, 9) ~ "Don't Know/Refused",
-    #       IncomeFromAnySource == 99 ~ "Missing")
-    # )
+    pe_entries <- pe_entries_no_income() |> 
+      dplyr::mutate(
+        MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
+        IncomeFromAnySource = dplyr::case_when(
+          IncomeFromAnySource == 1 ~ "Yes",
+          IncomeFromAnySource == 0 ~ "No",
+          IncomeFromAnySource %in% c(8, 9) ~ "Don't Know/Refused",
+          IncomeFromAnySource == 99 ~ "Missing")
+    )
     pe_entries_filter <- eventReactive(input$pe_provider, {
       pe_entries |>
         dplyr::filter(AltProjectName == input$pe_provider)
@@ -299,13 +299,11 @@ mod_body_coc_competition_server <- function(id){
     output$pe_NoIncomeAtEntry <- DT::renderDataTable({
       pe_entries_filter() |>
         dplyr::select(
-          # "Client ID" = PersonalID,
-          # "Entry Date" = EntryDate,
-          # "Exit Date" = ExitDate,
-          # "Income From Any Source" = IncomeFromAnySource,
-          # "Meets Objective" = MeetsObjective
-          "No Income at Entry" = NoIncomeAtEntry,
-          "No Income at Entry / All Entries" = NoIncomeAtEntryMath
+          "Client ID" = PersonalID,
+          "Entry Date" = EntryDate,
+          "Exit Date" = ExitDate,
+          "Income From Any Source" = IncomeFromAnySource,
+          "Meets Objective" = MeetsObjective
         ) |> 
         datatable_default(caption = "ALL Project Types: Adults who entered the project
               during the reporting period")
@@ -373,9 +371,9 @@ mod_body_coc_competition_server <- function(id){
       dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
       dplyr::select(-Description) |>
       dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
-      dplyr::select(-Description) |>
-      dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
+      dplyr::mutate(MonthsHomelessPastThreeYears = Description,
+                    MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")) |>
+      dplyr::select(-Description)
       
     pe_long_homeless_filter <- eventReactive(input$pe_provider, {
       pe_long_homeless |>
