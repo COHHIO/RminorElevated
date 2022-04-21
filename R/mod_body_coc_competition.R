@@ -195,22 +195,14 @@ mod_body_coc_competition_server <- function(id){
           )) |>
           dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
-        # datatable_default(
-        #   purrr::when(
-        #     ptc == 3 ~ psh,
-        #     ptc == 13 ~ rrh,
-        #     ptc == 2 ~ th
-        #   )
-        # )
+        
 
         datatable_default(
-          if (ptc == 3) {
-            psh
-          } else if (ptc == 13) {
-            rrh
-          } else if(ptc == 2) {
-            th
-          }
+          purrr::when(ptc,
+                      . == 3 ~ psh,
+                      . == 13 ~ rrh,
+                      . == 2 ~ th
+          )
         )
       })
     
