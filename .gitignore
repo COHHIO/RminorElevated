@@ -32,4 +32,6 @@ reprex/
 
 inst/vault/
 
-inst/app/www/css/.sass_cache_keys
+appDependencies.R
+
+appDependencies.R

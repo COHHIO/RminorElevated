@@ -5,5 +5,4 @@ default:
 production:
   app_prod: yes
 dev:
-  golem_wd: !expr getwd()
-  
+  golem_wd: !expr pkgload::pkg_path()
