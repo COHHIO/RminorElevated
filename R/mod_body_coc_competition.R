@@ -95,7 +95,7 @@ mod_body_coc_competition_server <- function(id){
             "VISPDAT Completion at Entry" = ScoredAtEntryPoints,
             "Data Quality" = DQPoints,
             "Prioritization Workgroup" = PrioritizationWorkgroupScore,
-            "Housing First" = HousingFirstScore,
+            # "Housing First" = HousingFirstScore,
             "Prioritization of Chronic" = ChronicPrioritizationScore
           ) |>
           tidyr::pivot_longer(cols = tidyselect::everything(),
@@ -112,7 +112,7 @@ mod_body_coc_competition_server <- function(id){
             "Median Homeless History Index" = MedianHHIDQ,
             "Long Term Homeless" = LTHomelessDQ,
             "VISPDAT Completion at Entry" = ScoredAtEntryDQ,
-            "Housing First" = HousingFirstDQ,
+            # "Housing First" = HousingFirstDQ,
             "Prioritization of Chronic" = ChronicPrioritizationDQ
           ) |>
           tidyr::pivot_longer(cols = tidyselect::everything(),
@@ -132,7 +132,7 @@ mod_body_coc_competition_server <- function(id){
               ScoredAtEntryPossible,
             "Data Quality" = DQPossible,
             "Prioritization Workgroup" = PrioritizationWorkgroupPossible,
-            "Housing First" = HousingFirstPossible,
+            # "Housing First" = HousingFirstPossible,
             "Prioritization of Chronic" = ChronicPrioritizationPossible
           ) |>
           tidyr::pivot_longer(cols = tidyselect::everything(),
