@@ -177,7 +177,9 @@ mod_body_coc_competition_server <- function(id){
         
         psh <-  estimated_score_dq |>
           dplyr::filter(!Measure %in% c("Moved into Own Housing",
-                                 "Average Length of Stay")) |>
+                                 "Average Length of Stay",
+                                 "Prioritization of Chronic",
+                                 "Prioritization Workgroup")) |>
           dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
         rrh <- estimated_score_dq |>
