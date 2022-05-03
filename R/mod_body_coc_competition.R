@@ -217,7 +217,7 @@ mod_body_coc_competition_server <- function(id){
     })
     output$pe_ExitsToPH <- DT::renderDataTable({
       pe_exits_to_ph_filter() |>
-        dplyr::select("Client ID" = PersonalID,
+        dplyr::select("Client ID" = UniqueID,
                       "Entry Date" = EntryDate,
                       "Move In Date" = MoveInDateAdjust,
                       "Exit Date" = ExitDate,
@@ -226,7 +226,16 @@ mod_body_coc_competition_server <- function(id){
                       "Meets Objective" = MeetsObjective
                       ) |>
         datatable_default(caption = "PSH: Heads of Household |
-                          TH, RRH: Heads of Household Leavers")
+                          TH, RRH: Heads of Household Leavers",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
 
@@ -248,7 +257,7 @@ mod_body_coc_competition_server <- function(id){
     output$pe_BenefitsAtExit <- DT::renderDataTable({
       pe_benefits_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Move-In Date" = MoveInDateAdjust,
           "Exit Date" = ExitDate,
@@ -258,7 +267,16 @@ mod_body_coc_competition_server <- function(id){
           AltProjectName
         ) |> 
         datatable_default(caption = "ALL Project Types: Adult Leavers who moved into the
-              project's housing")
+              project's housing",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
     
@@ -274,14 +292,23 @@ mod_body_coc_competition_server <- function(id){
     output$pe_LivingSituationAtEntry <- DT::renderDataTable({
       pe_res_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Residence Prior" = LivingSituation,
           "Meets Objective" = MeetsObjective
         ) |>
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period")
+              during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
     
@@ -301,14 +328,23 @@ mod_body_coc_competition_server <- function(id){
     output$pe_NoIncomeAtEntry <- DT::renderDataTable({
       pe_entries_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Income From Any Source" = IncomeFromAnySource,
           "Meets Objective" = MeetsObjective
         ) |> 
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period")
+              during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
      
@@ -320,13 +356,22 @@ mod_body_coc_competition_server <- function(id){
     output$pe_LengthOfStay <- DT::renderDataTable({
       pe_length_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Move-In Date" = MoveInDateAdjust,
           "Exit Date" = ExitDate,
           "Days in Project" = DaysInProject
         ) |> 
-      datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing")
+      datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
+                        escape = FALSE,
+                        options = list(
+                          initComplete = DT::JS(
+                            "function(settings, json) {",
+                            "$('th').css({'text-align': 'center'});",
+                            "$('td').css({'text-align': 'center'});",
+                            "}"
+                          )
+                        ))
 
     })
     
@@ -353,7 +398,7 @@ mod_body_coc_competition_server <- function(id){
     output$pe_MedianHHI <- DT::renderDataTable({
       pe_homeless_history_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Approximate Date Homeless" = DateToStreetESSH,
@@ -363,7 +408,16 @@ mod_body_coc_competition_server <- function(id){
           "Homeless Hisory Index" = HHI
         ) |>
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period")
+              during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
     
@@ -384,7 +438,7 @@ mod_body_coc_competition_server <- function(id){
     output$pe_LongTermHomeless <- DT::renderDataTable({
       pe_long_homeless_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Approximate Date Homeless" = DateToStreetESSH,
@@ -394,7 +448,16 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         ) |> 
         datatable_default(caption = "PSH: Adults who entered the project during the
-              reporting period")
+              reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
 
@@ -407,13 +470,22 @@ mod_body_coc_competition_server <- function(id){
     output$pe_ScoredAtPHEntry <- DT::renderDataTable({
       pe_scored_at_ph_filter() |>
         dplyr::select(
-          "Client ID" = PersonalID,
+          "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Meets Objective" = MeetsObjective
         ) |>
         datatable_default(caption = "All Project Types: Heads of Household who entered the
-              project during the reporting period")
+              project during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
 
     })
 
