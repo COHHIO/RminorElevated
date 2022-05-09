@@ -109,7 +109,8 @@ mod_body_dq_program_level_server <- function(id){
     output$dq_APsNoReferrals <- renderUI({
       req(input$program, program())
       AP_no_referrals <- dq_aps_no_referrals()  |> 
-        dplyr::filter(ProjectID %in% program())
+        dplyr::filter(ProjectID %in% program() & 
+                        (Sys.Date() < OperatingEndDate | is.na(OperatingEndDate)))
       
       if (nrow(AP_no_referrals) > 0) {
         ui_solid_box(
