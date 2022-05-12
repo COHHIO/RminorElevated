@@ -19,7 +19,7 @@ qpr_expr$noncash_benefits$infobox <- rlang::expr({
       dplyr::summarise(BenefitsAtExit = dplyr::n(), .groups = "drop_last"),
     by = "ProjectName"
   ) |> 
-    {\(x) {tidyr::replace_na(x, rlang::set_names(as.list(rep(0, length(x))), nm = names(x)))}}() |> 
+    dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
     dplyr::mutate(Percent = BenefitsAtExit / TotalHHs)
   if (nrow(.data) > 0) {
     .args <- list(.data = .data,

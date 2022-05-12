@@ -12,17 +12,17 @@ qpr_expr$income_growth$expr <- rlang::expr({
 qpr_expr$income_growth$infobox <- rlang::expr({
   .data <- dplyr::left_join(
     # all_hhs
-    data_env() |> 
+    data_env() |>
       dplyr::group_by(ProjectName, ProjectType, ProjectCounty, ProjectRegion) |>
       dplyr::summarise(TotalHHs = dplyr::n(), .groups = "drop_last"),
     # meeting_objective
-    data_env() |> 
+    data_env() |>
       dplyr::filter(Difference > 0) |> 
       dplyr::group_by(ProjectName, ProjectType, ProjectCounty, ProjectRegion) |>
       dplyr::summarise(Increased = dplyr::n(), .groups = "drop_last"),
     by = c("ProjectName", "ProjectType", "ProjectCounty", "ProjectRegion")
-  ) |> 
-    {\(x) {tidyr::replace_na(x, setNames(as.list(rep(0, length(x))), nm = names(x)))}}() |> 
+  ) |>
+    dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
     dplyr::mutate(Percent = Increased / TotalHHs)
   if (nrow(.data) > 0) {
     .args <- list(.data = .data,

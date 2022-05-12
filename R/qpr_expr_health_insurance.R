@@ -20,7 +20,7 @@ qpr_expr$health_insurance$infobox <- rlang::expr({
       dplyr::summarise(InsuranceAtExit = dplyr::n(), .groups = "drop_last"),
     by = c("ProjectName")
   ) |> 
-    {\(x) {tidyr::replace_na(x, rlang::set_names(as.list(rep(0, length(x))), nm = names(x)))}}() |> 
+    dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
     dplyr::mutate(Percent = InsuranceAtExit / TotalHHs)
   
   if (nrow(.data) > 0) {
