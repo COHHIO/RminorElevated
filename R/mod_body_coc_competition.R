@@ -72,7 +72,7 @@ mod_body_coc_competition_server <- function(id){
                                   function(x) gsub("/", "÷", x)))
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
         pe_summary |>
-          dplyr::filter(AltProjectName == input$pe_provider)
+          dplyr::filter(AltProjectName %in% input$pe_provider)
     })
     
     
@@ -85,6 +85,7 @@ mod_body_coc_competition_server <- function(id){
         
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
+            "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
             "Average Length of Stay" = AverageLoSPoints,
@@ -98,12 +99,13 @@ mod_body_coc_competition_server <- function(id){
             # "Housing First" = HousingFirstScore,
             "Prioritization of Chronic" = ChronicPrioritizationScore
           ) |>
-          tidyr::pivot_longer(cols = tidyselect::everything(),
+          tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
                        values_to = "Estimated Score") 
         
         dq <- pe_summary_final_filter() |>
           dplyr::select(
+            "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
             "Average Length of Stay" = AverageLoSDQ,
@@ -115,12 +117,13 @@ mod_body_coc_competition_server <- function(id){
             # "Housing First" = HousingFirstDQ,
             "Prioritization of Chronic" = ChronicPrioritizationDQ
           ) |>
-          tidyr::pivot_longer(cols = tidyselect::everything(),
+          tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
                        values_to = "DQflag")
         
         possible_score <- pe_summary_final_filter() |>
           dplyr::select(
+            "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
             "Average Length of Stay" = AverageLoSPossible,
@@ -135,12 +138,13 @@ mod_body_coc_competition_server <- function(id){
             # "Housing First" = HousingFirstPossible,
             "Prioritization of Chronic" = ChronicPrioritizationPossible
           ) |>
-          tidyr::pivot_longer(cols = tidyselect::everything(),
+          tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
                        values_to = "Possible Score")
         
         calculation <- pe_summary_final_filter() |>
           dplyr::select(
+            "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
             "Average Length of Stay" = AverageLoSMath,
@@ -155,14 +159,14 @@ mod_body_coc_competition_server <- function(id){
             # "Housing First" = HousingFirstMath,
             # "Prioritization of Chronic" = ChronicPrioritizationMath
           ) |>
-          tidyr::pivot_longer(cols = tidyselect::everything(),
+          tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
                        values_to = "Calculation")
         
-        estimated_score_dq <- estimated_score |> dplyr::left_join(dq, by = "Measure") |>
+        estimated_score_dq <- estimated_score |> dplyr::left_join(dq, by = c("Measure","Project Name")) |>
           dplyr::ungroup() |>
-          dplyr::left_join(possible_score, by = "Measure") |>
-          dplyr::left_join(calculation, by = "Measure") |>
+          dplyr::left_join(possible_score, by = c("Measure","Project Name")) |>
+          dplyr::left_join(calculation, by = c("Measure","Project Name")) |>
           dplyr::mutate(
             DQ = dplyr::case_when(
               DQflag == 1 ~ "Please correct your Data Quality issues so this item
@@ -173,38 +177,47 @@ mod_body_coc_competition_server <- function(id){
               DQflag == 4 ~ "", # "CoC Error",
               DQflag == 5 ~ "" # "Docs received past the due date"
             )
-          )
+          ) |> 
+          # dplyr::filter(!Measure %in% c("Prioritization of Chronic",
+          #                               "Prioritization Workgroup")) |> 
+          dplyr::filter(!is.na(`Estimated Score`))
         
-        psh <-  estimated_score_dq |>
-          dplyr::filter(!Measure %in% c("Moved into Own Housing",
-                                 "Average Length of Stay",
-                                 "Prioritization of Chronic",
-                                 "Prioritization Workgroup")) |>
-          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
-        
-        rrh <- estimated_score_dq |>
-          dplyr::filter(!Measure %in%
-                   c("Long Term Homeless",
-                     "Prioritization of Chronic",
-                     "Prioritization Workgroup")) |>
-          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
-        
-        th <- estimated_score_dq |>
-          dplyr::filter(!Measure %in% c(
-            "Long Term Homeless",
-            "Prioritization of Chronic",
-            "Prioritization Workgroup"
-          )) |>
-          dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+        # psh <-  estimated_score_dq |>
+        #   dplyr::filter(!Measure %in% c("Moved into Own Housing",
+        #                          "Average Length of Stay",
+        #                          "Prioritization of Chronic",
+        #                          "Prioritization Workgroup")) |>
+        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+        # 
+        # rrh <- estimated_score_dq |>
+        #   dplyr::filter(!Measure %in%
+        #            c("Long Term Homeless",
+        #              "Prioritization of Chronic",
+        #              "Prioritization Workgroup")) |>
+        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
+        # 
+        # th <- estimated_score_dq |>
+        #   dplyr::filter(!Measure %in% c(
+        #     "Long Term Homeless",
+        #     "Prioritization of Chronic",
+        #     "Prioritization Workgroup"
+        #   )) |>
+        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
         
 
         datatable_default(
-          purrr::when(ptc,
-                      . == 3 ~ psh,
-                      . == 13 ~ rrh,
-                      . == 2 ~ th
-          )
+          estimated_score_dq |> 
+            dplyr::select(1, Calculation, 2, "Estimated Score", "Possible Score" = 5, "Data Quality" = DQ),
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          # purrr::when(ptc,
+          #             . == 3 ~ psh,
+          #             . == 13 ~ rrh,
+          #             . == 2 ~ th
+          # )
         )
       })
     
