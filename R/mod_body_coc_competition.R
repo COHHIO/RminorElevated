@@ -178,8 +178,8 @@ mod_body_coc_competition_server <- function(id){
               DQflag == 5 ~ "" # "Docs received past the due date"
             )
           ) |> 
-          # dplyr::filter(!Measure %in% c("Prioritization of Chronic",
-          #                               "Prioritization Workgroup")) |> 
+          dplyr::filter(!Measure %in% c("Prioritization of Chronic",
+                                        "Prioritization Workgroup")) |>
           dplyr::filter(!is.na(`Estimated Score`))
         
         # psh <-  estimated_score_dq |>
