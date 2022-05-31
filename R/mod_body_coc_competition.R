@@ -68,21 +68,18 @@ mod_body_coc_competition_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     pe_summary <- pe_summary_final_scoring() |> 
-      dplyr::mutate(dplyr::across(tidyselect::everything(),
+      dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
                                   function(x) gsub("/", "÷", x)))
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
         pe_summary |>
           dplyr::filter(AltProjectName %in% input$pe_provider)
     })
     
-    
+
     output$pe_ProjectSummary <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
           dplyr::pull(ProjectType)
-          
-          
-        
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
             "Project Name" = AltProjectName,
