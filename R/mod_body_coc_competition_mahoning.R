@@ -46,10 +46,10 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "Length of Stay",
       DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
     ),
-    ui_row(
-      title = "Median Homeless History Index",
-      DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
-    ),
+    # ui_row(
+    #   title = "Median Homeless History Index",
+    #   DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
+    # ),
     ui_row(
       title = "Long Term Homeless",
       DT::dataTableOutput(ns("pe_LongTermHomelessMahoning"))
@@ -69,12 +69,24 @@ mod_body_coc_competition_mahoning_server <- function(id){
     ns <- session$ns
     pe_summary <- pe_summary_final_scoring_mahoning() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
-                                  function(x) gsub("/", "÷", x)))
+                                  function(x) gsub("/", "÷", x))) |> 
+      # dplyr::filter(AltProjectName %in%
+      #                 c("Mahoning - Beatitude House - Permanent Supportive Housing Program - PSH",
+      #                   "Mahoning - Help Network - PSH Rental Assistance Program - PSH",
+      #                   "Mahoning - Help Network - Shelter Plus Care - PSH",
+      #                   "Mahoning - Meridian Services - Phoenix Court - PSH",
+      #                   "Mahoning - Meridian Services - Samaritan Housing PRA - PSH",
+      #                   "Mahoning - Meridian Services - Homeless Solutions SRO II - PSH",
+      #                   "Mahoning - Ursuline Center - Merici - PSH",
+      #                   "Mahoning - YWCA Permanent Housing for Disabled Families - PSH",
+      #                   "Mahoning - YWCA Scattered Site Housing II - PSH"
+      #                   )) |> 
+      dplyr::distinct()
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
       pe_summary |>
         dplyr::filter(AltProjectName %in% input$pe_provider)
     })
-    
+  # browser()
     output$pe_ProjectSummaryMahoning <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
@@ -366,42 +378,42 @@ mod_body_coc_competition_mahoning_server <- function(id){
       dplyr::filter(DataElement == "MonthsHomelessPastThreeYears") |>
       dplyr::select(ReferenceNo, Description)
     
-    pe_homeless_history <- pe_homeless_history_index_mahoning() |>
-      dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
-      dplyr::select(-Description) |>
-      dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
-      dplyr::select(-Description)
-    pe_homeless_history_filter <- eventReactive(input$pe_provider, {
-      pe_homeless_history |>
-        dplyr::filter(AltProjectName == input$pe_provider)
-    })
-    output$pe_MedianHHIMahoning <- DT::renderDataTable({
-      pe_homeless_history_filter() |>
-        dplyr::select(
-          "Client ID" = UniqueID,
-          "Entry Date" = EntryDate,
-          "Exit Date" = ExitDate,
-          "Approximate Date Homeless" = DateToStreetESSH,
-          "Days Homeless at Entry" = DaysHomelessAtEntry,
-          "Times Homeless Past 3 Years" = TimesHomelessPastThreeYears,
-          "Months Homeless Past 3 Years" = MonthsHomelessPastThreeYears,
-          "Homeless Hisory Index" = HHI
-        ) |>
-        datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period",
-                          escape = FALSE,
-                          options = list(
-                            initComplete = DT::JS(
-                              "function(settings, json) {",
-                              "$('th').css({'text-align': 'center'});",
-                              "$('td').css({'text-align': 'center'});",
-                              "}"
-                            )
-                          ))
-      
-    })
+    # pe_homeless_history <- pe_homeless_history_index_mahoning() |>
+    #   dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
+    #   dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
+    #   dplyr::select(-Description) |>
+    #   dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
+    #   dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
+    #   dplyr::select(-Description)
+    # pe_homeless_history_filter <- eventReactive(input$pe_provider, {
+    #   pe_homeless_history |>
+    #     dplyr::filter(AltProjectName == input$pe_provider)
+    # })
+    # output$pe_MedianHHIMahoning <- DT::renderDataTable({
+    #   pe_homeless_history_filter() |>
+    #     dplyr::select(
+    #       "Client ID" = UniqueID,
+    #       "Entry Date" = EntryDate,
+    #       "Exit Date" = ExitDate,
+    #       "Approximate Date Homeless" = DateToStreetESSH,
+    #       "Days Homeless at Entry" = DaysHomelessAtEntry,
+    #       "Times Homeless Past 3 Years" = TimesHomelessPastThreeYears,
+    #       "Months Homeless Past 3 Years" = MonthsHomelessPastThreeYears,
+    #       "Homeless Hisory Index" = HHI
+    #     ) |>
+    #     datatable_default(caption = "ALL Project Types: Adults who entered the project
+    #           during the reporting period",
+    #                       escape = FALSE,
+    #                       options = list(
+    #                         initComplete = DT::JS(
+    #                           "function(settings, json) {",
+    #                           "$('th').css({'text-align': 'center'});",
+    #                           "$('td').css({'text-align': 'center'});",
+    #                           "}"
+    #                         )
+    #                       ))
+    #   
+    # })
     
     pe_long_homeless <- pe_long_term_homeless_mahoning() |>
       dplyr::filter(ProjectType == 3) |>
