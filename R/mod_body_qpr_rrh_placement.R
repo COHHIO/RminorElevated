@@ -16,7 +16,8 @@ mod_body_qpr_rrh_placement_ui <- function(id){
 #'
 #' @noRd 
 mod_body_qpr_rrh_placement_server <- function(id){
-  moduleServer( id, mod_qpr_server(id, "Average Days to House"))
+  moduleServer( id, mod_qpr_server(id, header = "Rapid Replacement for RRH", 
+                                   subtitle = shiny::h5("Average days to house")))
 }
     
 ## To be copied in the UI

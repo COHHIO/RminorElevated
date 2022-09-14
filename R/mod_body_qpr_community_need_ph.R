@@ -16,7 +16,7 @@ mod_body_qpr_community_need_ph_ui <- function(id){
 #'
 #' @noRd 
 mod_body_qpr_community_need_ph_server <- function(id){
-  moduleServer( id, mod_qpr_server(id, "Community Need, Entered Permanent Housing"))
+  moduleServer( id, mod_qpr_server(id, "Permanent Housing Need"))
 }
     
 ## To be copied in the UI

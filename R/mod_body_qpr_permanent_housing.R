@@ -16,7 +16,7 @@ mod_body_qpr_permanent_housing_ui <- function(id){
 #'
 #' @noRd 
 mod_body_qpr_permanent_housing_server <- function(id){
-  moduleServer( id, mod_qpr_server(id, "Successful Placement Detail"))
+  moduleServer( id, mod_qpr_server(id, "Exits to Permanent Housing"))
 }
     
 ## To be copied in the UI

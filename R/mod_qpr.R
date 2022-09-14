@@ -89,7 +89,7 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
 #'  unspecified. 
 
 
-mod_qpr_server <- function(id, header){
+mod_qpr_server <- function(id, header, ...){
   .id <- strip_id(id)
   if (missing(header)) 
     rlang::abort("Must provide header for mod_QPR_server(",id,")")
@@ -99,7 +99,7 @@ mod_qpr_server <- function(id, header){
     # Header
     output$header <- shiny::renderUI({
       req(input$date_range)
-      server_header(header, date_range = input$date_range)
+      server_header(header, date_range = input$date_range, ...)
     })
     
     # Process Data

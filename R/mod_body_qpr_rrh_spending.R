@@ -16,7 +16,7 @@ mod_body_qpr_rrh_spending_ui <- function(id){
 #'
 #' @noRd 
 mod_body_qpr_rrh_spending_server <- function(id){
-  moduleServer( id, mod_qpr_server(id, "Rapid Rehousing Spending Goals"))
+    moduleServer( id, mod_qpr_server(id, "RRH Spending"))
 }
     
 ## To be copied in the UI
