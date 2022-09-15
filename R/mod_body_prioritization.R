@@ -35,7 +35,10 @@ mod_body_prioritization_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
    output$header <- renderUI(server_header("Prioritization Report",
-                              x = shiny::h3(paste0("Updated: ", rm_dates()$meta_HUDCSV$Export_End))))
+                              x = shiny::h3(paste0("Updated: ", rm_dates()$meta_HUDCSV$Export_End)),
+                              shiny::p("Prioritization workgroups should use this report to prioritize clients. PSH, RRH, and TH programs are required to prioritize clients with the most severe needs and the longest homeless histories. Clients enrolled in domestic violence programs do not appear in the report and must be advocated for in prioritization meetings."),
+                              shiny::p("This report is intended to identify households who may be chronically homeless. It should not serve as formal documentation of chronic homeless status. Please reference HUD Definition of Chronic Homelessness and Recordkeeping Requirements for Chronic Status for more information."),
+                              shiny::p("Answers for Approximate Date Homelessness Started and Total number of months homeless on the streets, in ES, or Safe Haven in the past three years can be nuanced. If the answers to these questions contradict one other, if they have not been filled in correctly, or if they have not been appropriately updated, they may create data quality issues. Please check the R minor elevated Data Quality Report to ensure that answers to these questions are cohesive.")))
    
    region <- eventReactive(input$region, {input$region}) |> debounce(1500)
    pc <- prioritization_colors()
