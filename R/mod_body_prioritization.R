@@ -81,7 +81,8 @@ mod_body_prioritization_server <- function(id){
                         "function(settings, json) {",
                         "$('th').css({'text-align': 'center'});",
                         "$('td').css({'text-align': 'center'});",
-                        "}")),
+                        "}"),
+                      scrollX = TRUE),
        escape = FALSE
      ) |> 
        DT::formatStyle(
@@ -98,7 +99,7 @@ mod_body_prioritization_server <- function(id){
        ) |> 
        datatable_options_update(options = list(columnDefs = list(list(
          visible = FALSE,
-         targets = c(15:17)
+         targets = c(18:20)
        ))))
        
    })
