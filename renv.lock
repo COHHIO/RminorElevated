@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.1.2",
+    "Version": "4.2.1",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -454,14 +454,14 @@
       "Package": "clarity.looker",
       "Version": "0.0.0.9002",
       "Source": "GitHub",
-      "Remotes": "yogat3ch/UU, COHHIO/lookr",
       "RemoteType": "github",
+      "Remotes": "yogat3ch/UU, COHHIO/lookr",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "clarity.looker",
       "RemoteUsername": "COHHIO",
       "RemoteRef": "HEAD",
       "RemoteSha": "8c7765838d9d4824ab05dbaa3af12a0b90acf109",
-      "Hash": "c6da75e561d1438cefb3885ecc8aba9a",
+      "Hash": "94d18f68909a41e5b41a64e69cfb6749",
       "Requirements": [
         "UU",
         "arrow",
@@ -1061,14 +1061,14 @@
       "Package": "maleta",
       "Version": "0.0.0.9000",
       "Source": "GitHub",
-      "Remotes": "yogat3ch/UU, yogat3ch/rdrop2",
       "RemoteType": "github",
+      "Remotes": "yogat3ch/UU, yogat3ch/rdrop2",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "maleta",
       "RemoteUsername": "yogat3ch",
       "RemoteRef": "HEAD",
       "RemoteSha": "712e476df50b2a39435d9266c769f91afa6a6071",
-      "Hash": "41f004cb70b692e3c32d792f835b1ec5",
+      "Hash": "abea9e3da3c360a8c861df7a70077900",
       "Requirements": [
         "UU",
         "cli",
@@ -1209,6 +1209,16 @@
       "Hash": "a555924add98c99d2f411e37e7d25e9f",
       "Requirements": []
     },
+    "prettydoc": {
+      "Package": "prettydoc",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c20a905f41b50770438ac4727649546f",
+      "Requirements": [
+        "rmarkdown"
+      ]
+    },
     "prettyunits": {
       "Package": "prettyunits",
       "Version": "1.1.1",
@@ -1348,6 +1358,25 @@
       "Repository": "CRAN",
       "Hash": "04884d9a75d778aca22c7154b8333ec9",
       "Requirements": []
+    },
+    "rmarkdown": {
+      "Package": "rmarkdown",
+      "Version": "2.17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e97c8be593e010f93520e8215c0f9189",
+      "Requirements": [
+        "bslib",
+        "evaluate",
+        "htmltools",
+        "jquerylib",
+        "jsonlite",
+        "knitr",
+        "stringr",
+        "tinytex",
+        "xfun",
+        "yaml"
+      ]
     },
     "roxygen2": {
       "Package": "roxygen2",
@@ -1574,6 +1603,16 @@
         "purrr",
         "rlang",
         "vctrs"
+      ]
+    },
+    "tinytex": {
+      "Package": "tinytex",
+      "Version": "0.42",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7629c6c1540835d5248e6e7df265fa74",
+      "Requirements": [
+        "xfun"
       ]
     },
     "tzdb": {

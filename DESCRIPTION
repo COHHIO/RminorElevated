@@ -18,6 +18,7 @@ Imports:
     maleta,
     pkgload,
     plotly,
+    prettydoc,
     purrr,
     rlang,
     sass,
