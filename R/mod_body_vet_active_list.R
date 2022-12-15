@@ -81,7 +81,7 @@ mod_body_vet_active_list_ui <- function(id) {
         column(
           3,
           ui_picker_program(
-            label = "Select Eligibility",
+            label = "Select List Status",
             inputId = ns("vet_status"),
             choices = val$ListStatus |>
               unique() |>
