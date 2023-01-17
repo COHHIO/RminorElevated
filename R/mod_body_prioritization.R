@@ -48,14 +48,14 @@ mod_body_prioritization_server <- function(id){
      prioritization() |>
        dplyr::filter(CountyServed %in% region() |
                 is.na(CountyServed)) |>
-       dplyr::arrange(dplyr::desc(C19Priority), dplyr::desc(HousingStatus)) |>
+       dplyr::arrange(dplyr::desc(HousingStatus)) |>
        dplyr::select(
          "HoH Unique ID" = UniqueID,
          "Project Name" = ProjectName,
          "Entry Date" = EntryDate,
          "County" = CountyServed,
          "Current Situation (Entry, Referral, Perm Housing Track)" = Situation,
-         "COVID-19: Priority for Immediate Non-congregate Housing" = C19Priority,
+         # "COVID-19: Priority for Immediate Non-congregate Housing" = C19Priority,
          "Expected Move-in" = ExpectedPHDate,
          "Veteran" = VeteranStatus,
          "Fleeing DV" = CurrentlyFleeing,
@@ -99,7 +99,7 @@ mod_body_prioritization_server <- function(id){
        ) |> 
        datatable_options_update(options = list(columnDefs = list(list(
          visible = FALSE,
-         targets = c(18:20)
+         targets = c(18:19)
        ))))
        
    })
