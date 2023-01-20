@@ -279,6 +279,7 @@ mod_body_dq_program_level_server <- function(id){
       OverlappingEEs <- dq_overlaps() |>
         dq_filter_between(ProjectID %in% program(), date_range = date_range()) |>
         dq_select_cols(
+          "UniqueID",
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Move-In Date" = MoveInDateAdjust,
