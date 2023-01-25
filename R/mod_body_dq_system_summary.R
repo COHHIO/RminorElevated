@@ -12,8 +12,8 @@ mod_body_dq_system_summary_ui <- function(id){
   tagList(
     ui_header_row(),
     uiOutput(ns("ce")),
-    uiOutput(ns("summary"))
-    # uiOutput(ns("overlaps"))
+    uiOutput(ns("summary")),
+    uiOutput(ns("overlaps"))
   )
 }
 
@@ -79,9 +79,9 @@ mod_body_dq_system_summary_server <- function(id){
       "clients_without_spdat",
       "Households without SPDAT by Project",
       "warning",
-      # "overlaps",
-      # "Overlapping Enrollments by Project",
-      # "danger",
+      "overlaps",
+      "Overlapping Enrollments by Project",
+      "danger",
       "long_stayer",
       "Long Stayers by Project",
       "warning",

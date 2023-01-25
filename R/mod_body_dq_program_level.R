@@ -274,33 +274,34 @@ mod_body_dq_program_level_server <- function(id){
     
     
     
-    # output$dq_OverlappingEEs <- renderUI({
-    #   req(input$program, input$date_range, program(), date_range())
-    #   OverlappingEEs <- dq_overlaps() |>
-    #     dq_filter_between(ProjectID %in% program(), date_range = date_range()) |>
-    #     dq_select_cols(
-    #       "Entry Date" = EntryDate,
-    #       "Exit Date" = ExitDate,
-    #       "Move-In Date" = MoveInDateAdjust,
-    #       "Overlaps",
-    #       "Issue",
-    #       "Guidance",
-    #       default = NULL
-    #     )
-    #     
-    #   if (nrow(OverlappingEEs)) {
-    #     ui_solid_box(
-    #       id = "overlappers",
-    #       title = "Overlapping Program Stays",
-    #       status = "warning",
-    #       width = 12,
-    #       datatable_default(OverlappingEEs, escape = FALSE),
-    #       shiny::HTML(guidance$project_stays)
-    #     )
-    #   } else {
-    #     
-    #   }
-    # })
+    output$dq_OverlappingEEs <- renderUI({
+      req(input$program, input$date_range, program(), date_range())
+      OverlappingEEs <- dq_overlaps() |>
+        dq_filter_between(ProjectID %in% program(), date_range = date_range()) |>
+        dq_select_cols(
+          "UniqueID",
+          "Entry Date" = EntryDate,
+          "Exit Date" = ExitDate,
+          "Move-In Date" = MoveInDateAdjust,
+          "Overlaps",
+          "Issue",
+          "Guidance",
+          default = NULL
+        )
+
+      if (nrow(OverlappingEEs)) {
+        ui_solid_box(
+          id = "overlappers",
+          title = "Overlapping Program Stays",
+          status = "warning",
+          width = 12,
+          datatable_default(OverlappingEEs, escape = FALSE),
+          shiny::HTML(guidance$project_stays)
+        )
+      } else {
+
+      }
+    })
     
     output$dq_Errors <- DT::renderDT(server = FALSE, {
       req(dq_main_time_proj())
