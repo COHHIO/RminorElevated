@@ -30,7 +30,8 @@ mod_body_program_lookup_server <- function(id){
     output$header <- renderUI(server_header("Agency & Program Lookup"))
     output$detail <- DT::renderDT(server = FALSE, {
       program_lookup() |> 
-        dplyr::rename(`Uses HMIS` = "HMISParticipating") |> 
+        dplyr::rename(`Uses HMIS` = "HMISParticipating",
+                      "PropertyManager" = "Property Manager") |> 
         dplyr::arrange("ProgramName") |> 
         datatable_default(escape = FALSE) |> 
         DT::formatStyle(

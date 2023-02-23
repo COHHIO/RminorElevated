@@ -138,7 +138,7 @@ mod_body_vet_active_list_server <- function(id) {
     })
     
     val <- veteran_active_list()
-  
+
     output$detail <- DT::renderDT(server = FALSE, {
       req(input$county, input$vet_status, input$chronic_status, county(), vet_status(), chronic_status())
       
