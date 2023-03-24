@@ -66,7 +66,7 @@ mod_body_dq_program_level_ui <- function(id){
     )
   )
 }
-    
+
 #' body_dq_program_level Server Functions
 #'
 #' @noRd 
@@ -283,7 +283,7 @@ mod_body_dq_program_level_server <- function(id){
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Move-In Date" = MoveInDateAdjust,
-          "Overlaps",
+          # "Overlaps",
           "Issue",
           "Guidance",
           default = NULL
@@ -354,7 +354,6 @@ mod_body_dq_program_level_server <- function(id){
       
     output$dq_summary <- DT::renderDT(server = FALSE, {
       req(input$program, issues_by_program(), dq_main_time_proj())
-      
       
       out <- dq_main_time_proj() |>
         dplyr::group_by(Type, Issue, Guidance, ProjectName, ProjectID) |>
