@@ -84,11 +84,11 @@ mod_sidebar_ui <- function(id){
           tabName = "vet_active_list", 
           icon = shiny::icon("medal")
         ),
-        # bs4Dash::bs4SidebarMenuItem(
-        #   text = "BoS CoC Competition",
-        #   tabName = "coc_competition", # cocCompetitionTab
-        #   icon = shiny::icon("flag-checkered")
-        # ),
+        bs4Dash::bs4SidebarMenuItem(
+          text = "BoS CoC Competition",
+          tabName = "coc_competition", # cocCompetitionTab
+          icon = shiny::icon("flag-checkered")
+        ),
         # bs4Dash::bs4SidebarMenuItem(
         #   text = "Mahoning CoC Competition",
         #   tabName = "coc_competition_mahoning",
