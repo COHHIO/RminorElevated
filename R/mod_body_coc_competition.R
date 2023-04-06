@@ -15,7 +15,7 @@ mod_body_coc_competition_ui <- function(id){
           inputId = ns("pe_provider"),
           label = "Select your CoC-funded Provider",
           choices = sort(pe_sum_val$AltProjectName) |> unique(),
-          selected = pe_sum_val$AltProjectName[1]
+          selected = NULL
         ),
     ui_row(
       title = "Score Summary",
@@ -487,7 +487,8 @@ mod_body_coc_competition_server <- function(id){
       dplyr::select(-Description)
     pe_homeless_history_filter <- eventReactive(input$pe_provider, {
       pe_homeless_history |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == input$pe_provider) |> 
+        dplyr::mutate(DaysHomelessAtEntry = DaysHomelessAtEntry / 86400)
     })
     output$pe_MedianHHI <- DT::renderDataTable({
       pe_homeless_history_filter() |>
