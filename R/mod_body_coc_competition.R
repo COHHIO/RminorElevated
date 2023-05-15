@@ -11,6 +11,7 @@ mod_body_coc_competition_ui <- function(id){
   ns <- NS(id)
   pe_sum_val <- pe_summary_validation()
   tagList(
+    ui_header_row(),
     ui_picker_program(
           inputId = ns("pe_provider"),
           label = "Select your CoC-funded Provider",
@@ -75,6 +76,10 @@ mod_body_coc_competition_ui <- function(id){
 mod_body_coc_competition_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    output$header <- renderUI(server_header("2023 CoC Competition Renewal Project Evaluation",
+                                            x = shiny::h3(paste0("Reporting Period: 1/1/22 - 12/31/22")),
+                                            shiny::p("For more information visit the", a("Ohio BoSCoC CoC Program website", href = "https://cohhio.org/boscoc/coc-program/"))))
+    
     pe_summary <- pe_summary_final_scoring() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
                                   function(x) gsub("/", "÷", x)))

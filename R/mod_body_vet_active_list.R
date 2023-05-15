@@ -9,6 +9,7 @@
 mod_body_vet_active_list_ui <- function(id) {
   ns <- NS(id)
   val <- veteran_active_list()
+  # val2 <- vets_housed()
   chronic_status <- as.character(sort(unique(val$ChronicStatus)))
   tagList(
     ui_header_row(),
@@ -108,6 +109,8 @@ mod_body_vet_active_list_ui <- function(id) {
     ui_solid_box(title = "Veteran Active List", status = "info",
                  DT::dataTableOutput(ns("detail"))
                  )
+    # ui_solid_box(title = "Veterans Housed Last 90 Days", status = "info",
+    #              DT::dataTableOutput(ns("housed")))
   )
 }
 
@@ -138,6 +141,7 @@ mod_body_vet_active_list_server <- function(id) {
     })
     
     val <- veteran_active_list()
+    # val2 <- vets_housed()
 
     output$detail <- DT::renderDT(server = FALSE, {
       req(input$county, input$vet_status, input$chronic_status, county(), vet_status(), chronic_status())
@@ -196,6 +200,17 @@ mod_body_vet_active_list_server <- function(id) {
                             )
                           ))
     })
+    
+    # output$housed <- DT::renderDT(server = FALSE,
+    #   val2 |> datatable_default(escape = FALSE,
+    #                             options = list(
+    #                               initComplete = DT::JS(
+    #                                 "function(settings, json) {",
+    #                                 "$('th').css({'text-align': 'center'});",
+    #                                 "$('td').css({'text-align': 'center'});",
+    #                                 "}"
+    #                               ))
+    #                             ))
     
     output$download <- shiny::downloadHandler(
       filename = "veteran_active_list.csv",
