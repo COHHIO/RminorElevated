@@ -89,11 +89,11 @@ mod_sidebar_ui <- function(id){
           tabName = "coc_competition", # cocCompetitionTab
           icon = shiny::icon("flag-checkered")
         ),
-        # bs4Dash::bs4SidebarMenuItem(
-        #   text = "Mahoning CoC Competition",
-        #   tabName = "coc_competition_mahoning",
-        #   icon = shiny::icon("flag-checkered")
-        # ),
+        bs4Dash::bs4SidebarMenuItem(
+          text = "Mahoning CoC Competition",
+          tabName = "coc_competition_mahoning",
+          icon = shiny::icon("flag-checkered")
+        ),
         bs4Dash::bs4SidebarMenuItem(
           text = "Quarterly Performance",
           icon = shiny::icon("file-medical-alt"),

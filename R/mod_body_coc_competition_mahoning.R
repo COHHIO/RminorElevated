@@ -15,7 +15,7 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       inputId = ns("pe_provider"),
       label = "Select your CoC-funded Provider",
       choices = sort(pe_sum_val$AltProjectName) |> unique(),
-      selected = pe_sum_val$AltProjectName[1]
+      selected = NULL
     ),
     ui_row(
       title = "Score Summary",
@@ -46,10 +46,14 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "Length of Stay",
       DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
     ),
-    # ui_row(
-    #   title = "Median Homeless History Index",
-    #   DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
-    # ),
+    ui_row(
+      title = "Rapid Placement into Housing",
+      DT::dataTableOutput(ns("pe_OwnHousingMahoning"))
+    ),
+    ui_row(
+      title = "Median Homeless History Index",
+      DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
+    ),
     ui_row(
       title = "Long Term Homeless",
       DT::dataTableOutput(ns("pe_LongTermHomelessMahoning"))
@@ -67,6 +71,9 @@ mod_body_coc_competition_mahoning_ui <- function(id){
 mod_body_coc_competition_mahoning_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    output$header <- renderUI(server_header("2023 CoC Competition Renewal Project Evaluation",
+                                            x = shiny::h3(paste0("Reporting Period: 1/1/22 - 12/31/22")),
+                                            shiny::p("For more information visit the", a("Mahoning CoC Competition website", href = "https://www.mahoningcountyoh.gov/1043/CoC-Competition"))))
     pe_summary <- pe_summary_final_scoring_mahoning() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
                                   function(x) gsub("/", "÷", x))) |> 
@@ -86,7 +93,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
       pe_summary |>
         dplyr::filter(AltProjectName %in% input$pe_provider)
     })
-  # browser()
+    
     output$pe_ProjectSummaryMahoning <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
@@ -97,6 +104,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
             "Average Length of Stay" = AverageLoSPoints,
+            "Rapid Placement into Housing" = OwnHousingPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
             "Median Homeless History Index" = MedianHHIPoints,
@@ -117,6 +125,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
             "Average Length of Stay" = AverageLoSDQ,
+            "Rapid Placement into Housing" = OwnHousingDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
             "Median Homeless History Index" = MedianHHIDQ,
@@ -135,6 +144,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
             "Average Length of Stay" = AverageLoSPossible,
+            "Rapid Placement into Housing" = OwnHousingPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
             "Median Homeless History Index" = MedianHHIPossible,
@@ -156,6 +166,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
             "Average Length of Stay" = AverageLoSMath,
+            "Rapid Placement into Housing" = OwnHousingMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
             "Median Homeless History Index" = MedianHHIMath,
