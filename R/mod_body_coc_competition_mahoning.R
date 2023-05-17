@@ -11,6 +11,7 @@ mod_body_coc_competition_mahoning_ui <- function(id){
   ns <- NS(id)
   pe_sum_val <- pe_summary_validation_mahoning()
   tagList(
+    ui_header_row(),
     ui_picker_program(
       inputId = ns("pe_provider"),
       label = "Select your CoC-funded Provider",
