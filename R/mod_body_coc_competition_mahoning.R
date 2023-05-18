@@ -51,10 +51,10 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "Rapid Placement into Housing",
       DT::dataTableOutput(ns("pe_OwnHousingMahoning"))
     ),
-    ui_row(
-      title = "Median Homeless History Index",
-      DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
-    ),
+    # ui_row(
+    #   title = "Median Homeless History Index",
+    #   DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
+    # ),
     ui_row(
       title = "Long Term Homeless",
       DT::dataTableOutput(ns("pe_LongTermHomelessMahoning"))
@@ -108,7 +108,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Rapid Placement into Housing" = OwnHousingPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
-            "Median Homeless History Index" = MedianHHIPoints,
+            # "Median Homeless History Index" = MedianHHIPoints,
             "Long Term Homeless" = LongTermHomelessPoints,
             "VISPDAT Completion at Entry" = ScoredAtEntryPoints,
             "Data Quality" = DQPoints,
@@ -129,7 +129,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Rapid Placement into Housing" = OwnHousingDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
-            "Median Homeless History Index" = MedianHHIDQ,
+            # "Median Homeless History Index" = MedianHHIDQ,
             "Long Term Homeless" = LTHomelessDQ,
             "VISPDAT Completion at Entry" = ScoredAtEntryDQ,
             # "Housing First" = HousingFirstDQ,
@@ -148,7 +148,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Rapid Placement into Housing" = OwnHousingPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
-            "Median Homeless History Index" = MedianHHIPossible,
+            # "Median Homeless History Index" = MedianHHIPossible,
             "Long Term Homeless" = LongTermHomelessPossible,
             "VISPDAT Completion at Entry" =
               ScoredAtEntryPossible,
@@ -170,7 +170,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Rapid Placement into Housing" = OwnHousingMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
-            "Median Homeless History Index" = MedianHHIMath,
+            # "Median Homeless History Index" = MedianHHIMath,
             "Long Term Homeless" = LongTermHomelessMath,
             "VISPDAT Completion at Entry" =
               ScoredAtEntryMath,
@@ -361,6 +361,36 @@ mod_body_coc_competition_mahoning_server <- function(id){
     })
     output$pe_LengthOfStayMahoning <- DT::renderDataTable({
       pe_length_filter() |>
+        dplyr::select(
+          "Client ID" = UniqueID,
+          "Entry Date" = EntryDate,
+          "Move-In Date" = MoveInDateAdjust,
+          "Exit Date" = ExitDate,
+          "Days in Project" = DaysInProject
+        ) |> 
+        datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
+      
+    })
+    
+    # Rapid Placement into Housing
+    pe_own_filter <- eventReactive(input$pe_provider, {
+      pe_own_housing() |>
+        dplyr::filter(AltProjectName == input$pe_provider &
+                        ProjectType %in% c(3, 13)) |> 
+        dplyr::mutate(DaysInProject = DaysInProject / 86400)
+    })
+    
+    output$pe_OwnHousingMahoning <- DT::renderDataTable({
+      pe_own_filter() |>
         dplyr::select(
           "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
