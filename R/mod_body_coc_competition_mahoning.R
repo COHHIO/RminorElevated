@@ -43,10 +43,10 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "No Income at Entry",
       DT::dataTableOutput(ns("pe_NoIncomeAtEntryMahoning"))
     ),
-    ui_row(
-      title = "Length of Stay",
-      DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
-    ),
+    # ui_row(
+    #   title = "Length of Stay",
+    #   DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
+    # ),
     ui_row(
       title = "Rapid Placement into Housing",
       DT::dataTableOutput(ns("pe_OwnHousingMahoning"))
@@ -77,19 +77,9 @@ mod_body_coc_competition_mahoning_server <- function(id){
                                             shiny::p("For more information visit the", a("Mahoning CoC Competition website", href = "https://www.mahoningcountyoh.gov/1043/CoC-Competition"))))
     pe_summary <- pe_summary_final_scoring_mahoning() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
-                                  function(x) gsub("/", "÷", x))) |> 
-      # dplyr::filter(AltProjectName %in%
-      #                 c("Mahoning - Beatitude House - Permanent Supportive Housing Program - PSH",
-      #                   "Mahoning - Help Network - PSH Rental Assistance Program - PSH",
-      #                   "Mahoning - Help Network - Shelter Plus Care - PSH",
-      #                   "Mahoning - Meridian Services - Phoenix Court - PSH",
-      #                   "Mahoning - Meridian Services - Samaritan Housing PRA - PSH",
-      #                   "Mahoning - Meridian Services - Homeless Solutions SRO II - PSH",
-      #                   "Mahoning - Ursuline Center - Merici - PSH",
-      #                   "Mahoning - YWCA Permanent Housing for Disabled Families - PSH",
-      #                   "Mahoning - YWCA Scattered Site Housing II - PSH"
-      #                   )) |> 
+                                  function(x) gsub("/", "÷", x))) |>
       dplyr::distinct()
+
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
       pe_summary |>
         dplyr::filter(AltProjectName %in% input$pe_provider)
@@ -104,7 +94,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
-            "Average Length of Stay" = AverageLoSPoints,
+            # "Average Length of Stay" = AverageLoSPoints,
             "Rapid Placement into Housing" = OwnHousingPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
@@ -125,7 +115,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
-            "Average Length of Stay" = AverageLoSDQ,
+            # "Average Length of Stay" = AverageLoSDQ,
             "Rapid Placement into Housing" = OwnHousingDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
@@ -144,7 +134,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
-            "Average Length of Stay" = AverageLoSPossible,
+            # "Average Length of Stay" = AverageLoSPossible,
             "Rapid Placement into Housing" = OwnHousingPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
@@ -166,7 +156,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
-            "Average Length of Stay" = AverageLoSMath,
+            # "Average Length of Stay" = AverageLoSMath,
             "Rapid Placement into Housing" = OwnHousingMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
@@ -203,7 +193,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
           dplyr::filter(!is.na(`Estimated Score`))
         
         
-        
+
         datatable_default(
           estimated_score_dq |> 
             dplyr::select(1, Calculation, 2, "Estimated Score", "Possible Score" = 5, "Data Quality" = DQ),
@@ -354,32 +344,32 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
-    pe_length_filter <- eventReactive(input$pe_provider, {
-      pe_length_of_stay_mahoning() |>
-        dplyr::filter(AltProjectName == input$pe_provider &
-                        ProjectType %in% c(2, 8, 13))
-    })
-    output$pe_LengthOfStayMahoning <- DT::renderDataTable({
-      pe_length_filter() |>
-        dplyr::select(
-          "Client ID" = UniqueID,
-          "Entry Date" = EntryDate,
-          "Move-In Date" = MoveInDateAdjust,
-          "Exit Date" = ExitDate,
-          "Days in Project" = DaysInProject
-        ) |> 
-        datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
-                          escape = FALSE,
-                          options = list(
-                            initComplete = DT::JS(
-                              "function(settings, json) {",
-                              "$('th').css({'text-align': 'center'});",
-                              "$('td').css({'text-align': 'center'});",
-                              "}"
-                            )
-                          ))
-      
-    })
+    # pe_length_filter <- eventReactive(input$pe_provider, {
+    #   pe_length_of_stay_mahoning() |>
+    #     dplyr::filter(AltProjectName == input$pe_provider &
+    #                     ProjectType %in% c(2, 8, 13))
+    # })
+    # output$pe_LengthOfStayMahoning <- DT::renderDataTable({
+    #   pe_length_filter() |>
+    #     dplyr::select(
+    #       "Client ID" = UniqueID,
+    #       "Entry Date" = EntryDate,
+    #       "Move-In Date" = MoveInDateAdjust,
+    #       "Exit Date" = ExitDate,
+    #       "Days in Project" = DaysInProject
+    #     ) |> 
+    #     datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
+    #                       escape = FALSE,
+    #                       options = list(
+    #                         initComplete = DT::JS(
+    #                           "function(settings, json) {",
+    #                           "$('th').css({'text-align': 'center'});",
+    #                           "$('td').css({'text-align': 'center'});",
+    #                           "}"
+    #                         )
+    #                       ))
+    #   
+    # })
     
     # Rapid Placement into Housing
     pe_own_filter <- eventReactive(input$pe_provider, {
