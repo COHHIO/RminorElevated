@@ -43,6 +43,10 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "No Income at Entry",
       DT::dataTableOutput(ns("pe_NoIncomeAtEntryMahoning"))
     ),
+    ui_row(
+      title = "Increased Income",
+      DT::dataTableOutput(ns("pe_IncreaseIncomeMahoning"))
+    ),
     # ui_row(
     #   title = "Length of Stay",
     #   DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
@@ -94,7 +98,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
-            # "Average Length of Stay" = AverageLoSPoints,
+            "Increased Income" = IncreasedIncomePoints,
             "Rapid Placement into Housing" = OwnHousingPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
@@ -115,7 +119,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
-            # "Average Length of Stay" = AverageLoSDQ,
+            "Increased Income" = IncreasedIncomeDQ,
             "Rapid Placement into Housing" = OwnHousingDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
@@ -134,7 +138,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
-            # "Average Length of Stay" = AverageLoSPossible,
+            "Increased Income" = IncreasedIncomePossible,
             "Rapid Placement into Housing" = OwnHousingPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
@@ -156,7 +160,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
-            # "Average Length of Stay" = AverageLoSMath,
+            "Increased Income" = IncreasedIncomeMath,
             "Rapid Placement into Housing" = OwnHousingMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
@@ -186,7 +190,13 @@ mod_body_coc_competition_mahoning_server <- function(id){
               DQflag == 3 ~ "", # "Docs received, not yet scored",
               DQflag == 4 ~ "", # "CoC Error",
               DQflag == 5 ~ "" # "Docs received past the due date"
-            )
+            ),
+            "Estimated Score" = dplyr::if_else(
+              Measure == "Long Term Homeless", 0, `Estimated Score`
+            ),
+            "Possible Score" = dplyr::if_else(
+              Measure == "Long Term Homeless", 0, `Possible Score`
+            ),
           ) |> 
           dplyr::filter(!Measure %in% c("Prioritization of Chronic",
                                         "Prioritization Workgroup")) |>
