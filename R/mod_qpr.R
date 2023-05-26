@@ -95,7 +95,7 @@ mod_qpr_server <- function(id, header, ...){
     rlang::abort("Must provide header for mod_QPR_server(",id,")")
   function(input, output, session){
     ns <- session$ns
-    
+
     # Header
     output$header <- shiny::renderUI({
       req(input$date_range)
