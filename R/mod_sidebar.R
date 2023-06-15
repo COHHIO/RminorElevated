@@ -135,11 +135,11 @@ mod_sidebar_ui <- function(id){
             tabName = "qpr_rrh_spending" # spending-Tab
           )
         ),
-        bs4Dash::bs4SidebarMenuItem(
-          text = "Mahoning Performance",
-          tabName = "mpo_length_of_stay",
-          icon = shiny::icon("file-medical-alt")
-        ),
+        # bs4Dash::bs4SidebarMenuItem(
+        #   text = "Mahoning Performance",
+        #   tabName = "mpo_length_of_stay",
+        #   icon = shiny::icon("file-medical-alt")
+        # ),
         bs4Dash::bs4SidebarMenuItem(
           text = "Agency & Program Lookup",
           tabName = "program_lookup",
