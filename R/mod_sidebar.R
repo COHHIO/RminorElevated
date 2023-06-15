@@ -137,7 +137,7 @@ mod_sidebar_ui <- function(id){
         ),
         bs4Dash::bs4SidebarMenuItem(
           text = "Mahoning Performance",
-          tabName = "performance",
+          tabName = "mpo_length_of_stay",
           icon = shiny::icon("file-medical-alt")
         ),
         bs4Dash::bs4SidebarMenuItem(

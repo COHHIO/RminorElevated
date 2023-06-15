@@ -1,10 +1,10 @@
 .qbegin <- lubridate::floor_date(Sys.Date(), "quarter")
 strip_id <- function(id) {
-  stringr::str_remove(id, "^(?:body\\-)?body\\_qpr\\_")
+  stringr::str_remove(id, "^(?:body\\-)?body\\_mpo\\_")
 }
-#' @family QPR
-#' @title QPR UI Function
-#' @description A shiny Module to generate the QPR UI.
+#' @family MPO
+#' @title MPO UI Function
+#' @description A shiny Module to generate the MPO UI.
 #' @param id Internal parameters for {shiny}.
 #' @param choices \code{(named list)} of arguments to \link[shinyWidgets]{pickerInput}.
 #'  `FALSE` to omit the choice drop-down selector. - choices must be provided 
@@ -23,7 +23,7 @@ strip_id <- function(id) {
 #' @param date_choices \code{(logical)} whether to show a date range picker
 
 
-mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::caller_env()$ns) {
+mod_mpo_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::caller_env()$ns) {
   # Create labeled Quarter List
   # .quarter_labels <- rev(unique(zoo::Sys.yearqtr() - 6 / 4:zoo::Sys.yearqtr() 
   #+ 1 / 4))
@@ -32,17 +32,17 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
   force(ns)
   .id <- strip_id(id)
   .defaults <- purrr::compact(list(
-  Dates = if (!isFALSE(date_choices)) list(
-    inputId = ns("date_range"),
-    start = lubridate::floor_date(lubridate::as_date(.qbegin - lubridate::dmonths(4)), "quarter"),
-    end = .qbegin
-  ),
-  Regions = if (!isFALSE(choices))
-    list(
-      inputId = ns("region"),
-      choices = qpr_tab_choices[[.id]]$choices,
-      multiple = FALSE
-    )
+    Dates = if (!isFALSE(date_choices)) list(
+      inputId = ns("date_range"),
+      start = lubridate::floor_date(lubridate::as_date(.qbegin - lubridate::dmonths(4)), "quarter"),
+      end = .qbegin
+    ),
+    Regions = if (!isFALSE(choices))
+      list(
+        inputId = ns("region"),
+        choices = qpr_tab_choices[[.id]]$choices,
+        multiple = FALSE
+      )
   ))
   .user <- purrr::compact(list(
     Dates = date_choices,
@@ -68,16 +68,16 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
     )
     ,
     ui_row(
-      iterate(qpr_expr[[.id]]$infobox, bs4Dash::infoBoxOutput, "ib_summary", width = 12)
+      iterate(mpo_expr[[.id]]$infobox, bs4Dash::infoBoxOutput, "ib_summary", width = 12)
       ,
-      iterate(qpr_expr[[.id]]$datatable, DT::DTOutput, "dt_detail")
+      iterate(mpo_expr[[.id]]$datatable, DT::DTOutput, "dt_detail")
     )
   )
   
 }
 
-#' @family QPR
-#' @title QPR Server Functions
+#' @family MPO
+#' @title MPO Server Functions
 #' @description A shiny server Module to generate the header, slider, pickers 
 #' and plot for each tabitem.
 #' @param id,input,output,session Internal parameters for {shiny}.
@@ -89,11 +89,11 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
 #'  unspecified. 
 
 
-mod_qpr_server <- function(id, header, ...){
+mod_mpo_server <- function(id, header, ...){
   .id <- strip_id(id)
-
+  
   if (missing(header)) 
-    rlang::abort("Must provide header for mod_QPR_server(",id,")")
+    rlang::abort("Must provide header for mod_mpo_server(",id,")")
   function(input, output, session){
     ns <- session$ns
     # Header
@@ -103,28 +103,28 @@ mod_qpr_server <- function(id, header, ...){
     })
     
     # Process Data
-    data_env <- shiny::reactive(qpr_expr[[.id]]$expr, quoted = TRUE)
-    if (UU::is_legit(qpr_expr[[.id]]$infobox)) {
-      if (rlang::is_list(qpr_expr[[.id]]$infobox))
-        x <- qpr_expr[[.id]]$infobox
+    data_env <- shiny::reactive(mpo_expr[[.id]]$expr, quoted = TRUE)
+    if (UU::is_legit(mpo_expr[[.id]]$infobox)) {
+      if (rlang::is_list(mpo_expr[[.id]]$infobox))
+        x <- mpo_expr[[.id]]$infobox
       else
-        x <- list(qpr_expr[[.id]]$infobox)
+        x <- list(mpo_expr[[.id]]$infobox)
       for (i in seq_along(x)) {
         output[[paste0("ib_summary",i)]] <- bs4Dash::renderbs4InfoBox(x[[i]], quoted = TRUE)
       }  
     }
-      # output$ib_summary1 <- bs4Dash::renderbs4InfoBox(qpr_expr[[.id]]$infobox, 
-      #                                                  quoted = TRUE)
+    # output$ib_summary1 <- bs4Dash::renderbs4InfoBox(mpo_expr[[.id]]$infobox, 
+    #                                                  quoted = TRUE)
     
     
-    if (rlang::is_list(qpr_expr[[.id]]$datatable)) {
-      for (i in seq_along(qpr_expr[[.id]]$datatable)) {
-        output[[paste0("dt_detail",i)]] <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable[[i]], quoted = TRUE)
+    if (rlang::is_list(mpo_expr[[.id]]$datatable)) {
+      for (i in seq_along(mpo_expr[[.id]]$datatable)) {
+        output[[paste0("dt_detail",i)]] <- DT::renderDT(server = FALSE, mpo_expr[[.id]]$datatable[[i]], quoted = TRUE)
       }
     } else {
-      output$dt_detail1 <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable, quoted = TRUE)
+      output$dt_detail1 <- DT::renderDT(server = FALSE, mpo_expr[[.id]]$datatable, quoted = TRUE)
     }
-      
+    
   }
 }
 
