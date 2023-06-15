@@ -136,6 +136,11 @@ mod_sidebar_ui <- function(id){
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
+          text = "Mahoning Performance",
+          tabName = "performance",
+          icon = shiny::icon("file-medical-alt")
+        ),
+        bs4Dash::bs4SidebarMenuItem(
           text = "Agency & Program Lookup",
           tabName = "program_lookup",
           icon = shiny::icon("search")
