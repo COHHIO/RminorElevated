@@ -21,9 +21,11 @@ mod_body_mpo_ui <- function(id){
     ),
     ui_row(
       title = "Lenght of Stay",
-      DT::dataTableOutput(ns("mpo_LengthOfStay")),
-      status = "info",
-      solidHeader = TRUE
+      DT::dataTableOutput(ns("mpo_LengthOfStay"))
+    ),
+    ui_row(
+      title = "Health Insurance",
+      DT::dataTableOutput(ns("mpo_HealthInsurance"))
     )
     # ui_row(
     #   title = "Exits to Permanent Housing",
@@ -77,23 +79,63 @@ mod_body_mpo_server <- function(id){
         )
       })
     
+    #### Health Insurance
+    mpo_benefits <- qpr_benefits() |>
+      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    
+    mpo_health <- eventReactive(input$mpo_type, {
+      mpo_benefits_m <- mpo_benefits |> 
+        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      
+      data <- dplyr::left_join(
+        # all_hhs
+        mpo_benefits_m |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(TotalHHs = dplyr::n(), .groups = "drop_last"),
+        # meeting_objective
+        mpo_benefits_m |> 
+          dplyr::filter(InsuranceFromAnySource == 1) |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(InsuranceAtExit = dplyr::n(), .groups = "drop_last"),
+        by = c("ProjectName")
+      ) |> 
+        dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
+        dplyr::mutate(Percent = InsuranceAtExit / TotalHHs)
+      
+      data
+      
+    })
+    
+    output$mpo_HealthInsurance <-
+      DT::renderDataTable({
+        health <- mpo_health()
+        
+        datatable_default(
+          health,
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+        )
+      })
+    
     #### Exits to Permanent Housing
     # leavers <- qpr_leavers()
     # 
     # by_type <- eventReactive(input$mpo_type, {
-    #   leavers |> 
+    #   leavers |>
     #     dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
     # })
-    # exited <- by_type |> 
+    # exited <- qpr_leavers() |>
     #   HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
-    # served <- by_type |> 
+    # served <- qpr_leavers() |>
     #   HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
     # 
+    # by_type2 <- by_type()
+    # psh_hp <- by_type2$ProjectType %in% c(3, 9, 12)
+    # es_th_sh_out_rrh <- by_type2$ProjectType %in% c(1, 2, 4, 8, 13)
     # 
-    # psh_hp <- by_type$ProjectType %in% c(3, 9, 12)
-    # es_th_sh_out_rrh <- by_type$ProjectType %in% c(1, 2, 4, 8, 13)
-    
-    # SuccessfullyPlaced <- dplyr::filter(by_type,
+    # SuccessfullyPlaced <- dplyr::filter(by_type2,
     #                                     ((ProjectType %in% c(3, 9, 13) &
     #                                         !is.na(MoveInDateAdjust)) |
     #                                        ProjectType %in% c(1, 2, 4, 8, 12)
@@ -111,35 +153,35 @@ mod_body_mpo_server <- function(id){
     #                                             exited
     #                                         )
     #                                       ))
-    
-    # calculating the total households to compare successful placements to
-    # TotalHHsSuccessfulPlacement <- 
-    #   dplyr::filter(by_type,
-    #                 (served & psh_hp) # PSH & HP
-    #                 |
-    #                   (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
-    #   )
-    # Success <- SuccessfullyPlaced |> dplyr::count(ProjectName)
-    # Total <- TotalHHsSuccessfulPlacement |> dplyr::count(ProjectName)
-    
-    # PHTable <- dplyr::left_join(Success, Total, by = "ProjectName")
-    
-    # Table
-    # output$mpo_PermanentHousing <- DT::renderDataTable({
-    #   Total |>
-    #     datatable_default(caption = "PSH: Heads of Household |
-    #                       TH, RRH: Heads of Household Leavers",
-    #                       escape = FALSE,
-    #                       options = list(
-    #                         initComplete = DT::JS(
-    #                           "function(settings, json) {",
-    #                           "$('th').css({'text-align': 'center'});",
-    #                           "$('td').css({'text-align': 'center'});",
-    #                           "}"
-    #                         )
-    #                       ))
-      
-    # })
+    # 
+    # # calculating the total households to compare successful placements to
+    # TotalHHsSuccessfulPlacement <-
+    #   dplyr::filter(by_type2,
+    #                (served & psh_hp) # PSH & HP
+    #                  |
+    #                    (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
+    #    )
+    #  Success <- SuccessfullyPlaced |> dplyr::count(ProjectName)
+    #  Total <- TotalHHsSuccessfulPlacement |> dplyr::count(ProjectName)
+    # 
+    #  PHTable <- dplyr::left_join(Success, Total, by = "ProjectName")
+    # 
+    # # Table
+    #  output$mpo_PermanentHousing <- DT::renderDataTable({
+    #    PHTable |>
+    #      datatable_default(caption = "PSH: Heads of Household |
+    #                        TH, RRH: Heads of Household Leavers",
+    #                        escape = FALSE,
+    #                        options = list(
+    #                          initComplete = DT::JS(
+    #                            "function(settings, json) {",
+    #                            "$('th').css({'text-align': 'center'});",
+    #                            "$('td').css({'text-align': 'center'});",
+    #                            "}"
+    #                          )
+    #                        ))
+    # 
+    #  })
     
     
     
