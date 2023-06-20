@@ -30,6 +30,14 @@ mod_body_mpo_ui <- function(id){
     ui_row(
       title = "Noncash Benefits",
       DT::dataTableOutput(ns("mpo_NoncashBenefits"))
+    ),
+    ui_row(
+      title = "Income Growth",
+      DT::dataTableOutput(ns("mpo_IncomeGrowth"))
+    ),
+    ui_row(
+      title = "Rapid Replacement for RRH",
+      DT::dataTableOutput(ns("mpo_Replacment"))
     )
     # ui_row(
     #   title = "Exits to Permanent Housing",
@@ -160,6 +168,76 @@ mod_body_mpo_server <- function(id){
                                                                                                                                          75, 100, 1000), lengthChange = TRUE, pageLength = 10)
         )
       })
+    
+    #### Income Growth
+    mpo_income <- qpr_income() |>
+      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    
+    mpo_income_growth <- eventReactive(input$mpo_type, {
+      mpo_income_m <- mpo_income |> 
+        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      
+      data <- dplyr::left_join(
+        # all_hhs
+        mpo_income_m |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(TotalHHs = dplyr::n(), .groups = "drop_last"),
+        # meeting_objective
+        mpo_income_m |> 
+          dplyr::filter(Difference > 0) |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(Increased = dplyr::n(), .groups = "drop_last"),
+        by = c("ProjectName")
+      ) |> 
+        dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
+        dplyr::mutate(Percent = Increased / TotalHHs)
+      
+      data
+      
+    })
+    
+    output$mpo_IncomeGrowth <-
+      DT::renderDataTable({
+        income_growth <- mpo_income_growth()
+        
+        datatable_default(
+          income_growth,
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+        )
+      })
+    
+    #### Rapid Replacement for RRH
+    mpo_rrh_enterers <- qpr_rrh_enterers() |>
+      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    
+    mpo_replacment <- eventReactive(input$mpo_type, {
+      mpo_rrh_enterers_m <- mpo_rrh_enterers |> 
+        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      
+      data <- mpo_rrh_enterers_m |>
+        dplyr::mutate(DaysToHouse = difftime(MoveInDateAdjust, EntryDate, units = "days")) |>
+        dplyr::summarise(AvgDaysToHouse = round(mean(DaysToHouse), 0), .groups = "drop_last")
+      
+      data
+      
+    })
+    
+    output$mpo_Replacement <-
+      DT::renderDataTable({
+        replacement <- mpo_replacment()
+        
+        datatable_default(
+          replacement,
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+        )
+      })
+    
     #### Exits to Permanent Housing
     # leavers <- qpr_leavers()
     # 
