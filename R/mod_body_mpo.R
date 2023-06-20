@@ -26,6 +26,10 @@ mod_body_mpo_ui <- function(id){
     ui_row(
       title = "Health Insurance",
       DT::dataTableOutput(ns("mpo_HealthInsurance"))
+    ),
+    ui_row(
+      title = "Noncash Benefits",
+      DT::dataTableOutput(ns("mpo_NoncashBenefits"))
     )
     # ui_row(
     #   title = "Exits to Permanent Housing",
@@ -119,6 +123,43 @@ mod_body_mpo_server <- function(id){
         )
       })
     
+    #### Non-cash benefits at Exit
+    
+    mpo_noncash <- eventReactive(input$mpo_type, {
+      mpo_benefits_m <- mpo_benefits |> 
+        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      
+      data <- dplyr::left_join(
+        # all_hhs
+        mpo_benefits_m |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(TotalHHs = dplyr::n(), .groups = "drop_last"),
+        # meeting_objective
+        mpo_benefits_m |> 
+          dplyr::filter(BenefitsFromAnySource == 1) |> 
+          dplyr::group_by(ProjectName) |>
+          dplyr::summarise(BenefitsAtExit = dplyr::n(), .groups = "drop_last"),
+        by = c("ProjectName")
+      ) |> 
+        dplyr::mutate(dplyr::across(where(is.numeric), tidyr::replace_na, 0)) |> 
+        dplyr::mutate(Percent = BenefitsAtExit / TotalHHs)
+      
+      data
+      
+    })
+    
+    output$mpo_NoncashBenefits <-
+      DT::renderDataTable({
+        noncash <- mpo_noncash()
+        
+        datatable_default(
+          noncash,
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+        )
+      })
     #### Exits to Permanent Housing
     # leavers <- qpr_leavers()
     # 
