@@ -38,11 +38,11 @@ mod_body_mpo_ui <- function(id){
     ui_row(
       title = "Rapid Replacement for RRH",
       DT::dataTableOutput(ns("mpo_Replacment"))
+    ),
+    ui_row(
+      title = "Exits to Permanent Housing",
+      DT::dataTableOutput(ns("mpo_PermanentHousing"))
     )
-    # ui_row(
-    #   title = "Exits to Permanent Housing",
-    #   DT::dataTableOutput(ns("mpo_PermanentHousing"))
-    # )
   )
 }
 
@@ -239,68 +239,84 @@ mod_body_mpo_server <- function(id){
       })
     
     #### Exits to Permanent Housing
-    # leavers <- qpr_leavers()
-    # 
-    # by_type <- eventReactive(input$mpo_type, {
-    #   leavers |>
-    #     dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
-    # })
-    # exited <- qpr_leavers() |>
-    #   HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
-    # served <- qpr_leavers() |>
-    #   HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
-    # 
-    # by_type2 <- by_type()
-    # psh_hp <- by_type2$ProjectType %in% c(3, 9, 12)
-    # es_th_sh_out_rrh <- by_type2$ProjectType %in% c(1, 2, 4, 8, 13)
-    # 
-    # SuccessfullyPlaced <- dplyr::filter(by_type2,
-    #                                     ((ProjectType %in% c(3, 9, 13) &
-    #                                         !is.na(MoveInDateAdjust)) |
-    #                                        ProjectType %in% c(1, 2, 4, 8, 12)
-    #                                     ) &
-    #                                       # excluding non-mover-inners
-    #                                       (((DestinationGroup == "Permanent" |
-    #                                            #exited to ph or still in PSH/HP
-    #                                            is.na(ExitDate)) &
-    #                                           psh_hp & # PSH & HP
-    #                                           served
-    #                                       ) |
-    #                                         (
-    #                                           DestinationGroup == "Permanent" & # exited to ph
-    #                                             es_th_sh_out_rrh &
-    #                                             exited
-    #                                         )
-    #                                       ))
-    # 
-    # # calculating the total households to compare successful placements to
-    # TotalHHsSuccessfulPlacement <-
-    #   dplyr::filter(by_type2,
-    #                (served & psh_hp) # PSH & HP
-    #                  |
-    #                    (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
-    #    )
-    #  Success <- SuccessfullyPlaced |> dplyr::count(ProjectName)
-    #  Total <- TotalHHsSuccessfulPlacement |> dplyr::count(ProjectName)
-    # 
-    #  PHTable <- dplyr::left_join(Success, Total, by = "ProjectName")
-    # 
+    
+    SuccessfullyPlaced <- eventReactive(input$mpo_type, {
+      mpo_leavers <- qpr_leavers() |>
+          dplyr::mutate(ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |> 
+          dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      browser()
+      exited <- mpo_leavers |>
+        HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+      served <- mpo_leavers |>
+        HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+      
+      psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
+      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
+      
+      dplyr::filter(mpo_leavers,
+                                          ((ProjectType %in% c(3, 9, 13) &
+                                              !is.na(MoveInDateAdjust)) |
+                                             ProjectType %in% c(1, 2, 4, 8, 12)
+                                          ) &
+                                            # excluding non-mover-inners
+                                            (((DestinationGroup == "Permanent" |
+                                                 #exited to ph or still in PSH/HP
+                                                 is.na(ExitDate)) &
+                                                psh_hp & # PSH & HP
+                                                served
+                                            ) |
+                                              (
+                                                DestinationGroup == "Permanent" & # exited to ph
+                                                  es_th_sh_out_rrh &
+                                                  exited
+                                              )
+                                            ))
+    })
+    
+    TotalHHsSuccessfulPlacement <- eventReactive(input$mpo_type, {
+      mpo_leavers <- qpr_leavers() |>
+        dplyr::mutate(ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
+        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+      
+      exited <- mpo_leavers |>
+        HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+      served <- mpo_leavers |>
+        HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+      
+      psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
+      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
+      
+      # # calculating the total households to compare successful placements to
+      dplyr::filter(mpo_leavers, ProjectType == input$mpo_type) |>  
+      dplyr::filter((served & psh_hp) # PSH & HP
+                      |
+                        (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
+        )
+    })
+    
+
+    
+     
+
     # # Table
-    #  output$mpo_PermanentHousing <- DT::renderDataTable({
-    #    PHTable |>
-    #      datatable_default(caption = "PSH: Heads of Household |
-    #                        TH, RRH: Heads of Household Leavers",
-    #                        escape = FALSE,
-    #                        options = list(
-    #                          initComplete = DT::JS(
-    #                            "function(settings, json) {",
-    #                            "$('th').css({'text-align': 'center'});",
-    #                            "$('td').css({'text-align': 'center'});",
-    #                            "}"
-    #                          )
-    #                        ))
-    # 
-    #  })
+     output$mpo_PermanentHousing <- DT::renderDataTable({
+       successfully_placed <- SuccessfullyPlaced()
+       Success <- successfully_placed |> dplyr::count(ProjectName)
+       
+       total_hhs_successful_placement <- TotalHHsSuccessfulPlacement()
+       Total <- total_hhs_successful_placement |> dplyr::count(ProjectName)
+       
+       PHTable <- dplyr::left_join(Success, Total, by = "ProjectName")
+       
+       datatable_default(
+         PHTable,
+         options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                        list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                               list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                        75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+       )
+
+     })
     
     
     
