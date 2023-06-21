@@ -1,3 +1,9 @@
+goals <-  arrow::read_feather("data/mahoning_goals.feather") |>
+  tidyr::pivot_longer(- tidyselect::all_of(c("Measure", "Operator")),  names_to = "ProjectType",
+                      values_to = "Goal") |>
+  dplyr::mutate(ProjectType = as.numeric(ProjectType)) |>
+  dplyr::filter(!is.na(Goal))
+
 #' body_coc_competition UI Function
 #'
 #' @description A shiny Module.
@@ -9,18 +15,21 @@
 #' @importFrom shiny NS tagList 
 mod_body_mpo_ui <- function(id){
   ns <- NS(id)
-  mpo <- qpr_income()
+  
   tagList(
     ui_header_row(),
     ui_picker_program(
       inputId = ns("mpo_type"),
       label = "Select your Project Type",
-      choices = sort(mpo$ProjectType) |> unique(),
+      choices = c("PH - Permanent Supportive Housing",
+                  "Emergency Shelter",
+                  "PH - Rapid Re-Housing",
+                  "Transitional Housing"),
       selected = NULL,
       multiple = FALSE
     ),
     ui_row(
-      title = "Lenght of Stay",
+      title = "Length of Stay",
       DT::dataTableOutput(ns("mpo_LengthOfStay"))
     ),
     ui_row(
@@ -37,7 +46,7 @@ mod_body_mpo_ui <- function(id){
     ),
     ui_row(
       title = "Rapid Replacement for RRH",
-      DT::dataTableOutput(ns("mpo_Replacment"))
+      DT::dataTableOutput(ns("mpo_Replacement"))
     ),
     ui_row(
       title = "Exits to Permanent Housing",
@@ -53,6 +62,13 @@ mod_body_mpo_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     output$header <- renderUI(server_header("Mahoning Performance & Outcomes"))
+    
+    measure <- eventReactive(input$mpo_type, {
+      goals |>dplyr::mutate(
+        ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
+      ) |> 
+      dplyr::filter(ProjectType == input$mpo_type)
+    })
     
     #### Length of Stay
     mpo_leavers <- qpr_leavers() |>
@@ -81,15 +97,25 @@ mod_body_mpo_server <- function(id){
     output$mpo_LengthOfStay <-
       DT::renderDataTable({
         length_of_stay <- mpo_length_of_stay()
+        length_of_stay_measure <- measure()
         
-        datatable_default(
-          length_of_stay,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-        )
-      })
+        goal <- length_of_stay_measure |> 
+          dplyr::filter(Measure == "Average Length of Stay") |> 
+          dplyr::pull(Goal)
+        if (length(goal) > 0) {
+          datatable_default(
+            length_of_stay,
+            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                           list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          ) |> 
+            DT::formatStyle(
+              'Average',
+              backgroundColor = DT::styleInterval(goal, c('green', 'red'))
+            )
+        }
+      }) 
     
     #### Health Insurance
     mpo_benefits <- qpr_benefits() |>
@@ -121,14 +147,26 @@ mod_body_mpo_server <- function(id){
     output$mpo_HealthInsurance <-
       DT::renderDataTable({
         health <- mpo_health()
+        health_measure <- measure()
         
-        datatable_default(
-          health,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-        )
+        goal <- health_measure |> 
+          dplyr::filter(Measure == "Health Insurance at Exit") |> 
+          dplyr::pull(Goal)
+        
+        if (length(goal) > 0) {
+          datatable_default(
+            health,
+            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                           list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          ) |>
+            DT::formatStyle(
+              'Percent',
+              backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+            ) |> 
+            DT::formatPercentage(c("Percent"), 1)
+        }
       })
     
     #### Non-cash benefits at Exit
@@ -159,14 +197,25 @@ mod_body_mpo_server <- function(id){
     output$mpo_NoncashBenefits <-
       DT::renderDataTable({
         noncash <- mpo_noncash()
+        noncash_measure <- measure()
         
-        datatable_default(
-          noncash,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-        )
+        goal <- noncash_measure |> 
+          dplyr::filter(Measure == "Non-cash Benefits") |> 
+          dplyr::pull(Goal)
+        if (length(goal) > 0) {
+          datatable_default(
+            noncash,
+            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                           list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          ) |> 
+            DT::formatStyle(
+              'Percent',
+              backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+            ) |> 
+            DT::formatPercentage(c("Percent"), 1)
+        }
       })
     
     #### Income Growth
@@ -199,14 +248,26 @@ mod_body_mpo_server <- function(id){
     output$mpo_IncomeGrowth <-
       DT::renderDataTable({
         income_growth <- mpo_income_growth()
+        income_measure <- measure()
         
-        datatable_default(
-          income_growth,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-        )
+        goal <- income_measure |> 
+          dplyr::filter(Measure == "Gain or Increase Income") |> 
+          dplyr::pull(Goal)
+        
+        if (length(goal) > 0) {
+          datatable_default(
+            income_growth,
+            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                           list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          ) |> 
+            DT::formatStyle(
+              'Percent',
+              backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+            ) |> 
+            DT::formatPercentage(c("Percent"), 1)
+        }
       })
     
     #### Rapid Replacement for RRH
@@ -214,12 +275,16 @@ mod_body_mpo_server <- function(id){
       HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
     
     mpo_replacment <- eventReactive(input$mpo_type, {
-      mpo_rrh_enterers_m <- mpo_rrh_enterers |> 
+      mpo_rrh_enterers_m <- mpo_rrh_enterers |>
+        dplyr::mutate(
+          ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
+        ) |> 
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- mpo_rrh_enterers_m |>
         dplyr::mutate(DaysToHouse = difftime(MoveInDateAdjust, EntryDate, units = "days")) |>
-        dplyr::summarise(AvgDaysToHouse = round(mean(DaysToHouse), 0), .groups = "drop_last")
+        dplyr::group_by(ProjectName) |>
+        dplyr::summarise(AvgDaysToHouse = round(mean(DaysToHouse, na.rm = TRUE), 0), .groups = "drop_last")
       
       data
       
@@ -228,23 +293,34 @@ mod_body_mpo_server <- function(id){
     output$mpo_Replacement <-
       DT::renderDataTable({
         replacement <- mpo_replacment()
+        replacement_measure <- measure()
         
-        datatable_default(
-          replacement,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-        )
+        goal <- replacement_measure |> 
+          dplyr::filter(Measure == "Rapid Placement for RRH") |> 
+          dplyr::pull(Goal)
+
+        if (length(goal) > 0) {
+          datatable_default(
+            replacement,
+            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                           list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+          ) |> 
+            DT::formatStyle(
+              'AvgDaysToHouse',
+              backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+            )
+        }
       })
     
     #### Exits to Permanent Housing
     
     SuccessfullyPlaced <- eventReactive(input$mpo_type, {
       mpo_leavers <- qpr_leavers() |>
-          dplyr::mutate(ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |> 
-          dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
-      browser()
+          dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |> 
+          dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+
       exited <- mpo_leavers |>
         HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
       served <- mpo_leavers |>
@@ -253,7 +329,7 @@ mod_body_mpo_server <- function(id){
       psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
       es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
       
-      dplyr::filter(mpo_leavers,
+      data <- dplyr::filter(mpo_leavers,
                                           ((ProjectType %in% c(3, 9, 13) &
                                               !is.na(MoveInDateAdjust)) |
                                              ProjectType %in% c(1, 2, 4, 8, 12)
@@ -271,13 +347,16 @@ mod_body_mpo_server <- function(id){
                                                   exited
                                               )
                                             ))
+      
+      data
+      
     })
     
     TotalHHsSuccessfulPlacement <- eventReactive(input$mpo_type, {
       mpo_leavers <- qpr_leavers() |>
-        dplyr::mutate(ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
-        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
-      
+        dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
+        dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+
       exited <- mpo_leavers |>
         HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
       served <- mpo_leavers |>
@@ -287,11 +366,13 @@ mod_body_mpo_server <- function(id){
       es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
       
       # # calculating the total households to compare successful placements to
-      dplyr::filter(mpo_leavers, ProjectType == input$mpo_type) |>  
-      dplyr::filter((served & psh_hp) # PSH & HP
+      data <- dplyr::filter(mpo_leavers, ProjectTypeLong == input$mpo_type) |>  
+        dplyr::filter((served & psh_hp) # PSH & HP
                       |
                         (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
         )
+      
+      data
     })
     
 
@@ -306,15 +387,31 @@ mod_body_mpo_server <- function(id){
        total_hhs_successful_placement <- TotalHHsSuccessfulPlacement()
        Total <- total_hhs_successful_placement |> dplyr::count(ProjectName)
        
-       PHTable <- dplyr::left_join(Success, Total, by = "ProjectName")
+       PHTable <- dplyr::left_join(Success, Total, by = "ProjectName") |> 
+         dplyr::rename("Successfully Placed" = n.x,
+                       "Total Households" = n.y) |> 
+         dplyr::mutate(Percent = `Successfully Placed` / `Total Households`)
        
-       datatable_default(
-         PHTable,
-         options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                        list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                               list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                        75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-       )
+       permanent_housing_measure <- measure()
+       
+       goal <- permanent_housing_measure |> 
+         dplyr::filter(Measure == "Exits to Permanent Housing") |> 
+         dplyr::pull(Goal)
+       
+       if (length(goal) > 0) {
+         datatable_default(
+           PHTable,
+           options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                 list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                          75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+         ) |> 
+           DT::formatStyle(
+             'Percent',
+             backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+           ) |> 
+           DT::formatPercentage(c("Percent"), 1)
+       }
 
      })
     
