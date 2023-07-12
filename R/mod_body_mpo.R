@@ -15,7 +15,7 @@ goals <-  arrow::read_feather("data/mahoning_goals.feather") |>
 #' @importFrom shiny NS tagList 
 mod_body_mpo_ui <- function(id){
   ns <- NS(id)
-  
+  report_end <- lubridate::floor_date(Sys.Date(), "month")
   tagList(
     ui_header_row(),
     ui_picker_program(
@@ -28,6 +28,8 @@ mod_body_mpo_ui <- function(id){
       selected = NULL,
       multiple = FALSE
     ),
+    ui_date_range(start = report_end - lubridate::years(1) - lubridate::days(1),
+                  end = report_end),
     ui_row(
       title = "Length of Stay",
       DT::dataTableOutput(ns("mpo_LengthOfStay"))
@@ -63,7 +65,10 @@ mod_body_mpo_server <- function(id){
     ns <- session$ns
     output$header <- renderUI(server_header("Mahoning Performance & Outcomes"))
     
+    server_debounce(input$mpo_type, input$date_range)
+    
     measure <- eventReactive(input$mpo_type, {
+      req(input$mpo_type)
       goals |>dplyr::mutate(
         ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
       ) |> 
@@ -71,8 +76,10 @@ mod_body_mpo_server <- function(id){
     })
     
     #### Length of Stay
-    mpo_leavers <- qpr_leavers() |>
-      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31")) |> 
+    mpo_leavers <- eventReactive(input$date_range, {
+      req(input$date_range)
+      qpr_leavers() |>
+      HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
       dplyr::filter(((
         !is.na(MoveInDateAdjust) & ProjectType == 13
       ) |
@@ -84,9 +91,11 @@ mod_body_mpo_server <- function(id){
       dplyr::mutate(
         ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
       )
+    })
     
     mpo_length_of_stay <- eventReactive(input$mpo_type, {
-      mpo_leavers |>
+      req(input$mpo_type)
+      mpo_leavers() |>
         dplyr::filter(ProjectType == input$mpo_type) |> 
         dplyr::group_by(ProjectName) |>
         dplyr::summarise(Average = round(mean(DaysinProject), 1),
@@ -118,11 +127,13 @@ mod_body_mpo_server <- function(id){
       }) 
     
     #### Health Insurance
-    mpo_benefits <- qpr_benefits() |>
-      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    mpo_benefits <- eventReactive(input$date_range, {
+      qpr_benefits() |>
+      HMIS::exited_between(input$date_range[1], input$date_range[2])
+    })
     
     mpo_health <- eventReactive(input$mpo_type, {
-      mpo_benefits_m <- mpo_benefits |> 
+      mpo_benefits_m <- mpo_benefits() |> 
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -172,7 +183,7 @@ mod_body_mpo_server <- function(id){
     #### Non-cash benefits at Exit
     
     mpo_noncash <- eventReactive(input$mpo_type, {
-      mpo_benefits_m <- mpo_benefits |> 
+      mpo_benefits_m <- mpo_benefits() |> 
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -219,11 +230,13 @@ mod_body_mpo_server <- function(id){
       })
     
     #### Income Growth
-    mpo_income <- qpr_income() |>
-      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    mpo_income <- eventReactive(input$date_range, {
+      qpr_income() |>
+      HMIS::exited_between(input$date_range[1], input$date_range[2])
+    })
     
     mpo_income_growth <- eventReactive(input$mpo_type, {
-      mpo_income_m <- mpo_income |> 
+      mpo_income_m <- mpo_income() |> 
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -271,11 +284,13 @@ mod_body_mpo_server <- function(id){
       })
     
     #### Rapid Replacement for RRH
-    mpo_rrh_enterers <- qpr_rrh_enterers() |>
-      HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"))
+    mpo_rrh_enterers <- eventReactive(input$date_range, {
+      qpr_rrh_enterers() |>
+      HMIS::exited_between(input$date_range[1], input$date_range[2])
+    })
     
     mpo_replacment <- eventReactive(input$mpo_type, {
-      mpo_rrh_enterers_m <- mpo_rrh_enterers |>
+      mpo_rrh_enterers_m <- mpo_rrh_enterers() |>
         dplyr::mutate(
           ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
         ) |> 
@@ -316,19 +331,19 @@ mod_body_mpo_server <- function(id){
     
     #### Exits to Permanent Housing
     
-    SuccessfullyPlaced <- eventReactive(input$mpo_type, {
+    SuccessfullyPlaced <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
-          dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |> 
+          dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
           dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
 
       exited <- mpo_leavers |>
-        HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+        HMIS::exited_between(input$date_range[1], input$date_range[2], lgl = TRUE)
       served <- mpo_leavers |>
-        HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
-      
+        HMIS::served_between(input$date_range[1], input$date_range[2], lgl = TRUE)
+
       psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
       es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
-      
+
       data <- dplyr::filter(mpo_leavers,
                                           ((ProjectType %in% c(3, 9, 13) &
                                               !is.na(MoveInDateAdjust)) |
@@ -347,73 +362,73 @@ mod_body_mpo_server <- function(id){
                                                   exited
                                               )
                                             ))
-      
+
       data
-      
+
     })
-    
-    TotalHHsSuccessfulPlacement <- eventReactive(input$mpo_type, {
+
+    TotalHHsSuccessfulPlacement <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
         dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
         dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
 
       exited <- mpo_leavers |>
-        HMIS::exited_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
+        HMIS::exited_between(input$date_range[1], input$date_range[2], lgl = TRUE)
       served <- mpo_leavers |>
-        HMIS::served_between(lubridate::ymd("2021-09-01"), lubridate::ymd("2022-08-31"), lgl = TRUE)
-      
+        HMIS::served_between(input$date_range[1], input$date_range[2], lgl = TRUE)
+
       psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
       es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
-      
+
       # # calculating the total households to compare successful placements to
-      data <- dplyr::filter(mpo_leavers, ProjectTypeLong == input$mpo_type) |>  
+      data <- dplyr::filter(mpo_leavers, ProjectTypeLong == input$mpo_type) |>
         dplyr::filter((served & psh_hp) # PSH & HP
                       |
                         (exited & es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
         )
-      
+
       data
     })
-    
+
 
     
      
 
-    # # Table
-     output$mpo_PermanentHousing <- DT::renderDataTable({
-       successfully_placed <- SuccessfullyPlaced()
-       Success <- successfully_placed |> dplyr::count(ProjectName)
-       
-       total_hhs_successful_placement <- TotalHHsSuccessfulPlacement()
-       Total <- total_hhs_successful_placement |> dplyr::count(ProjectName)
-       
-       PHTable <- dplyr::left_join(Success, Total, by = "ProjectName") |> 
-         dplyr::rename("Successfully Placed" = n.x,
-                       "Total Households" = n.y) |> 
-         dplyr::mutate(Percent = `Successfully Placed` / `Total Households`)
-       
-       permanent_housing_measure <- measure()
-       
-       goal <- permanent_housing_measure |> 
-         dplyr::filter(Measure == "Exits to Permanent Housing") |> 
-         dplyr::pull(Goal)
-       
-       if (length(goal) > 0) {
-         datatable_default(
-           PHTable,
-           options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
-                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                 list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                          75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-         ) |> 
-           DT::formatStyle(
-             'Percent',
-             backgroundColor = DT::styleInterval(goal, c('red', 'green'))
-           ) |> 
-           DT::formatPercentage(c("Percent"), 1)
-       }
+    # Table
+    output$mpo_PermanentHousing <- DT::renderDataTable({
+      successfully_placed <- SuccessfullyPlaced()
+      Success <- successfully_placed |> dplyr::count(ProjectName)
 
-     })
+      total_hhs_successful_placement <- TotalHHsSuccessfulPlacement()
+      Total <- total_hhs_successful_placement |> dplyr::count(ProjectName)
+
+      PHTable <- dplyr::left_join(Success, Total, by = "ProjectName") |>
+        dplyr::rename("Successfully Placed" = n.x,
+                      "Total Households" = n.y) |>
+        dplyr::mutate(Percent = `Successfully Placed` / `Total Households`)
+
+      permanent_housing_measure <- measure()
+
+      goal <- permanent_housing_measure |>
+        dplyr::filter(Measure == "Exits to Permanent Housing") |>
+        dplyr::pull(Goal)
+
+      if (length(goal) > 0) {
+        datatable_default(
+          PHTable,
+          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+                                                         list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+        ) |>
+          DT::formatStyle(
+            'Percent',
+            backgroundColor = DT::styleInterval(goal, c('red', 'green'))
+          ) |>
+          DT::formatPercentage(c("Percent"), 1)
+      }
+
+    })
     
     
     
