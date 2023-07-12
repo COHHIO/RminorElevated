@@ -79,6 +79,8 @@ mod_body_mpo_server <- function(id){
     mpo_leavers <- eventReactive(input$date_range, {
       req(input$date_range)
       qpr_leavers() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |> 
       HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
       dplyr::filter(((
         !is.na(MoveInDateAdjust) & ProjectType == 13
@@ -133,7 +135,9 @@ mod_body_mpo_server <- function(id){
     })
     
     mpo_health <- eventReactive(input$mpo_type, {
-      mpo_benefits_m <- mpo_benefits() |> 
+      mpo_benefits_m <- mpo_benefits() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -183,7 +187,9 @@ mod_body_mpo_server <- function(id){
     #### Non-cash benefits at Exit
     
     mpo_noncash <- eventReactive(input$mpo_type, {
-      mpo_benefits_m <- mpo_benefits() |> 
+      mpo_benefits_m <- mpo_benefits() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -236,7 +242,9 @@ mod_body_mpo_server <- function(id){
     })
     
     mpo_income_growth <- eventReactive(input$mpo_type, {
-      mpo_income_m <- mpo_income() |> 
+      mpo_income_m <- mpo_income() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
       
       data <- dplyr::left_join(
@@ -291,6 +299,8 @@ mod_body_mpo_server <- function(id){
     
     mpo_replacment <- eventReactive(input$mpo_type, {
       mpo_rrh_enterers_m <- mpo_rrh_enterers() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::mutate(
           ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
         ) |> 
@@ -333,6 +343,8 @@ mod_body_mpo_server <- function(id){
     
     SuccessfullyPlaced <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
           dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
           dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
 
@@ -369,6 +381,8 @@ mod_body_mpo_server <- function(id){
 
     TotalHHsSuccessfulPlacement <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
+        dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
+                                           "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
         dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
 
