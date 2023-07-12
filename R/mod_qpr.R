@@ -91,11 +91,11 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
 
 mod_qpr_server <- function(id, header, ...){
   .id <- strip_id(id)
+
   if (missing(header)) 
     rlang::abort("Must provide header for mod_QPR_server(",id,")")
   function(input, output, session){
     ns <- session$ns
-
     # Header
     output$header <- shiny::renderUI({
       req(input$date_range)
