@@ -71,7 +71,7 @@ mod_body_utilization_server <- function(id){
   shiny::moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    output$header <- shiny::renderUI(server_header("Bed and Unit Utilization", format(input$date_range, "%B %Y"), shiny::tags$p(shiny::icon("exclamation-triangle", style = "display:inline-block; color: #ffc107;"), "During this time, congregate facilities should be aiming to deconcentrate. If this causes fluctuations in Utilization, that is okay. Please continue to keep your clients safe.", status = "warning")))
+    output$header <- shiny::renderUI(server_header("Bed and Unit Utilization", format(input$date_range, "%B %Y")))
     
     ReportStart <- eventReactive(input$date_range,{
       lubridate::floor_date(input$date_range,

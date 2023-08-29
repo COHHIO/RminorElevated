@@ -15,7 +15,7 @@ goals <-  arrow::read_feather("data/mahoning_goals.feather") |>
 #' @importFrom shiny NS tagList 
 mod_body_mpo_ui <- function(id){
   ns <- NS(id)
-  report_end <- lubridate::floor_date(Sys.Date(), "month")
+  report_end <- lubridate::floor_date(Sys.Date(), "month") - lubridate::days(1)
   tagList(
     ui_header_row(),
     ui_picker_program(
@@ -28,7 +28,7 @@ mod_body_mpo_ui <- function(id){
       selected = NULL,
       multiple = FALSE
     ),
-    ui_date_range(start = report_end - lubridate::years(1) - lubridate::days(1),
+    ui_date_range(start = lubridate::floor_date(report_end, "month"),
                   end = report_end),
     ui_row(
       title = "Length of Stay",
@@ -74,11 +74,12 @@ mod_body_mpo_server <- function(id){
       ) |> 
       dplyr::filter(ProjectType == input$mpo_type)
     })
-    
+
     #### Length of Stay
     mpo_leavers <- eventReactive(input$date_range, {
       req(input$date_range)
       qpr_leavers() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |> 
       HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
@@ -87,8 +88,7 @@ mod_body_mpo_server <- function(id){
       ) |
         (
           !is.na(ExitDate) & ProjectType %in% c(1, 2, 8)
-        )) &
-        ProjectCounty == "Mahoning/Trumbull"
+        ))
       ) |> 
       dplyr::mutate(
         ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
@@ -136,9 +136,10 @@ mod_body_mpo_server <- function(id){
     
     mpo_health <- eventReactive(input$mpo_type, {
       mpo_benefits_m <- mpo_benefits() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
-        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+        dplyr::filter(ProjectType == input$mpo_type)
       
       data <- dplyr::left_join(
         # all_hhs
@@ -188,9 +189,10 @@ mod_body_mpo_server <- function(id){
     
     mpo_noncash <- eventReactive(input$mpo_type, {
       mpo_benefits_m <- mpo_benefits() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
-        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+        dplyr::filter(ProjectType == input$mpo_type)
       
       data <- dplyr::left_join(
         # all_hhs
@@ -243,9 +245,10 @@ mod_body_mpo_server <- function(id){
     
     mpo_income_growth <- eventReactive(input$mpo_type, {
       mpo_income_m <- mpo_income() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
-        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+        dplyr::filter(ProjectType == input$mpo_type)
       
       data <- dplyr::left_join(
         # all_hhs
@@ -299,12 +302,13 @@ mod_body_mpo_server <- function(id){
     
     mpo_replacment <- eventReactive(input$mpo_type, {
       mpo_rrh_enterers_m <- mpo_rrh_enterers() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::mutate(
           ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
         ) |> 
-        dplyr::filter(ProjectType == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+        dplyr::filter(ProjectType == input$mpo_type)
       
       data <- mpo_rrh_enterers_m |>
         dplyr::mutate(DaysToHouse = difftime(MoveInDateAdjust, EntryDate, units = "days")) |>
@@ -343,10 +347,11 @@ mod_body_mpo_server <- function(id){
     
     SuccessfullyPlaced <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
           dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
-          dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+          dplyr::filter(ProjectTypeLong == input$mpo_type)
 
       exited <- mpo_leavers |>
         HMIS::exited_between(input$date_range[1], input$date_range[2], lgl = TRUE)
@@ -378,13 +383,14 @@ mod_body_mpo_server <- function(id){
       data
 
     })
-
+    
     TotalHHsSuccessfulPlacement <- eventReactive(c(input$mpo_type,input$date_range), {
       mpo_leavers <- qpr_leavers() |>
+        dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
         dplyr::mutate(ProjectTypeLong = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)) |>
-        dplyr::filter(ProjectTypeLong == input$mpo_type & ProjectCounty == "Mahoning/Trumbull")
+        dplyr::filter(ProjectTypeLong == input$mpo_type)
 
       exited <- mpo_leavers |>
         HMIS::exited_between(input$date_range[1], input$date_range[2], lgl = TRUE)

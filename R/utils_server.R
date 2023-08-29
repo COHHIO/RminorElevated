@@ -128,12 +128,12 @@ datatable_options_update <- function(x, options, hide_cols) {
         targets = which_cols(hide_cols, x$x$data) - 1 # js numbers start with 0
       )
     )))
-  if (UU::is_legit(out$x$options$columnDefs) &&
-      UU::is_legit(options$columnDefs)) {
+  # if (UU::is_legit(out$x$options$columnDefs) &&
+  #     UU::is_legit(options$columnDefs)) {
     out$x$options$columnDefs <-
       append(out$x$options$columnDefs, options$columnDefs)
     options$columnDefs <- NULL
-  }
+  # }
   if (UU::is_legit(options))
     out$x$options <- purrr::list_modify(out$x$options,!!!options)
   

@@ -25,6 +25,7 @@ Imports:
     scales,
     shiny (>= 1.6.0),
     shinyWidgets,
+    usethis,
     UU
 Remotes:
     COHHIO/HMIS,
