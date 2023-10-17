@@ -24,6 +24,7 @@ Imports:
     sass,
     scales,
     shiny (>= 1.6.0),
+    shinyalert,
     shinyWidgets,
     usethis,
     UU

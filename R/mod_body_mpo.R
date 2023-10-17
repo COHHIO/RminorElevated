@@ -240,7 +240,7 @@ mod_body_mpo_server <- function(id){
     #### Income Growth
     mpo_income <- eventReactive(input$date_range, {
       qpr_income() |>
-      HMIS::exited_between(input$date_range[1], input$date_range[2])
+      HMIS::served_between(input$date_range[1], input$date_range[2])
     })
     
     mpo_income_growth <- eventReactive(input$mpo_type, {

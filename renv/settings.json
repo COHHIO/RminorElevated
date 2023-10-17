@@ -2,7 +2,6 @@
   "bioconductor.version": [],
   "external.libraries": [],
   "ignored.packages": [
-    "usethis",
     "datapasta",
     "jobs"
   ],

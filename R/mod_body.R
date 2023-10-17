@@ -9,6 +9,7 @@
 
 mod_body_ui <- function(id){
   ns <- NS(id)
+  
   bs4Dash::dashboardBody(
     uiOutput(ns("bodyui"))
   )
@@ -23,7 +24,11 @@ mod_body_server <- function(id){
   
     
     e <- environment()
-      
+    
+    shinyalert::shinyalert("Notice", "The HMIS data in RME was last updated 9/29/2023. We will resume regular updates to the app when the work from the data standards changes has been completed.", 
+                           type = "info",
+                           closeOnClickOutside = TRUE)
+    
     output$bodyui <- renderUI({
       req(active$ui)
       message("Tab: ", active$tab)
