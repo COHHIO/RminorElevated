@@ -87,7 +87,7 @@ mod_body_mpo_server <- function(id){
         !is.na(MoveInDateAdjust) & ProjectType == 13
       ) |
         (
-          !is.na(ExitDate) & ProjectType %in% c(1, 2, 8)
+          !is.na(ExitDate) & ProjectType %in% c(0, 1, 2, 8)
         ))
       ) |> 
       dplyr::mutate(
@@ -359,12 +359,12 @@ mod_body_mpo_server <- function(id){
         HMIS::served_between(input$date_range[1], input$date_range[2], lgl = TRUE)
 
       psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
-      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
+      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(0, 1, 2, 4, 8, 13)
 
       data <- dplyr::filter(mpo_leavers,
                                           ((ProjectType %in% c(3, 9, 13) &
                                               !is.na(MoveInDateAdjust)) |
-                                             ProjectType %in% c(1, 2, 4, 8, 12)
+                                             ProjectType %in% c(0, 1, 2, 4, 8, 12)
                                           ) &
                                             # excluding non-mover-inners
                                             (((DestinationGroup == "Permanent" |
@@ -398,7 +398,7 @@ mod_body_mpo_server <- function(id){
         HMIS::served_between(input$date_range[1], input$date_range[2], lgl = TRUE)
 
       psh_hp <- mpo_leavers$ProjectType %in% c(3, 9, 12)
-      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(1, 2, 4, 8, 13)
+      es_th_sh_out_rrh <- mpo_leavers$ProjectType %in% c(0, 1, 2, 4, 8, 13)
 
       # # calculating the total households to compare successful placements to
       data <- dplyr::filter(mpo_leavers, ProjectTypeLong == input$mpo_type) |>
