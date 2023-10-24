@@ -5,8 +5,6 @@ data2feather <- function(path = "data/db", data = "data/Rme_old.RData", new_data
   } else {
     list2env(readRDS(data), envir = objects)
   }
-  #file.copy("data/Rminor_elevated.RData", "data/Rme_old.RData")
-  # This is the previous
   
   nms <- ls(objects, all.names = TRUE) %>%
     {`[`(., !. %in% c("Exit", "summary", "Project", "tay", "Enrollment"))} %>%
@@ -46,8 +44,6 @@ compare_image_sizes <- function(new = "data/Rminor_elevated.RData", old = "data/
        old = old_list)
 }
 
-# compare_image_sizes()
-#99% reduction in size
 
 #' @title Convert the occurrence of a symbol in an R document to a function call by the same name
 #' @description Useful to replace calls to an object by symbol name with an accessor function or reactive with the same name
@@ -80,13 +76,6 @@ sym2function <- function(x, file) {
   }
   out
 }
-
-# purrr::walk(c(list.files("R", pattern = "\\.R$", full.names = T), "server.R", "ui.R", "global.R")[ - c(1:3)], ~{
-#   .lines <- object2function(all_df_nms, .x)
-#   skip = FALSE
-#   browser()
-#   if (!skip) write(.lines, file = .x)
-# })
 
 
 
