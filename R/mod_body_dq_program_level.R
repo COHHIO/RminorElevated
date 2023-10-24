@@ -191,30 +191,6 @@ mod_body_dq_program_level_server <- function(id){
       }
     })
     
-
-    # Deprecated in Clarity
-    # output$dq_MissingLocation <- renderUI({
-    #   req(program())
-    #   HHIssues <- dq_main_time_proj |> 
-    #     dq_filter_between(date_range = input$date_range, program = program(), Issue == "Missing Client Location") |> 
-    #     dq_select_cols()
-    #   
-    #   
-    #   if (nrow(HHIssues)) {
-    #     ui_solid_box(
-    #       id = "location",
-    #       title = "Missing Client Location",
-    #       status = "warning",
-    #       shiny::tags$p(
-    #         guidance$missing_client_loc
-    #       ),
-    #       datatable_default(HHIssues, escape = FALSE)
-    #     )
-    #   }
-    #   else {
-    #     
-    #   }
-    # })
     
     output$dq_PATHMissingContact <- renderUI({
       req(dq_main_time_proj())
