@@ -25,7 +25,7 @@ mod_body_server <- function(id){
     
     e <- environment()
     
-    shinyalert::shinyalert("Notice", "The HMIS data in RME was last updated 9/29/2023. We will resume regular updates to the app when the work from the data standards changes has been completed.", 
+    shinyalert::shinyalert("Notice", "The HMIS data in RME is now up to date. Please email the HMIS Help Desk if you have any questions or concerns.", 
                            type = "info",
                            closeOnClickOutside = TRUE)
     
