@@ -4,7 +4,7 @@
 \alias{mod_qpr_server}
 \title{QPR Server Functions}
 \usage{
-mod_qpr_server(id, header)
+mod_qpr_server(id, header, ...)
 }
 \arguments{
 \item{id, input, output, session}{Internal parameters for {shiny}.}

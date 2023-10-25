@@ -10,8 +10,8 @@ ui_picker_program(
   choices = programs,
   selected = NULL,
   multiple = TRUE,
-  options = shinyWidgets::pickerOptions(liveSearch = TRUE, liveSearchStyle =
-    "contains", actionsBox = TRUE),
+  options = shinyWidgets::pickerOptions(liveSearch = TRUE, liveSearchStyle = "contains",
+    actionsBox = TRUE),
   ...,
   add_options
 )

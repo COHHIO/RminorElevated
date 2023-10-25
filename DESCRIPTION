@@ -37,7 +37,7 @@ Remotes:
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
@@ -55,11 +55,13 @@ Collate:
     'mod_body.R'
     'mod_body_client_counts.R'
     'mod_body_coc_competition.R'
+    'mod_body_coc_competition_mahoning.R'
     'mod_body_dq_program_level.R'
     'mod_body_dq_region_level.R'
     'mod_body_dq_system_summary.R'
     'mod_body_dq_timeliness.R'
     'mod_body_dq_unsheltered.R'
+    'mod_body_mpo.R'
     'mod_body_prioritization.R'
     'mod_body_program_lookup.R'
     'mod_body_qpr_community_need_lh.R'

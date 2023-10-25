@@ -81,9 +81,7 @@ dependencies (as well as Bootswatch themes, if desired) are included on the
 page. Note, when set explicitly, it's the user's responsibility to ensure
 that only one unique `style` value is used on the same page, if multiple
 DT tables exist, as different styling resources may conflict with each other.}
-    \item{\code{width}}{Width/Height in pixels (optional, defaults to automatic
-sizing)}
-    \item{\code{height}}{Width/Height in pixels (optional, defaults to automatic
+    \item{\code{width,height}}{Width/Height in pixels (optional, defaults to automatic
 sizing)}
     \item{\code{elementId}}{An id for the widget (a random string by default).}
     \item{\code{fillContainer}}{\code{TRUE} to configure the table to automatically fill
