@@ -65,11 +65,6 @@ mod_sidebar_ui <- function(id){
             text = "Data Entry Timeliness",
             tabName = "dq_timeliness" #deskTime
           ),
-          # Deprecated in Clarity
-          # bs4Dash::bs4SidebarMenuSubItem(
-          #   text = "Unsheltered",
-          #   tabName = "dq_unsheltered" #dqUnsh
-          # ),
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Region-level",
             tabName = "dq_region_level" #dqRegion
@@ -95,7 +90,7 @@ mod_sidebar_ui <- function(id){
           icon = shiny::icon("flag-checkered")
         ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "Quarterly Performance",
+          text = "BoS Quarterly Performance",
           icon = shiny::icon("file-medical-alt"),
           tabName = "qpr",
           bs4Dash::bs4SidebarMenuSubItem(
@@ -138,7 +133,47 @@ mod_sidebar_ui <- function(id){
         bs4Dash::bs4SidebarMenuItem(
           text = "Mahoning Performance",
           tabName = "mpo",
-          icon = shiny::icon("file-medical-alt")
+          icon = shiny::icon("file-medical-alt"),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Performance Summary",
+            tabName = "mpo"
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Permanent Housing Need",
+            tabName = "qpr_community_need_ph" #spdat1Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Literally Homeless Need",
+            tabName = "qpr_community_need_lh" #spdat2Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Length of Stay",
+            tabName = "qpr_length_of_stay" # LoS-Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Exits to Permanent Housing",
+            tabName = "qpr_permanent_housing" # PHTab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Non-Cash Benefits at Exit",
+            tabName = "qpr_noncash_benefits" # NCB-Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Health Insurance at Exit",
+            tabName = "qpr_health_insurance" # HI-Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Income Growth",
+            tabName = "qpr_income_growth" # income-Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Rapid Placement for RRH",
+            tabName = "qpr_rrh_placement" # rapid-Tab
+          ),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "RRH Spending",
+            tabName = "qpr_rrh_spending" # spending-Tab
+          )
         ),
         bs4Dash::bs4SidebarMenuItem(
           text = "Agency & Program Lookup",

@@ -1,5 +1,6 @@
 qpr_expr$health_insurance <- list()
 qpr_expr$health_insurance$expr <- rlang::expr({
+  browser()
   qpr_benefits() |>
     HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ProjectName == input$region)

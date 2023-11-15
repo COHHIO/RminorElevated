@@ -17,6 +17,7 @@ mod_body_qpr_health_insurance_ui <- function(id){
 #' @noRd 
 mod_body_qpr_health_insurance_server <- function(id){
   moduleServer( id, mod_qpr_server(id, "Health Insurance at Exit"))
+  browser()
 }
     
 ## To be copied in the UI
