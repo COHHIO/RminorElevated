@@ -21,9 +21,9 @@ mod_body_mpo_ui <- function(id){
     ui_picker_program(
       inputId = ns("mpo_type"),
       label = "Select your Project Type",
-      choices = c("PH - Permanent Supportive Housing",
-                  "Emergency Shelter",
-                  "PH - Rapid Re-Housing",
+      choices = c("PH – Permanent Supportive Housing",
+                  "Emergency Shelter - Entry Exit",
+                  "PH – Rapid Re-Housing",
                   "Transitional Housing"),
       selected = NULL,
       multiple = FALSE
