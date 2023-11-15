@@ -25,9 +25,6 @@ mod_body_server <- function(id){
     
     e <- environment()
     
-    shinyalert::shinyalert("Notice", "The HMIS data in RME is now up to date. Please email the HMIS Help Desk if you have any questions or concerns.", 
-                           type = "info",
-                           closeOnClickOutside = TRUE)
     
     output$bodyui <- renderUI({
       req(active$ui)

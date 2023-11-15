@@ -83,6 +83,7 @@ mod_body_dq_program_level_server <- function(id){
     server_debounce(input$program, input$date_range)
     
     dq_p <- dq_main()
+
     dq_main_time <- eventReactive(input$date_range, {
       req(input$date_range)
       dq_p |> 
