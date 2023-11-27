@@ -22,10 +22,10 @@ mod_body_mpo_ui <- function(id){
       inputId = ns("mpo_type"),
       label = "Select your Project Type",
       choices = c("PH – Permanent Supportive Housing",
-                  "Emergency Shelter - Entry Exit",
+                  "Emergency Shelter – Entry Exit",
                   "PH – Rapid Re-Housing",
                   "Transitional Housing"),
-      selected = NULL,
+      selected = "Emergency Shelter – Entry Exit",
       multiple = FALSE
     ),
     ui_date_range(start = lubridate::floor_date(report_end, "month"),
@@ -47,8 +47,8 @@ mod_body_mpo_ui <- function(id){
       DT::dataTableOutput(ns("mpo_IncomeGrowth"))
     ),
     ui_row(
-      title = "Rapid Replacement for RRH",
-      DT::dataTableOutput(ns("mpo_Replacement"))
+      title = "Rapid Placement for RRH",
+      DT::dataTableOutput(ns("mpo_Placement"))
     ),
     ui_row(
       title = "Exits to Permanent Housing",
@@ -294,13 +294,13 @@ mod_body_mpo_server <- function(id){
         }
       })
     
-    #### Rapid Replacement for RRH
+    #### Rapid Placement for RRH
     mpo_rrh_enterers <- eventReactive(input$date_range, {
       qpr_rrh_enterers() |>
       HMIS::exited_between(input$date_range[1], input$date_range[2])
     })
     
-    mpo_replacment <- eventReactive(input$mpo_type, {
+    mpo_placment <- eventReactive(input$mpo_type, {
       mpo_rrh_enterers_m <- mpo_rrh_enterers() |>
         dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
@@ -319,18 +319,18 @@ mod_body_mpo_server <- function(id){
       
     })
     
-    output$mpo_Replacement <-
+    output$mpo_Placement <-
       DT::renderDataTable({
-        replacement <- mpo_replacment()
-        replacement_measure <- measure()
+        placement <- mpo_placment()
+        placement_measure <- measure()
         
-        goal <- replacement_measure |> 
+        goal <- placement_measure |> 
           dplyr::filter(Measure == "Rapid Placement for RRH") |> 
           dplyr::pull(Goal)
 
         if (length(goal) > 0) {
           datatable_default(
-            replacement,
+            placement,
             options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
                                                                   list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
