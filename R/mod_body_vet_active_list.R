@@ -219,7 +219,7 @@ mod_body_vet_active_list_server <- function(id) {
           val |>
             dplyr::filter(County %in% input$county |
                             is.na(County)) |>
-            dplyr::mutate(DisablingCondition = HMIS::hud_translations$`1.8 No_Yes_Reasons for Missing Data`(DisablingCondition)) |>
+            dplyr::mutate(DisablingCondition = HMIS::hud_translations$`1.8 NoYesReasons for Missing Data`(DisablingCondition)) |>
             clarity.looker::make_linked_df(UniqueID, unlink = TRUE) |> 
             dplyr::select(
               SSVFServiceArea,
