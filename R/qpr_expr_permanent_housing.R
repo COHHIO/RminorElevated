@@ -16,30 +16,25 @@ qpr_expr$permanent_housing$expr <- rlang::expr({
     .es_th_sh_out_rrh <- .by_region$ProjectType %in% c(0, 1, 2, 4, 8, 13)
     
     SuccessfullyPlaced <- dplyr::filter(.by_region,
-             ((ProjectType %in% c(3, 9, 13) &
-                 !is.na(MoveInDateAdjust)) |
-                ProjectType %in% c(0, 1, 2, 4, 8, 12)
-             ) &
-             # excluding non-mover-inners
-             (((DestinationGroup == "Permanent" |
-                  #exited to ph or still in PSH/HP
-                  is.na(ExitDate)) &
-                 .psh_hp & # PSH & HP
-                 .served
-             ) |
-               (
-                 DestinationGroup == "Permanent" & # exited to ph
-                   .es_th_sh_out_rrh &
-                   .exited
-               )
-             ))
+             (ProjectType %in% c(0, 1, 2, 3, 4, 8, 9, 12, 13)) &
+               # excluding non-mover-inners
+               (((DestinationGroup == "Permanent" |
+                    #exited to ph or still in PSH/HP
+                    is.na(ExitDate)) &
+                   .psh_hp & # PSH & HP
+                   .served
+               ) |
+                 (
+                   DestinationGroup == "Permanent" & # exited to ph
+                     .es_th_sh_out_rrh &
+                     .exited
+                 )
+               ))
   
   # calculating the total households to compare successful placements to
   TotalHHsSuccessfulPlacement <- 
     dplyr::filter(.by_region,
-             (.served & .psh_hp) # PSH & HP
-              |
-              (.exited & .es_th_sh_out_rrh) # ES, TH, SH, OUT, RRH
+             (.served & .psh_hp) | (.exited & .es_th_sh_out_rrh)
              )
   list(SuccessfullyPlaced = SuccessfullyPlaced,
        TotalHHsSuccessfulPlacement = TotalHHsSuccessfulPlacement)
@@ -48,19 +43,21 @@ qpr_expr$permanent_housing$expr <- rlang::expr({
 
 qpr_expr$permanent_housing$infobox <- rlang::expr({
   req(data_env())
-  qpr_infobox(
-    data_env(),
-    title = "Successfully Placed",
-    color = "info",
-    icon = shiny::icon("key"),
-    value = paste(
-      nrow(.data$SuccessfullyPlaced),
-      "/",
-      nrow(.data$TotalHHsSuccessfulPlacement),
-      "households"
-    )
+    qpr_infobox(
+      data_env(),
+      title = "Successfully Placed",
+      color = "info",
+      icon = shiny::icon("key"),
+      value = paste(
+        nrow(.data$SuccessfullyPlaced),
+        "/",
+        nrow(.data$TotalHHsSuccessfulPlacement),
+        "households"
+      )
   )
 })
+
+
 
 qpr_expr$permanent_housing$datatable <- 
   rlang::expr({
