@@ -21,6 +21,8 @@ Sys.setenv(TZ = "America/New_York")
 
 
 
+rm_dates()
+
 if (exists("validation")) {
   programs <- validation() |>
     dplyr::distinct(ProjectID, ProjectName) |>

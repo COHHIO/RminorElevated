@@ -182,6 +182,7 @@ mod_body_vet_active_list_server <- function(id) {
         dplyr::select(
           "SSVF Responsible Provider" = SSVFServiceArea,
           "Unique ID" = UniqueID,
+          "Age" = Age,
           "Active Date" =  ActiveDateDisplay,
           "Enrollments" = Enrollments,
           "Eligibility" = VAEligibilityIcon,

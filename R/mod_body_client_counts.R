@@ -171,7 +171,7 @@ mod_body_client_counts_server <- function(id){
       
       datatable_default(final)
     })
-    
+
     output$path <- DT::renderDT({
       path_referrals() |> 
         dplyr::rename(
