@@ -95,7 +95,7 @@ mod_sidebar_ui <- function(id){
         #   icon = shiny::icon("flag-checkered")
         # ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "Quarterly Performance",
+          text = "Ohio BoSCoC Performance",
           icon = shiny::icon("file-medical-alt"),
           tabName = "qpr",
           bs4Dash::bs4SidebarMenuSubItem(
