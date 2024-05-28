@@ -34,3 +34,12 @@ qpr_expr$community_need_ph$datatable <- rlang::expr({
     ) |> 
     datatable_default(escape = FALSE)
 })
+
+qpr_expr$community_need_ph$details <- rlang::expr({
+  tibble::tibble(
+    ProjectType = c(""),
+    Goal = c(""),
+    HowCalculated = c("")
+  ) |>
+    DT::datatable(escape = FALSE)
+})

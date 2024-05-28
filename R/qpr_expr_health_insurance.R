@@ -54,3 +54,17 @@ qpr_expr$health_insurance$datatable <- rlang::expr({
     datatable_default(escape = FALSE)
 })
 
+qpr_expr$health_insurance$details <- rlang::expr({
+  tibble::tibble(
+    ProjectType = c("Emergency Shelter", "Transitional Housing", "Rapid Re-housing", "Permanent Supportive Housing"),
+    Goal = c("At least 75% of households in ES projects will receive at least one source of health insurance at program exit",
+             "At least 85% of households in TH projects will receive at least one source of health insurance at program exit",
+             "At least 85% of households in RRH projects will receive at least one source of health insurance at program exit",
+             "At least 85% of households in PSH projects will receive at least one source of health insurance at program exit"),
+    HowCalculated = c("Number of households who exited with 1 or more sources of health insurance / number of households who exited the project",
+                      "Number of households who exited with 1 or more sources of health insurance / number of households who exited the project",
+                      "Number of households who exited with 1 or more sources of health insurance / number of households who exited RRH",
+                      "Number of households who exited with 1 or more sources of health insurance / number of households that entered a PSH project who exited the project")
+  ) |> 
+    DT::datatable(escape = FALSE)
+})

@@ -68,6 +68,7 @@ mod_body_prioritization_server <- function(id){
          "Household Size" = HouseholdSize,
          "Income" = IncomeFromAnySource,
          Score,
+         Assessment,
          HH_DQ_Issue,
          CountyGuessed,
          HousingStatus

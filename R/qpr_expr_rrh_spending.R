@@ -58,3 +58,12 @@ qpr_expr$rrh_spending$datatable <- list(
     datatable_default(data_env()$hp, escape = FALSE)
   })
 )
+
+qpr_expr$rrh_spending$details <- rlang::expr({
+  tibble::tibble(
+    ProjectType = c("Rapid Re-housing"),
+    Goal = c(""),
+    HowCalculated = c("")
+  ) |>
+    DT::datatable(escape = FALSE)
+})
