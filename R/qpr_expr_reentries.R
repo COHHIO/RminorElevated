@@ -39,13 +39,13 @@ qpr_expr$reentries$infobox <- rlang::expr({
 
 qpr_expr$reentries$datatable <- rlang::expr({
   data_env()$Reentries |>
-    # dplyr::arrange(dplyr::desc(DaysToHouse)) |>
-    # dplyr::select(
-    #   UniqueID,
-    #   EntryDate,
-    #   "Move In Date" = MoveInDate,
-    #   "Days to House" = DaysToHouse
-    # ) |>
+    dplyr::select(
+      UniqueID,
+      "Exiting HP Program" = ExitingHP,
+      "Exit Date from HP" = LatestPermanentProject12,
+      "Entry Date (Re-Entry)" = EntryDate,
+      "Exit Date (Re-Entry)" = ExitDate
+    ) |>
     datatable_default(escape = FALSE)
 })
 
