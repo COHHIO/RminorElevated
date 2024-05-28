@@ -137,8 +137,7 @@ mod_sidebar_ui <- function(id){
           bs4Dash::bs4SidebarMenuSubItem(
             text = "Entries in Homeless System",
             tabName = "qpr_reentries" # Entry-Tab
-          )
-        ),
+          ),
           bs4Dash::bs4SidebarMenuSubItem(
             text = "RRH Spending",
             tabName = "qpr_rrh_spending" # spending-Tab
