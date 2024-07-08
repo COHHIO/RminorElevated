@@ -69,7 +69,7 @@ mod_body_mpo_server <- function(id){
     
     measure <- eventReactive(input$mpo_type, {
       req(input$mpo_type)
-      goals |>dplyr::mutate(
+      goals |> dplyr::mutate(
         ProjectType = HMIS::hud_translations$`2.02.6 ProjectType`(ProjectType)
       ) |> 
       dplyr::filter(ProjectType == input$mpo_type)
