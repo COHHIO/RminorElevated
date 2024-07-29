@@ -76,8 +76,8 @@ mod_body_coc_competition_mahoning_ui <- function(id){
 mod_body_coc_competition_mahoning_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$header <- renderUI(server_header("2023 CoC Competition Renewal Project Evaluation",
-                                            x = shiny::h3(paste0("Reporting Period: 1/1/22 - 12/31/22")),
+    output$header <- renderUI(server_header("2024 CoC Competition Renewal Project Evaluation",
+                                            x = shiny::h3(paste0("Reporting Period: 1/1/23 - 12/31/23")),
                                             shiny::p("For more information visit the", a("Mahoning CoC Competition website", href = "https://www.mahoningcountyoh.gov/1043/CoC-Competition"))))
     pe_summary <- pe_summary_final_scoring_mahoning() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
@@ -88,11 +88,12 @@ mod_body_coc_competition_mahoning_server <- function(id){
       pe_summary |>
         dplyr::filter(AltProjectName %in% input$pe_provider)
     })
-    
+
     output$pe_ProjectSummaryMahoning <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
           dplyr::pull(ProjectType)
+
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
             "Project Name" = AltProjectName,
@@ -190,13 +191,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
               DQflag == 3 ~ "", # "Docs received, not yet scored",
               DQflag == 4 ~ "", # "CoC Error",
               DQflag == 5 ~ "" # "Docs received past the due date"
-            ),
-            "Estimated Score" = dplyr::if_else(
-              Measure == "Long Term Homeless", 0, `Estimated Score`
-            ),
-            "Possible Score" = dplyr::if_else(
-              Measure == "Long Term Homeless", 0, `Possible Score`
-            ),
+            )
           ) |> 
           dplyr::filter(!Measure %in% c("Prioritization of Chronic",
                                         "Prioritization Workgroup")) |>
