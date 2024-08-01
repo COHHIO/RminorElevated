@@ -36,19 +36,6 @@ mod_sidebar_ui <- function(id){
           icon = shiny::icon("users") 
         ),
         bs4Dash::bs4SidebarMenuItem(
-          text = "COVID-19",
-          tabName = "covid19",
-          icon = shiny::icon("virus"),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Vaccine Status",
-            tabName = "c19_vaccine_status"
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Second Dose Logistics", #vaccineStatus
-            tabName = "c19_second_dose" #vaccineSecondDose
-          )
-        ),
-        bs4Dash::bs4SidebarMenuItem(
           text = "Bed & Unit Use",
           tabName = "utilization", #utilizationTab
           icon = shiny::icon("bed")
