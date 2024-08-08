@@ -90,10 +90,18 @@ datatable_default <- function(data,
 
 #' @title Give DT ready column numbers from names or numbers
 #'
-#' @param x \code{(character/numeric)} Column numbers or names
+#' @description Given a vector of column names or numbers, return the corresponding column indices.
 #'
-#' @return
+#' @param x \code{(character/numeric)} Column numbers or names to be converted to column indices.
+#' @param .data \code{(data.frame)} The data frame from which column names are extracted. This parameter is used only in the character method.
+#'
+#' @return \code{numeric} A vector of column indices.
 #' @export
+#'
+#' @examples
+#' df <- data.frame(A = 1:3, B = 4:6, C = 7:9)
+#' which_cols(c("A", "B"), df)  # Returns: 1 2
+#' which_cols(c(1, 3), df)      # Returns: 1 3
 
 which_cols <- function(x, .data) {
   UseMethod("which_cols")
@@ -226,9 +234,8 @@ server_debounce <-
 
 #' @title Style DT divergent color bar
 #'
-#' Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
-#'
-#' @details This function draws background color bars behind table cells in a column,
+#' @details #' Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
+#' This function draws background color bars behind table cells in a column,
 #' width the width of bars being proportional to the column values *and* the color
 #' dependent on the sign of the value.
 #'

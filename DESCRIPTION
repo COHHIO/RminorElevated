@@ -37,7 +37,7 @@ Remotes:
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
@@ -71,8 +71,10 @@ Collate:
     'mod_body_qpr_length_of_stay.R'
     'mod_body_qpr_noncash_benefits.R'
     'mod_body_qpr_permanent_housing.R'
+    'mod_body_qpr_reentries.R'
     'mod_body_qpr_rrh_placement.R'
     'mod_body_qpr_rrh_spending.R'
+    'mod_body_qpr_temp_permanent_housing.R'
     'mod_body_utilization.R'
     'mod_body_vet_active_list.R'
     'mod_coming_soon.R'
@@ -90,8 +92,10 @@ Collate:
     'qpr_expr_length_of_stay.R'
     'qpr_expr_noncash_benefits.R'
     'qpr_expr_permanent_housing.R'
+    'qpr_expr_reentries.R'
     'qpr_expr_rrh_placement.R'
     'qpr_expr_rrh_spending.R'
+    'qpr_expr_temp_permanent_housing.R'
     'run_app.R'
     'utils_dq.R'
     'utils_server.R'

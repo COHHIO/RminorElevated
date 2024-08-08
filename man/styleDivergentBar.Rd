@@ -2,9 +2,7 @@
 % Please edit documentation in R/utils_server.R
 \name{styleDivergentBar}
 \alias{styleDivergentBar}
-\title{Style DT divergent color bar
-
-Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}}
+\title{Style DT divergent color bar}
 \usage{
 styleDivergentBar(data, color_pos, color_neg)
 }
@@ -24,10 +22,9 @@ specified in R, to be used in DT tables formatting.
 }
 \description{
 Style DT divergent color bar
-
-Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
 }
 \details{
+#' Style DT color bars for values that diverge from 0. From \href{https://github.com/federicomarini/GeneTonic}{federicomarini/GeneTonic}
 This function draws background color bars behind table cells in a column,
 width the width of bars being proportional to the column values *and* the color
 dependent on the sign of the value.

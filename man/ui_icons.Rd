@@ -7,22 +7,27 @@
 ui_icons(name, class = NULL, lib = "font-awesome", ...)
 }
 \arguments{
-\item{name}{The name of the icon. A name from either \href{https://fontawesome.com/}{Font Awesome} (when \code{lib="font-awesome"}) or
-\href{https://getbootstrap.com/docs/3.3/components/#glyphicons}{Bootstrap Glyphicons} (when
-\code{lib="glyphicon"}) may be provided. Note that the \code{"fa-"} and
-\code{"glyphicon-"} prefixes should not appear in name (i.e., the
-\code{"fa-calendar"} icon should be referred to as \code{"calendar"}). A \code{name} of
-\code{NULL} may also be provided to get a raw \verb{<i>} tag with no library attached
-to it.}
+\item{name}{\code{(character)} The name(s) of the icon(s) to generate.}
 
-\item{class}{Additional classes to customize the style of an icon (see the
-\href{https://fontawesome.com/how-to-use}{usage examples} for details on
-supported styles).}
+\item{class}{\code{(character, optional)} Additional CSS class(es) to apply to the icon(s).}
 
-\item{lib}{The icon library to use. Either \code{"font-awesome"} or \code{"glyphicon"}.}
+\item{lib}{\code{(character)} The library from which to source the icon(s). Default is "font-awesome".}
 
-\item{...}{Arguments passed to the \verb{<i>} tag of \link[htmltools:builder]{htmltools::tags}.}
+\item{...}{Additional arguments passed to \code{\link[shiny]{icon}}.}
+}
+\value{
+A \code{tibble} with a column of generated icons as \code{shiny::icon} objects.
 }
 \description{
-Iterative generation of icons
+Generates a list of icons based on the provided parameters using `shiny::icon`.
+}
+\examples{
+# Generate icons with default parameters
+ui_icons(name = c("home", "user", "cog"))
+
+# Generate icons with additional classes
+ui_icons(name = c("home", "user"), class = c("fa-2x", "text-primary"))
+
+# Generate icons from a different library
+ui_icons(name = "home", lib = "material", class = "my-class")
 }

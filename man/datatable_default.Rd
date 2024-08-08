@@ -40,11 +40,8 @@ global options will be merged into this \code{options} argument if set}
 \code{bottom/top}: put column filters at the bottom/top of the table; range
 sliders are used to filter numeric/date/time columns, select lists are used
 for factor columns, and text input boxes are used for character columns; if
-you want more control over the styles of filters, you can provide a list to
-this argument of the form \code{list(position = 'top', clear = TRUE, plain
-= FALSE)}, where \code{clear} indicates whether you want the clear buttons
-in the input boxes, and \code{plain} means if you want to use Bootstrap
-form styles or plain text input styles for the text input boxes}
+you want more control over the styles of filters, you can provide a named
+list to this argument; see Details for more}
 
 \item{width, height}{Width/Height in pixels (optional, defaults to automatic
 sizing)}
@@ -136,7 +133,7 @@ indices of the columns for which you want to restrict the editing to
 numbers or \code{"all"} to restrict the editing to numbers for all columns.
 If you don't set \code{numeric}, then the editing is restricted to numbers
 for all numeric columns; set \code{numeric = "none"} to disable this
-behavior. Finally, you can also edit the cells in text areas, which are
+behavior. It is also possible to edit the cells in text areas, which are
 useful for large contents. For that, set the \code{editable} argument to a
 list of the form \code{list(target = TARGET, area = INDICES)} where
 \code{INDICES} can be the vector of the indices of the columns for which
@@ -144,7 +141,11 @@ you want the text areas, or \code{"all"} if you want the text areas for
 all columns. Of course, you can request the numeric editing for some
 columns and the text areas for some other columns by setting
 \code{editable} to a list of the form \code{list(target = TARGET, numeric
-= INDICES1, area = INDICES2)}.}
+= INDICES1, area = INDICES2)}. Finally, you can edit date cells with a
+calendar with \code{list(target = TARGET, date = INDICES)}; the target
+columns must have the \code{Date} type. If you don't set \code{date} in
+the \code{editable} list, the editing with the calendar is automatically
+set for all \code{Date} columns.}
   }}
 }
 \value{

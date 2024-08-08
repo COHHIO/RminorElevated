@@ -330,10 +330,25 @@ iterate <- function(x, fn, outputId, env = rlang::caller_env(), output, ..., rc 
 
 #' @title Iterative generation of icons
 #'
-#' @inheritParams shiny::icon
+#' @description Generates a list of icons based on the provided parameters using `shiny::icon`.
 #'
-#' @return
+#' @param name \code{(character)} The name(s) of the icon(s) to generate.
+#' @param class \code{(character, optional)} Additional CSS class(es) to apply to the icon(s).
+#' @param lib \code{(character)} The library from which to source the icon(s). Default is "font-awesome".
+#' @param ... Additional arguments passed to \code{\link[shiny]{icon}}.
+#'
+#' @return A \code{tibble} with a column of generated icons as \code{shiny::icon} objects.
 #' @export
+#'
+#' @examples
+#' # Generate icons with default parameters
+#' ui_icons(name = c("home", "user", "cog"))
+#'
+#' # Generate icons with additional classes
+#' ui_icons(name = c("home", "user"), class = c("fa-2x", "text-primary"))
+#'
+#' # Generate icons from a different library
+#' ui_icons(name = "home", lib = "material", class = "my-class")
 
 ui_icons <- function(name, class = NULL, lib = "font-awesome", ...) {
   tibble::tibble(name = name, class = class, lib = lib, ...) |> 

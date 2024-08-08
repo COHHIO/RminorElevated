@@ -7,8 +7,18 @@
 which_cols(x, .data)
 }
 \arguments{
-\item{x}{\code{(character/numeric)} Column numbers or names}
+\item{x}{\code{(character/numeric)} Column numbers or names to be converted to column indices.}
+
+\item{.data}{\code{(data.frame)} The data frame from which column names are extracted. This parameter is used only in the character method.}
+}
+\value{
+\code{numeric} A vector of column indices.
 }
 \description{
-Give DT ready column numbers from names or numbers
+Given a vector of column names or numbers, return the corresponding column indices.
+}
+\examples{
+df <- data.frame(A = 1:3, B = 4:6, C = 7:9)
+which_cols(c("A", "B"), df)  # Returns: 1 2
+which_cols(c(1, 3), df)      # Returns: 1 3
 }
