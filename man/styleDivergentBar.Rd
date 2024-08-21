@@ -45,10 +45,10 @@ simplest_df <- data.frame(
 )
 
 # or with a very simple data frame
-DT::datatable(simplest_df) \%>\%
-  formatStyle(
+DT::datatable(simplest_df) |>
+  DT::formatStyle(
     "value",
-    background = styleColorBar_divergent(
+    background = styleDivergentBar(
       simplest_df$value,
       scales::alpha("forestgreen", 0.4),
       scales::alpha("gold", 0.4)

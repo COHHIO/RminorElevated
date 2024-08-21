@@ -24,10 +24,4 @@ Generates a list of icons based on the provided parameters using `shiny::icon`.
 \examples{
 # Generate icons with default parameters
 ui_icons(name = c("home", "user", "cog"))
-
-# Generate icons with additional classes
-ui_icons(name = c("home", "user"), class = c("fa-2x", "text-primary"))
-
-# Generate icons from a different library
-ui_icons(name = "home", lib = "material", class = "my-class")
 }

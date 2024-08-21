@@ -343,12 +343,6 @@ iterate <- function(x, fn, outputId, env = rlang::caller_env(), output, ..., rc 
 #' @examples
 #' # Generate icons with default parameters
 #' ui_icons(name = c("home", "user", "cog"))
-#'
-#' # Generate icons with additional classes
-#' ui_icons(name = c("home", "user"), class = c("fa-2x", "text-primary"))
-#'
-#' # Generate icons from a different library
-#' ui_icons(name = "home", lib = "material", class = "my-class")
 
 ui_icons <- function(name, class = NULL, lib = "font-awesome", ...) {
   tibble::tibble(name = name, class = class, lib = lib, ...) |> 

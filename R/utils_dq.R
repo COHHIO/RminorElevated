@@ -33,15 +33,19 @@ dq_filter_between <- function(x,
 
 #' @title Select default display columns for Data Quality Tables
 #' 
-#' @param x \code{(data.frame)}
-#' @param ... \code{(columns to select)} These can be unquoted or quoted.
-#' @param default \code{(list)} Columns to select can also be supplied as a list. If using `...` and you wish to not select the default columns, set to `FALSE`
+#' @param x \code{(data.frame)} The data frame from which columns will be selected.
+#' @param ... \code{(columns to select)} Columns to select, can be unquoted or quoted.
+#' @param default \code{(list or logical)} Columns to select as defaults. If `TRUE`, defaults are used. If `FALSE`, no default columns are selected. Can also be a list of column names or expressions.
 #'
-#' @return \code{(data.frame)} with selected columns. See `default` argument for defaults that will be selected.
+#' @return \code{(data.frame)} with selected columns.
 #' @export
 #'
 #' @examples
-#' dq_select_cols(data.frame(UniqueID = 1:3, Issue = letters[1:3], EntryDate = 1:3, blah = 1:3), blah)
+#' # Selecting columns with default columns
+#' dq_select_cols(data.frame(UniqueID = 1:3, EnrollmentID = 4:6, Issue = letters[1:3], EntryDate = 1:3, Type = 1:3))
+#' 
+#' # Selecting columns with custom defaults
+#' dq_select_cols(data.frame(UniqueID = 1:3, EnrollmentID = 4:6, Issue = letters[1:3], EntryDate = 1:3, blah = 1:3), default = list("UniqueID", "EntryDate"))
 dq_select_cols <- function(x, ..., default = list("UniqueID",
                                                   "EnrollmentID",
                                                   `Entry Date` = "EntryDate",
