@@ -139,7 +139,8 @@ mod_body_client_counts_server <- function(id){
       clients <- validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
-        dplyr::select(ProjectType,
+        dplyr::select(UniqueID,
+                      ProjectType,
                       EntryDate,
                       MoveInDateAdjust,
                       ExitDate) |>

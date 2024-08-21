@@ -27,7 +27,7 @@ mod_body_program_lookup_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
   
-  program_lookup() |> 
+  df <- program_lookup() |>
     dplyr::arrange("ProgramName") |> 
     datatable_default(escape = FALSE) |> 
     DT::formatStyle(
@@ -35,7 +35,8 @@ mod_body_program_lookup_server <- function(id){
       c("AgencyActive", "ProgramActive"),
       target = "cell",
       backgroundColor = DT::styleEqual(FALSE, "#FFB2B6")
-    ) -> df
+    )
+
     df |>  datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive"))
     output$header <- renderUI(server_header("Agency & Program Lookup"))
     output$detail <- DT::renderDT(server = FALSE, {
