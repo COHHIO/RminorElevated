@@ -25,10 +25,7 @@ mod_body_client_counts_ui <- function(id){
       title = "Client Details",
       DT::dataTableOutput(ns("dt_output")),
       width = 12
-    ),
-    ui_row(title = "PATH & Mental Health",
-          fluidRow(col_6(DT::dataTableOutput(ns("path"))), col_6(DT::dataTableOutput(ns("mh")))),
-           width = 12)
+    )
   )
 }
 
@@ -173,23 +170,6 @@ mod_body_client_counts_server <- function(id){
       datatable_default(final)
     })
 
-    output$path <- DT::renderDT({
-      path_referrals() |> 
-        dplyr::rename(
-          "Project Type" = "rrhpsh",
-          "# of Clients" = "n",
-          "% of Total PATH Clients" = "PctPATH"
-        ) |> 
-        datatable_default()
-    })
-    output$mh <- DT::renderDT({
-      mental_health_unsheltered() |> 
-        dplyr::rename(
-          "Disability Type" = "DisabilityType",
-          "# of Clients" = "n"
-        ) |> 
-        datatable_default()
-    })
   })
 }
 
