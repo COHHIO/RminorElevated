@@ -81,48 +81,8 @@ mod_sidebar_ui <- function(id){
           icon = shiny::icon("file-medical-alt"),
           tabName = "qpr",
           bs4Dash::bs4SidebarMenuSubItem(
-            text = "Permanent Housing Need",
-            tabName = "qpr_community_need_ph" #spdat1Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Literally Homeless Need",
-            tabName = "qpr_community_need_lh" #spdat2Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Length of Stay",
-            tabName = "qpr_length_of_stay" # LoS-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Exits to Permanent Housing",
-            tabName = "qpr_permanent_housing" # PHTab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Exits to Temp or Permanent Housing",
-            tabName = "qpr_temp_permanent_housing" # PHTab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Non-Cash Benefits at Exit",
-            tabName = "qpr_noncash_benefits" # NCB-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Health Insurance at Exit",
-            tabName = "qpr_health_insurance" # HI-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Income Growth",
-            tabName = "qpr_income_growth" # income-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Rapid Placement for RRH",
-            tabName = "qpr_rrh_placement" # rapid-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "Entries in Homeless System",
-            tabName = "qpr_reentries" # Entry-Tab
-          ),
-          bs4Dash::bs4SidebarMenuSubItem(
-            text = "RRH Spending",
-            tabName = "qpr_rrh_spending" # spending-Tab
+            text = "Program Details",
+            tabName = "program_details"
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
