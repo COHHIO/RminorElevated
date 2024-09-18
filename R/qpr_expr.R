@@ -53,6 +53,18 @@ qpr_expr <- list(
                           "Number of households who exited with 1 or more sources of health insurance / number of households that entered a PSH project who exited the project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(
+          InsuranceFromAnySource = HMIS::hud_translations$`1.8 NoYesReasons for Missing Data`(InsuranceFromAnySource)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Health Insurance from Any Source (at Exit)" = InsuranceFromAnySource
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Youth Health Insurance Measure
@@ -108,6 +120,18 @@ qpr_expr <- list(
                           "Number of households who exited with 1 or more sources of health insurance / number of households that entered a PSH project who exited the project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(
+          InsuranceFromAnySource = HMIS::hud_translations$`1.8 NoYesReasons for Missing Data`(InsuranceFromAnySource)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Health Insurance from Any Source (at Exit)" = InsuranceFromAnySource
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Length of Stay
@@ -161,6 +185,17 @@ qpr_expr <- list(
                           "Median length of stay for households who have exited")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::arrange(dplyr::desc(DaysinProject)) |>
+        dplyr::select(
+          UniqueID,
+          "Bed Start" = EntryAdjust,
+          ExitDate,
+          "Days in Program" = DaysinProject
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Youth Length of Stay
@@ -214,6 +249,17 @@ qpr_expr <- list(
                           "Median length of stay for households who have exited")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::arrange(dplyr::desc(DaysinProject)) |>
+        dplyr::select(
+          UniqueID,
+          "Bed Start" = EntryAdjust,
+          ExitDate,
+          "Days in Program" = DaysinProject
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Income Growth
@@ -265,6 +311,21 @@ qpr_expr <- list(
                           "Number of households who either gained or increased earned income or who gained or increased non-employment cash income / number of households who entered a PSH project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(EntryIncome = scales::dollar(EntryIncome, accuracy = .01),
+                      RecentIncome = scales::dollar(RecentIncome, accuracy = .01),
+                      Difference = scales::dollar(Difference, accuracy = .01)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Income at Entry" = EntryIncome,
+          "Most Recent Income" = RecentIncome,
+          "Income Difference" = Difference
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Income Growth Youth
@@ -316,6 +377,21 @@ qpr_expr <- list(
                           "Number of households who either gained or increased earned income or who gained or increased non-employment cash income / number of households who entered a PSH project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(EntryIncome = scales::dollar(EntryIncome, accuracy = .01),
+                      RecentIncome = scales::dollar(RecentIncome, accuracy = .01),
+                      Difference = scales::dollar(Difference, accuracy = .01)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Income at Entry" = EntryIncome,
+          "Most Recent Income" = RecentIncome,
+          "Income Difference" = Difference
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Non-cash Benefits
@@ -371,6 +447,19 @@ qpr_expr <- list(
                           "Number of households who either gained or increased earned income or who gained or increased non-employment cash income / number of households who entered a PSH project")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(
+          BenefitsFromAnySource = HMIS::hud_translations$`1.8 NoYesReasons for Missing Data`(BenefitsFromAnySource)
+        ) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Benefits from Any Source (at Exit)" = BenefitsFromAnySource
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Non-cash benefits Youth
@@ -426,6 +515,19 @@ qpr_expr <- list(
                           "Number of households who either gained or increased earned income or who gained or increased non-employment cash income / number of households who entered a PSH project")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::mutate(
+          BenefitsFromAnySource = HMIS::hud_translations$`1.8 NoYesReasons for Missing Data`(BenefitsFromAnySource)
+        ) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          ExitDate,
+          "Benefits from Any Source (at Exit)" = BenefitsFromAnySource
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Permanent Housing
@@ -504,6 +606,38 @@ qpr_expr <- list(
                           "Number of households who moved to PH upon exit / number of participants who exited RRH project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      req(data_env())
+      dplyr::left_join(
+        data_env()$TotalHHsSuccessfulPlacement,
+        data_env()$SuccessfullyPlaced,
+        by = c(
+          "EnrollmentID",
+          "ProjectType",
+          "ProjectName",
+          "PersonalID",
+          "UniqueID",
+          "EntryDate",
+          "MoveInDate",
+          "MoveInDateAdjust",
+          "ExitDate",
+          "DestinationGroup",
+          "Destination",
+          "HouseholdID"
+        )
+      ) |>
+        dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
+                                                MoveInDate, EntryDate)) |>
+        dplyr::arrange(DestinationGroup, PersonalID) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Bed Start" = BedStart,
+          ExitDate,
+          "Destination Group" =  DestinationGroup
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Youth Permanent Housing
@@ -582,6 +716,38 @@ qpr_expr <- list(
                           "Number of households who moved to PH upon exit / number of participants who exited RRH project")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      req(data_env())
+      dplyr::left_join(
+        data_env()$TotalHHsSuccessfulPlacement,
+        data_env()$SuccessfullyPlaced,
+        by = c(
+          "EnrollmentID",
+          "ProjectType",
+          "ProjectName",
+          "PersonalID",
+          "UniqueID",
+          "EntryDate",
+          "MoveInDate",
+          "MoveInDateAdjust",
+          "ExitDate",
+          "DestinationGroup",
+          "Destination",
+          "HouseholdID"
+        )
+      ) |>
+        dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
+                                                MoveInDate, EntryDate)) |>
+        dplyr::arrange(DestinationGroup, PersonalID) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Bed Start" = BedStart,
+          ExitDate,
+          "Destination Group" =  DestinationGroup
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Temp Permanent Housing
@@ -635,6 +801,38 @@ qpr_expr <- list(
         HowCalculated = c("Number of households who moved from unsheltered locations to temporary (ES or TH) or to PH upon exit / number of households who moved from unsheltered locations to any destination at exit")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      req(data_env())
+      dplyr::left_join(
+        data_env()$TotalHHsSuccessfulPlacement,
+        data_env()$SuccessfullyPlaced,
+        by = c(
+          "EnrollmentID",
+          "ProjectType",
+          "ProjectName",
+          "PersonalID",
+          "UniqueID",
+          "EntryDate",
+          "MoveInDate",
+          "MoveInDateAdjust",
+          "ExitDate",
+          "DestinationGroup",
+          "Destination",
+          "HouseholdID"
+        )
+      ) |>
+        dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
+                                                MoveInDate, EntryDate)) |>
+        dplyr::arrange(DestinationGroup, PersonalID) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Bed Start" = BedStart,
+          ExitDate,
+          "Destination Group" =  DestinationGroup
+        ) |>
+        datatable_default(escape = FALSE)
     })
   ),
   #### Temp or Permanent Housing Youth
@@ -681,13 +879,45 @@ qpr_expr <- list(
         )
       )
     }),
-    rlang::expr({
+    details = rlang::expr({
       tibble::tibble(
         ProjectType = c("Street Outreach"),
         Goal = c("At least XX% of households in Youth Outreach projects will move from unsheltered locations to temporary or permanent housing at exit"),
         HowCalculated = c("Number of households who moved from unsheltered locations to temporary (ES or TH) or to PH upon exit / number of households who moved from unsheltered locations to any destination at exit")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      req(data_env())
+      dplyr::left_join(
+        data_env()$TotalHHsSuccessfulPlacement,
+        data_env()$SuccessfullyPlaced,
+        by = c(
+          "EnrollmentID",
+          "ProjectType",
+          "ProjectName",
+          "PersonalID",
+          "UniqueID",
+          "EntryDate",
+          "MoveInDate",
+          "MoveInDateAdjust",
+          "ExitDate",
+          "DestinationGroup",
+          "Destination",
+          "HouseholdID"
+        )
+      ) |>
+        dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
+                                                MoveInDate, EntryDate)) |>
+        dplyr::arrange(DestinationGroup, PersonalID) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Bed Start" = BedStart,
+          ExitDate,
+          "Destination Group" =  DestinationGroup
+        ) |>
+        datatable_default(escape = FALSE)
     })
   ),
   #### RRH Placement
@@ -715,6 +945,17 @@ qpr_expr <- list(
         HowCalculated = c("Average number of days between leavers' RRH entry date and Housing Move-in Date")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::arrange(dplyr::desc(DaysToHouse)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Move In Date" = MoveInDate,
+          "Days to House" = DaysToHouse
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### RRH Placement Youth
@@ -742,6 +983,17 @@ qpr_expr <- list(
         HowCalculated = c("Average number of days between leavers' RRH entry date and Housing Move-in Date")
       ) |>
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env() |>
+        dplyr::arrange(dplyr::desc(DaysToHouse)) |>
+        dplyr::select(
+          UniqueID,
+          EntryDate,
+          "Move In Date" = MoveInDate,
+          "Days to House" = DaysToHouse
+        ) |> 
+        datatable_default(escape = FALSE)
     })
   ),
   #### Re-entries
@@ -782,13 +1034,24 @@ qpr_expr <- list(
         )
       )
     }),
-    details = qpr_expr$reentries$details <- rlang::expr({
+    details = rlang::expr({
       tibble::tibble(
         ProjectType = c("Homelessness Prevention"),
         Goal = c("HP Projects will have no more than 25% of households who exited to PH enter into the Ohio BoSCoC homeless system within 12 months of HP assistance"),
         HowCalculated = c("Number of households who returned to ES, SH, TH, or Outreach within 12 months of exit / number of household leavers to permanent housing")
       ) |> 
         DT::datatable(escape = FALSE)
+    }),
+    datatable = rlang::expr({
+      data_env()$Reentries |>
+        dplyr::select(
+          UniqueID,
+          "Exiting HP Program" = ExitingHP,
+          "Exit Date from HP" = LatestPermanentProject12,
+          "Entry Date (Re-Entry)" = EntryDate,
+          "Exit Date (Re-Entry)" = ExitDate
+        ) |>
+        datatable_default(escape = FALSE)
     })
   )
 )
