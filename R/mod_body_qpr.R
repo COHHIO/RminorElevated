@@ -53,12 +53,16 @@ mod_body_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang:
     ),
     ui_row(
       bs4Dash::infoBoxOutput(ns("infobox_output"), width = 12)  # Correctly namespaced infobox output
+    ),
+    ui_row(
+      DT::DTOutput(ns("datatable_output"))
     )
   )
 }
 
 
-mod_body_qpr_server <- function(id, header, calculate_expr, infobox_expr, details_expr, is_youth = FALSE) {
+mod_body_qpr_server <- function(id, header, calculate_expr, infobox_expr, details_expr, 
+                                datatable_expr, is_youth = FALSE) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -114,7 +118,7 @@ mod_body_qpr_server <- function(id, header, calculate_expr, infobox_expr, detail
         })
       })
       
-      # Data table generation
+      # Measure details table generation
       output$details_output <- DT::renderDataTable({
         req(data_env())  # Ensure data is available
         message("Rendering details for measure: ", id)
@@ -124,6 +128,22 @@ mod_body_qpr_server <- function(id, header, calculate_expr, infobox_expr, detail
         
         tryCatch({
           eval(selected_details)
+        }, error = function(e) {
+          message("Error rendering details: ", e$message)
+          NULL
+        })
+      })
+      
+      # Data table generation
+      output$datatable_output <- DT::renderDataTable({
+        req(data_env())  # Ensure data is available
+        message("Rendering table for measure: ", id)
+        
+        # Select youth or standard details expression
+        selected_datatable <- if (is_youth) qpr_expr[[paste0(id, "_youth")]]$datatable else datatable_expr
+        
+        tryCatch({
+          eval(selected_datatable)
         }, error = function(e) {
           message("Error rendering details: ", e$message)
           NULL
