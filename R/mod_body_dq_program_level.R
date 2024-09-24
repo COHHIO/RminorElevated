@@ -196,7 +196,7 @@ mod_body_dq_program_level_server <- function(id){
     output$dq_PATHMissingContact <- renderUI({
       req(dq_main_time_proj())
       MissingPathContact <- dq_main_time_proj()  |> 
-        dq_filter_between(Issue == "Missing PATH Contact") |> 
+        dq_filter_between(Issue == "Missing PATH Contact", date_range = date_range()) |> 
         dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL))
       
       if (nrow(MissingPathContact)) {
