@@ -1,5 +1,5 @@
 .qbegin <- lubridate::floor_date(Sys.Date(), "quarter")
-strip_id <- function(id) {
+strip_id <- function(id, is_youth = is_youth) {
   stringr::str_remove(id, "^(?:body\\-)?body\\_qpr\\_")
 }
 #' @family QPR
@@ -30,7 +30,7 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
   # slider_choices <- rev(purrr::map(.qs, ~lubridate::yq(.x) - lubridate::days(1)))
   # names(slider_choices) <- .quarter_labels
   force(ns)
-  .id <- strip_id(id)
+  .id <- strip_id(id, is_youth = is_youth)
   .defaults <- purrr::compact(list(
   Dates = if (!isFALSE(date_choices)) list(
     inputId = ns("date_range"),
@@ -106,7 +106,7 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
 
 
 mod_qpr_server <- function(id, header, ...){
-  .id <- strip_id(id)
+  .id <- strip_id(id, is_youth = is_youth)
 
   if (missing(header)) 
     rlang::abort("Must provide header for mod_QPR_server(",id,")")
