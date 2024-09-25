@@ -1,7 +1,12 @@
 .qbegin <- lubridate::floor_date(Sys.Date(), "quarter")
 strip_id <- function(id, is_youth = is_youth) {
-  stringr::str_remove(id, "^(?:body\\-)?body\\_qpr\\_")
-}
+  if (is_youth == FALSE) {
+    # First remove the "body-program_details-" prefix
+    base_id <- stringr::str_remove(id, "^body\\-program_details\\-")
+  } else {
+    base_id <- stringr::str_remove(id, "^body-youth\\_program_details\\-")
+  }
+  
 #' @family QPR
 #' @title QPR UI Function
 #' @description A shiny Module to generate the QPR UI.
