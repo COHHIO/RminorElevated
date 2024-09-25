@@ -19,6 +19,6 @@ app_server <- function( input, output, session ) {
   # Top-level Modules
   mod_navbar_server("navbar")
   mod_sidebar_server("sidebar")
-  mod_body_server("body")
+  mod_body_server("body", active$is_youth)
   mod_theme_server("color_theme")
 }
