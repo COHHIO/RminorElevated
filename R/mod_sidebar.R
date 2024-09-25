@@ -86,6 +86,15 @@ mod_sidebar_ui <- function(id){
           )
         ),
         bs4Dash::bs4SidebarMenuItem(
+          text = "Ohio Youth Performance",
+          tabName = "qpr", # quarterly performance tab
+          icon = shiny::icon("child"),
+          bs4Dash::bs4SidebarMenuSubItem(
+            text = "Program Details",
+            tabName = "youth_program_details"
+          )
+        ),
+        bs4Dash::bs4SidebarMenuItem(
           text = "Mahoning Performance",
           tabName = "mpo",
           icon = shiny::icon("file-medical-alt")
