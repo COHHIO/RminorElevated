@@ -7,6 +7,9 @@ strip_id <- function(id, is_youth = is_youth) {
     base_id <- stringr::str_remove(id, "^body-youth\\_program_details\\-")
   }
   
+  return(base_id)
+}
+  
 #' @family QPR
 #' @title QPR UI Function
 #' @description A shiny Module to generate the QPR UI.
