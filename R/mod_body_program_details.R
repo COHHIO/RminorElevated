@@ -103,6 +103,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$length_of_stay$expr, 
       infobox_expr = qpr_expr$length_of_stay$infobox, 
       details_expr = qpr_expr$length_of_stay$details,
+      datatable_expr = qpr_expr$length_of_stay$datatable,
       is_youth = is_youth
     )
     
@@ -113,6 +114,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$permanent_housing$expr, 
       infobox_expr = qpr_expr$permanent_housing$infobox, 
       details_expr = qpr_expr$permanent_housing$details,
+      datatable_expr = qpr_expr$permanent_housing$datatable,
       is_youth = is_youth
     )
     
@@ -123,6 +125,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$temp_permanent_housing$expr, 
       infobox_expr = qpr_expr$temp_permanent_housing$infobox, 
       details_expr = qpr_expr$temp_permanent_housing$details,
+      datatable_expr = qpr_expr$temp_permanent_housing$datatable,
       is_youth = is_youth
     )
     
@@ -133,6 +136,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$noncash_benefits$expr, 
       infobox_expr = qpr_expr$noncash_benefits$infobox, 
       details_expr = qpr_expr$noncash_benefits$details,
+      datatable_expr = qpr_expr$noncash_benefits$datatable,
       is_youth = is_youth
     )
     
@@ -143,6 +147,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$health_insurance$expr, 
       infobox_expr = qpr_expr$health_insurance$infobox, 
       details_expr = qpr_expr$health_insurance$details,
+      datatable_expr = qpr_expr$health_insurance$datatable,
       is_youth = is_youth
     )
     
@@ -153,6 +158,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$income_growth$expr, 
       infobox_expr = qpr_expr$income_growth$infobox, 
       details_expr = qpr_expr$income_growth$details,
+      datatable_expr = qpr_expr$income_growth$datatable,
       is_youth = is_youth
     )
     
@@ -163,6 +169,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$rrh_placement$expr, 
       infobox_expr = qpr_expr$rrh_placement$infobox, 
       details_expr = qpr_expr$rrh_placement$details,
+      datatable_expr = qpr_expr$rrh_placement$datatable,
       is_youth = is_youth
     )
     
@@ -173,6 +180,7 @@ mod_body_program_details_server <- function(id, is_youth = FALSE) {
       calculate_expr = qpr_expr$reentries$expr, 
       infobox_expr = qpr_expr$reentries$infobox, 
       details_expr = qpr_expr$reentries$details,
+      datatable_expr = qpr_expr$reentries$datatable,
       is_youth = is_youth
     )
     
