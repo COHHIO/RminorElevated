@@ -1,6 +1,6 @@
 
 dt_time <- validation() |>
-  dplyr::filter(ProjectType %in% c(0, 1, 2, 3, 4, 8, 9, 12, 13)) |>
+  dplyr::filter(ProjectType %in% c(0, 1, 2, 3, 4, 6, 8, 9, 12, 13)) |>
   dplyr::mutate(
     DateCreated = lubridate::as_date(DateCreated, tz = NULL),
     DeskTime = as.integer(
