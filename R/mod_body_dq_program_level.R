@@ -257,6 +257,7 @@ mod_body_dq_program_level_server <- function(id){
         dq_filter_between(ProjectID %in% program(), date_range = date_range()) |>
         dq_select_cols(
           "UniqueID",
+          "Project Name" = ProjectName,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Move-In Date" = MoveInDateAdjust,
