@@ -173,6 +173,7 @@ mod_body_dq_program_level_server <- function(id){
         dq_filter_between(Issue == "Duplicate Entry Exits")  |> 
         dq_select_cols(
           !!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL),
+          "Entry Date" = EntryDate,
           "Exit Date" = ExitDate
         ) 
       
