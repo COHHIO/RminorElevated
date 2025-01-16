@@ -37,7 +37,9 @@ mod_body_program_lookup_server <- function(id){
       backgroundColor = DT::styleEqual(FALSE, "#FFB2B6")
     )
 
-    df |>  datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive"))
+    df |>  datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive",
+                                                  "StartDate", "EndDate",
+                                                  "LastUpdatedDate"))
     output$header <- renderUI(server_header("Agency & Program Lookup"))
     output$detail <- DT::renderDT(server = FALSE, {
       program_lookup() |> 
@@ -49,7 +51,9 @@ mod_body_program_lookup_server <- function(id){
           target = "cell",
           backgroundColor = DT::styleEqual(FALSE, "#FFB2B6")
         ) |> 
-        datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive"))
+        datatable_options_update(hide_cols = c("AgencyActive", "ProgramActive",
+                                               "StartDate", "EndDate",
+                                               "LastUpdatedDate"))
       })
   })
 }
