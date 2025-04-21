@@ -140,7 +140,8 @@ mod_body_dq_program_level_server <- function(id){
           "Too Many Heads of Household",
           "Missing Relationship to Head of Household",
           "No Head of Household",
-          "Children Only Household"
+          "Children Only Household",
+          "Client remains active after Head of Household's exit"
         )) |> 
         dq_select_cols(
           `A UniqueID in the HH` = UniqueID,
