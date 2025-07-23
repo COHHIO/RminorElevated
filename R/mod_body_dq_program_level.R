@@ -141,7 +141,7 @@ mod_body_dq_program_level_server <- function(id){
           "Missing Relationship to Head of Household",
           "No Head of Household",
           "Children Only Household",
-          "Client remains active after Head of Household's exit"
+          "Client remains active after Head of Household's exit or deletion"
         )) |> 
         dq_select_cols(
           `A UniqueID in the HH` = UniqueID,
@@ -295,7 +295,8 @@ mod_body_dq_program_level_server <- function(id){
             "Children Only Household",
             "Overlapping Program Stays",
             "Duplicate Entry Exits",
-            "Access Point with Entry Exits"
+            "Access Point with Entry Exits",
+            "Client remains active after Head of Household's exit or deletion"
           )  &
             Type == "Error"
         ) |>
@@ -314,7 +315,8 @@ mod_body_dq_program_level_server <- function(id){
             "Children Only Household",
             "Overlapping Program Stays",
             "Duplicate Entry Exits",
-            "Check Eligibility"
+            "Check Eligibility",
+            "Client remains active after Head of Household's exit or deletion"
           ) &
             Type == "Warning"
         ) |>
