@@ -78,7 +78,7 @@ mod_body_dq_system_summary_server <- function(id){
       "Eligibility Issues by Project",
       "warning",
       "clients_without_spdat",
-      "Households without SPDAT by Project",
+      "Households without HARP or SPDAT by Project",
       "warning",
       "overlaps",
       "Overlapping Enrollments by Project",
