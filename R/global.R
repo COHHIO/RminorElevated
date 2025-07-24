@@ -21,23 +21,81 @@ clean_null <- function(files) {
   files[!files %in% .rds[.sizes == 44]]
 }
 
-accessor_create <- function(.x, do_update) rlang::new_function(args =
-                                                                 rlang::pairlist2(
-                                                                   path = rlang::expr(!!.x),
-                                                                   dep_update = maleta::update_dropbox,
-                                                                   do_update = rlang::expr(!!do_update),
-                                                                   ... = ,
-                                                                 ),
-                                                               body = base::quote({
-                                                                 if (do_update)
-                                                                   dep_update(path)
-                                                                 UU::file_fn(path)(path, ...)
-                                                               }))
+# accessor_create <- function(.x, do_update) rlang::new_function(args =
+#                                                                  rlang::pairlist2(
+#                                                                    path = rlang::expr(!!.x),
+#                                                                    dep_update = maleta::update_dropbox,
+#                                                                    do_update = rlang::expr(!!do_update),
+#                                                                    ... = ,
+#                                                                  ),
+#                                                                body = base::quote({
+#                                                                  if (do_update)
+#                                                                    dep_update(path)
+#                                                                  UU::file_fn(path)(path, ...)
+#                                                                }))
+
+# accessor_create <- function(.x, do_update) {
+#   cat("Creating accessor for path:", .x, "\n")
+#   
+#   rlang::new_function(
+#     args = rlang::pairlist2(
+#       path = rlang::expr(!!.x),
+#       dep_update = maleta::update_dropbox,
+#       do_update = rlang::expr(!!do_update),
+#       ... = ,
+#     ),
+#     body = rlang::expr({
+#       cat("Accessor function called with path:", path, "\n")
+#       
+#       if (is.null(path) || length(path) == 0 || path == "") {
+#         stop("Invalid path in accessor function: ", path)
+#       }
+#       
+#       if (do_update)
+#         dep_update(path)
+#       
+#       file_func <- UU::file_fn(path)
+#       file_func(path, ...)
+#     })
+#   )
+# }
+
+accessor_create <- function(.x, do_update) {
+  cat("Creating accessor for path:", .x, "\n")
+  
+  rlang::new_function(
+    args = rlang::pairlist2(
+      path = rlang::expr(!!.x),
+      dep_update = maleta::update_dropbox,
+      do_update = rlang::expr(!!do_update),
+      ... = ,
+    ),
+    body = rlang::expr({
+      cat("Accessor function called with path:", path, "\n")
+      
+      if (is.null(path) || length(path) == 0 || path == "") {
+        stop("Invalid path in accessor function: ", path)
+      }
+      
+      if (do_update)
+        dep_update(path)
+      
+      # Check file extension and handle differently
+      if (tools::file_ext(path) == "rds") {
+        # For .rds files, maybe use readRDS directly?
+        readRDS(path)
+      } else {
+        file_func <- UU::file_fn(path)
+        file_func(path, ...)
+      }
+    })
+  )
+}
 
 create_accessors <- function(dep_dir = "data", deps = NULL, dep_update = maleta::dep_update_dropbox, update_all = TRUE) {
   if (is.null(deps))
     deps <- clean_null(UU::list.files2(dep_dir)) |>
-      stringr::str_subset("\\.png^", negate = TRUE)
+      stringr::str_subset("\\.png$", negate = TRUE)
   deps <- fs::path_abs(deps)
   UU::mkpath(dep_dir)
   if (update_all)
@@ -66,13 +124,16 @@ do_assignment <- function(funs, ns = pkgload::pkg_name()) {
     funs
 }
 
+# Debug: Check what files are found
+files <- UU::list.files2("data")
+print(paste("Found files:", paste(files, collapse = ", ")))
+
 .time <- system.time({
   create_accessors("data")
 })
 # Create accessor functions
 
-
-rm_dates()
+# rm_dates() <- HMISprep::load_dates()
 
 if (exists("validation")) {
   programs <- validation() |>
