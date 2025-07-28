@@ -5,7 +5,7 @@
 #' @import shiny
 #' @noRd
 app_server <- function( input, output, session ) {
-
+  
   # Inputs needed in submodules
   active <<- reactiveValues()
   observe({
