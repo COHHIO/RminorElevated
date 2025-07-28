@@ -14,7 +14,7 @@ mod_body_dq_program_level_ui <- function(id){
     ui_header_row(),
     ui_row(
       ui_picker_program(
-        choices = dq_providers(),
+        choices = dq_providers_df() |> dplyr::select(ProjectName),
         options = shinyWidgets::pickerOptions(
         liveSearch = TRUE,
         liveSearchStyle = 'contains',

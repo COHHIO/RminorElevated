@@ -19,7 +19,7 @@ mod_data_quality_ui <- function(id){
       pickerInput(
         label = "Select Provider",
         inputId = ns("providerListDQ"),
-        choices = dq_providers,
+        choices = dq_providers_df |> dplyr::select(ProjectName),
         options = pickerOptions(
           liveSearch = TRUE,
           liveSearchStyle = 'contains',
