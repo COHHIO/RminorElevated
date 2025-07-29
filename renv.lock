@@ -309,7 +309,7 @@
     },
     "arrow": {
       "Package": "arrow",
-      "Version": "20.0.0.2",
+      "Version": "21.0.0",
       "Source": "Repository",
       "Title": "Integration to 'Apache' 'Arrow'",
       "Authors@R": "c( person(\"Neal\", \"Richardson\", email = \"neal.p.richardson@gmail.com\", role = c(\"aut\")), person(\"Ian\", \"Cook\", email = \"ianmcook@gmail.com\", role = c(\"aut\")), person(\"Nic\", \"Crane\", email = \"thisisnic@gmail.com\", role = c(\"aut\")), person(\"Dewey\", \"Dunnington\", role = c(\"aut\"), email = \"dewey@fishandwhistle.net\", comment = c(ORCID = \"0000-0002-9415-4582\")), person(\"Romain\", \"Fran\\u00e7ois\", role = c(\"aut\"), comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Jonathan\", \"Keane\", email = \"jkeane@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Drago\\u0219\", \"Moldovan-Gr\\u00fcnfeld\", email = \"dragos.mold@gmail.com\", role = c(\"aut\")), person(\"Jeroen\", \"Ooms\", email = \"jeroen@berkeley.edu\", role = c(\"aut\")), person(\"Jacob\", \"Wujciak-Jens\", email = \"jacob@wujciak.de\", role = c(\"aut\")), person(\"Javier\", \"Luraschi\", email = \"javier@rstudio.com\", role = c(\"ctb\")), person(\"Karl\", \"Dunkle Werner\", email = \"karldw@users.noreply.github.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0003-0523-7309\")), person(\"Jeffrey\", \"Wong\", email = \"jeffreyw@netflix.com\", role = c(\"ctb\")), person(\"Apache Arrow\", email = \"dev@arrow.apache.org\", role = c(\"aut\", \"cph\")) )",
@@ -322,7 +322,7 @@
       "BugReports": "https://github.com/apache/arrow/issues",
       "Encoding": "UTF-8",
       "Language": "en-US",
-      "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and openssl (optional); cmake >= 3.16 (build-time only, and only for full source build)",
+      "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and openssl (optional); cmake >= 3.25 (build-time only, and only for full source build)",
       "Biarch": "true",
       "Imports": [
         "assertthat",
@@ -1236,38 +1236,50 @@
     },
     "clarity.looker": {
       "Package": "clarity.looker",
-      "Version": "0.0.0.9002",
+      "Version": "0.1.0",
       "Source": "GitHub",
       "Title": "A package for retrieve HMIS data and HUD Export items from the BitFocus Clarity Looker API",
-      "Description": "Retrieve HUD Export CSVs and other HMIS data from the Clarity Looker API",
+      "Description": "This package retrieves HUD Export CSVs and other HMIS data from the Clarity Looker API.",
       "Authors@R": "c(person(\"Stephen\",\"Holsenbeck\", email = \"sholsen@alumni.emory.edu\", role = c(\"aut\",\"cre\")), person(\"Genelle\", \"Denzin\", email = \"\", role = c(\"aut\")))",
       "License": "AGPL (>= 3)",
       "Encoding": "UTF-8",
       "Imports": [
-        "arrow",
         "cli",
         "dplyr",
-        "httpuv",
+        "glue",
+        "htmltools",
         "httr",
         "lookr",
+        "lubridate",
+        "purrr",
         "readr",
         "rlang (>= 1.0.0)",
+        "rvest",
+        "slider",
+        "stringdist",
         "stringr",
-        "UU"
+        "tibble",
+        "tidyr",
+        "tidyselect",
+        "UU",
+        "xml2"
       ],
-      "LazyData": "true",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.1.2",
-      "Collate": "'aaa_imports.R' 'hud_extras.R' 'hud_export.R' 'clarity_api_r6.R' 'export_fields.R' 'helpers.R' 'hud_export_2020.R' 'hud_export_2022.R' 'knn_c.R' 'model_names.R' 'setup_looker.R'",
-      "Author": "Stephen Holsenbeck [aut, cre], Genelle Denzin [aut]",
-      "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>",
-      "RemoteType": "github",
+      "Suggests": [
+        "arrow"
+      ],
       "Remotes": "yogat3ch/UU, COHHIO/lookr",
+      "Roxygen": "list(markdown = TRUE)",
+      "RoxygenNote": "7.3.2",
+      "Collate": "'aaa_imports.R' 'hud_extras.R' 'hud_export.R' 'clarity_api_r6.R' 'export_fields.R' 'helpers.R' 'hud_export_2020.R' 'hud_export_2022.R' 'knn_c.R' 'model_names.R' 'setup_looker.R'",
+      "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "clarity.looker",
       "RemoteUsername": "COHHIO",
       "RemoteRef": "HEAD",
-      "RemoteSha": "8c7765838d9d4824ab05dbaa3af12a0b90acf109"
+      "RemoteSha": "0945918a4b4fd0abbf60791624f2238c4e8fbe34",
+      "NeedsCompilation": "no",
+      "Author": "Stephen Holsenbeck [aut, cre], Genelle Denzin [aut]",
+      "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>"
     },
     "cli": {
       "Package": "cli",
@@ -3030,11 +3042,13 @@
     },
     "lookr": {
       "Package": "lookr",
-      "Version": "1.0.1",
+      "Version": "3.0.0",
       "Source": "GitHub",
-      "Date": "2018-04-27",
+      "Date": "2021-10-28T17:08:48.816-04:00",
       "Title": "LookR",
-      "Authors@R": "c(person(\"Maxie\", \"Corbin\", role = c(\"aut\", \"cre\"), email = \"maxie@looker.com\"))",
+      "Author": "Mike DeAngelo <drstrangelove@google.com>",
+      "Maintainer": "Mike DeAngelo <drstrangelove@google.com>",
+      "Authors@R": "c( person(\"Google LLC\", role = c(\"cph\"), email = \"opensource@google.com\"), person(\"Maxie\", \"Corbin\", role = c(\"cre\"), email = \"maxie@looker.com\"), person(\"Mike\", \"DeAngelo\", role = c(\"aut\"), email = \"drstrangelove@google.com\") )",
       "Depends": [
         "R (>= 3.4.3)"
       ],
@@ -3042,26 +3056,25 @@
         "R6",
         "httr",
         "configr",
-        "jsonlite",
-        "readr"
+        "jsonlite"
       ],
       "License": "MIT + file LICENSE",
       "Description": "Software Development Kit for connecting to Looker and making requests via the API. Built on top of bindings generated automatically using Swagger.",
       "URL": "https://github.com/looker/lookr",
-      "BugReports": "https://github.com/looker/lookr/issues",
+      "BugReports": "https://github.com/looker-open-source/lookr/issues",
       "Suggests": [
         "testthat",
         "httpuv"
       ],
-      "RoxygenNote": "6.0.1",
-      "Author": "Maxie Corbin [aut, cre]",
-      "Maintainer": "Maxie Corbin <maxie@looker.com>",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.2",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "lookr",
       "RemoteUsername": "COHHIO",
       "RemoteRef": "HEAD",
-      "RemoteSha": "fc8e6c2044a2833a0891da7cc57b0759651cb67a"
+      "RemoteSha": "df80e1f2b0c5e687b8358ca14c0cfbfe063dcc05",
+      "NeedsCompilation": "no"
     },
     "lubridate": {
       "Package": "lubridate",
@@ -4215,6 +4228,55 @@
       "Author": "Kevin Ushey [aut, cre], JJ Allaire [aut], Hadley Wickham [aut], Gary Ritchie [aut], RStudio [cph]",
       "Repository": "CRAN"
     },
+    "rvest": {
+      "Package": "rvest",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Title": "Easily Harvest (Scrape) Web Pages",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Wrappers around the 'xml2' and 'httr' packages to make it easy to download, then manipulate, HTML and XML.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://rvest.tidyverse.org/, https://github.com/tidyverse/rvest",
+      "BugReports": "https://github.com/tidyverse/rvest/issues",
+      "Depends": [
+        "R (>= 3.6)"
+      ],
+      "Imports": [
+        "cli",
+        "glue",
+        "httr (>= 0.5)",
+        "lifecycle (>= 1.0.3)",
+        "magrittr",
+        "rlang (>= 1.1.0)",
+        "selectr",
+        "tibble",
+        "xml2 (>= 1.3)"
+      ],
+      "Suggests": [
+        "chromote",
+        "covr",
+        "knitr",
+        "R6",
+        "readr",
+        "repurrrsive",
+        "rmarkdown",
+        "spelling",
+        "stringi (>= 0.3.1)",
+        "testthat (>= 3.0.2)",
+        "webfakes"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "RoxygenNote": "7.3.1",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.10",
@@ -4293,6 +4355,36 @@
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Dana Seidel [aut], Posit Software, PBC [cph, fnd] (03wc8by49)",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+      "Repository": "CRAN"
+    },
+    "selectr": {
+      "Package": "selectr",
+      "Version": "0.4-2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Translate CSS Selectors to XPath Expressions",
+      "Date": "2019-11-20",
+      "Authors@R": "c(person(\"Simon\", \"Potter\", role = c(\"aut\", \"trl\", \"cre\"), email = \"simon@sjp.co.nz\"), person(\"Simon\", \"Sapin\", role = \"aut\"), person(\"Ian\", \"Bicking\", role = \"aut\"))",
+      "License": "BSD_3_clause + file LICENCE",
+      "Depends": [
+        "R (>= 3.0)"
+      ],
+      "Imports": [
+        "methods",
+        "stringr",
+        "R6"
+      ],
+      "Suggests": [
+        "testthat",
+        "XML",
+        "xml2"
+      ],
+      "URL": "https://sjp.co.nz/projects/selectr",
+      "BugReports": "https://github.com/sjp/selectr/issues",
+      "Description": "Translates a CSS3 selector into an equivalent XPath expression. This allows us to use CSS selectors when working with the XML package as it can only evaluate XPath expressions. Also provided are convenience functions useful for using CSS selectors on XML nodes. This package is a port of the Python package 'cssselect' (<https://cssselect.readthedocs.io/>).",
+      "NeedsCompilation": "no",
+      "Author": "Simon Potter [aut, trl, cre], Simon Sapin [aut], Ian Bicking [aut]",
+      "Maintainer": "Simon Potter <simon@sjp.co.nz>",
       "Repository": "CRAN"
     },
     "shiny": {
@@ -4433,6 +4525,49 @@
       "Maintainer": "Dean Attali <daattali@gmail.com>",
       "Repository": "CRAN"
     },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.3.2",
+      "Source": "Repository",
+      "Title": "Sliding Window Functions",
+      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Provides type-stable rolling window functions over any R data type. Cumulative and expanding windows are also supported. For more advanced usage, an index can be used as a secondary vector that defines how sliding windows are to be created.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/r-lib/slider, https://slider.r-lib.org",
+      "BugReports": "https://github.com/r-lib/slider/issues",
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "Imports": [
+        "cli (>= 3.6.1)",
+        "rlang (>= 1.1.1)",
+        "vctrs (>= 0.6.3)",
+        "warp"
+      ],
+      "Suggests": [
+        "covr",
+        "dplyr (>= 1.0.0)",
+        "knitr",
+        "lubridate",
+        "rmarkdown",
+        "testthat (>= 3.0.0)"
+      ],
+      "LinkingTo": [
+        "vctrs (>= 0.6.3)"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/build/compilation-database": "true",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/usethis/last-upkeep": "2024-10-25",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Collate": "'arithmetic.R' 'block.R' 'conditions.R' 'hop-common.R' 'hop-index-common.R' 'hop-index.R' 'hop-index2.R' 'hop.R' 'hop2.R' 'phop-index.R' 'phop.R' 'slide-index2.R' 'pslide-index.R' 'slide-period2.R' 'pslide-period.R' 'slide2.R' 'pslide.R' 'segment-tree.R' 'slide-common.R' 'slide-index-common.R' 'slide-index.R' 'slide-period-common.R' 'slide-period.R' 'slide.R' 'slider-package.R' 'summary-index.R' 'summary-slide.R' 'utils.R' 'zzz.R'",
+      "NeedsCompilation": "yes",
+      "Author": "Davis Vaughan [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Davis Vaughan <davis@posit.co>",
+      "Repository": "CRAN"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -4453,6 +4588,34 @@
       "BugReports": "https://github.com/kevinushey/sourcetools/issues",
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
+    "stringdist": {
+      "Package": "stringdist",
+      "Version": "0.9.15",
+      "Source": "Repository",
+      "Maintainer": "Mark van der Loo <mark.vanderloo@gmail.com>",
+      "License": "GPL-3",
+      "Title": "Approximate String Matching, Fuzzy Text Search, and String Distance Functions",
+      "Type": "Package",
+      "LazyLoad": "yes",
+      "Authors@R": "c( person(\"Mark\", \"van der Loo\", role=c(\"aut\",\"cre\") , email=\"mark.vanderloo@gmail.com\" , comment= c(ORCID=\"0000-0002-9807-4686\")) , person(\"Jan\", \"van der Laan\", role=\"ctb\") , person(\"R Core Team\",\"\"     , role=\"ctb\") , person(\"Nick\",\"Logan\"       , role=\"ctb\") , person(\"Chris\",\"Muir\"       , role=\"ctb\") , person(\"Johannes\", \"Gruber\" , role=\"ctb\") , person(\"Brian\",\"Ripley\"     , role=\"ctb\"))",
+      "Description": "Implements an approximate string matching version of R's native 'match' function. Also offers fuzzy text search based on various string distance measures. Can calculate various string distances based on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal sting alignment), qgrams (q- gram, cosine, jaccard distance) or heuristic metrics (Jaro, Jaro-Winkler). An implementation of soundex is provided as well. Distances can be computed between character vectors while taking proper care of encoding or between integer vectors representing generic sequences. This package is built for speed and runs in parallel by using 'openMP'. An API for C or C++ is exposed as well. Reference: MPJ van der Loo (2014) <doi:10.32614/RJ-2014-011>.",
+      "Depends": [
+        "R (>= 2.15.3)"
+      ],
+      "URL": "https://github.com/markvanderloo/stringdist",
+      "BugReports": "https://github.com/markvanderloo/stringdist/issues",
+      "Suggests": [
+        "tinytest"
+      ],
+      "Imports": [
+        "parallel"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Mark van der Loo [aut, cre] (<https://orcid.org/0000-0002-9807-4686>), Jan van der Laan [ctb], R Core Team [ctb], Nick Logan [ctb], Chris Muir [ctb], Johannes Gruber [ctb], Brian Ripley [ctb]",
       "Repository": "CRAN"
     },
     "stringi": {
@@ -5077,6 +5240,34 @@
       "Maintainer": "John Coene <jcoenep@gmail.com>",
       "Repository": "CRAN"
     },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Title": "Group Dates",
+      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Tooling to group dates by a variety of periods including: yearly, monthly, by second, by week of the month, and more.  The groups are defined in such a way that they also represent the distance between dates in terms of the period. This extracts valuable information that can be used in further calculations that rely on a specific temporal spacing between observations.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/DavisVaughan/warp, https://davisvaughan.github.io/warp/",
+      "BugReports": "https://github.com/DavisVaughan/warp/issues",
+      "Depends": [
+        "R (>= 3.2)"
+      ],
+      "Suggests": [
+        "covr",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.0.0)"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "NeedsCompilation": "yes",
+      "Author": "Davis Vaughan [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Davis Vaughan <davis@posit.co>",
+      "Repository": "CRAN"
+    },
     "whisker": {
       "Package": "whisker",
       "Version": "0.4.1",
@@ -5179,6 +5370,47 @@
       "NeedsCompilation": "yes",
       "Author": "Yihui Xie [aut, cre, cph] (<https://orcid.org/0000-0003-0645-5666>, https://yihui.org), Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann [ctb] (<https://orcid.org/0000-0002-5329-5987>), Christophe Dervieux [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
+    "xml2": {
+      "Package": "xml2",
+      "Version": "1.3.8",
+      "Source": "Repository",
+      "Title": "Parse XML",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Jim\", \"Hester\", role = \"aut\"), person(\"Jeroen\", \"Ooms\", email = \"jeroenooms@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(\"R Foundation\", role = \"ctb\", comment = \"Copy of R-project homepage cached as example\") )",
+      "Description": "Bindings to 'libxml2' for working with XML data using a simple,  consistent interface based on 'XPath' expressions. Also supports XML schema validation; for 'XSLT' transformations see the 'xslt' package.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://xml2.r-lib.org, https://r-lib.r-universe.dev/xml2",
+      "BugReports": "https://github.com/r-lib/xml2/issues",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "Imports": [
+        "cli",
+        "methods",
+        "rlang (>= 1.1.0)"
+      ],
+      "Suggests": [
+        "covr",
+        "curl",
+        "httr",
+        "knitr",
+        "magrittr",
+        "mockery",
+        "rmarkdown",
+        "testthat (>= 3.2.0)",
+        "xslt"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "SystemRequirements": "libxml2: libxml2-dev (deb), libxml2-devel (rpm)",
+      "Collate": "'S4.R' 'as_list.R' 'xml_parse.R' 'as_xml_document.R' 'classes.R' 'format.R' 'import-standalone-obj-type.R' 'import-standalone-purrr.R' 'import-standalone-types-check.R' 'init.R' 'nodeset_apply.R' 'paths.R' 'utils.R' 'xml2-package.R' 'xml_attr.R' 'xml_children.R' 'xml_document.R' 'xml_find.R' 'xml_missing.R' 'xml_modify.R' 'xml_name.R' 'xml_namespaces.R' 'xml_node.R' 'xml_nodeset.R' 'xml_path.R' 'xml_schema.R' 'xml_serialize.R' 'xml_structure.R' 'xml_text.R' 'xml_type.R' 'xml_url.R' 'xml_write.R' 'zzz.R'",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "yes",
+      "Author": "Hadley Wickham [aut], Jim Hester [aut], Jeroen Ooms [aut, cre], Posit Software, PBC [cph, fnd], R Foundation [ctb] (Copy of R-project homepage cached as example)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
     },
     "xtable": {
