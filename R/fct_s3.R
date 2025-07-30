@@ -88,6 +88,56 @@ load_s3_file <- function(
   })
 }
 
+#' Get S3 file last modified dates
+#'
+#' @param bucket \code{(character)} S3 bucket name
+#' @param folder \code{(character)} S3 folder/prefix  
+#' @param region \code{(character)} AWS region
+#' @return \code{(POSIXct)} Vector of last modified dates
+#' @noRd
+get_s3_refresh_date <- function(bucket = "shiny-data-cohhio", 
+                                folder = "RME", 
+                                region = "us-east-2") {
+  tryCatch({
+    # Get all objects in the S3 bucket/folder
+    s3_objects <- aws.s3::get_bucket(bucket = bucket, prefix = folder, region = region)
+    
+    # Extract last modified dates, excluding folder entries
+    last_modified <- purrr::map_chr(s3_objects, ~.x$LastModified) |>
+      as.POSIXct(format = "%Y-%m-%dT%H:%M:%S", tz = "UTC")
+    
+    # Filter out any NA dates (from folder entries)
+    last_modified <- last_modified[!is.na(last_modified)]
+    
+    if (length(last_modified) == 0) {
+      cli::cli_alert_warning("No valid timestamps found in S3")
+      return(Sys.time())  # Fallback to current time
+    }
+    
+    # Return the most recent modification time, converted to Eastern Time
+    max_time <- max(last_modified)
+    # Convert to Eastern Time (handles EDT/EST automatically)
+    attr(max_time, "tzone") <- "America/New_York"
+    max_time
+    
+  }, error = function(e) {
+    cli::cli_alert_warning("Could not get S3 refresh date: {e$message}")
+    # Fallback: try local files if they exist
+    if (dir.exists("data")) {
+      local_files <- list.files(path = "data", full.names = TRUE)
+      if (length(local_files) > 0) {
+        purrr::map(local_files, ~file.info(.x)$mtime) |> 
+          {\(x) {do.call(c, x)}}() |> 
+          max()
+      } else {
+        Sys.time()
+      }
+    } else {
+      Sys.time()
+    }
+  })
+}
+
 #' Create S3 accessor functions 
 #'
 #' @param s3_files \code{(character)} Vector of S3 file names  
