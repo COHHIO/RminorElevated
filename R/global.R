@@ -29,7 +29,8 @@ cli::cli_alert_info("Initializing S3 accessor functions...")
   create_accessors_s3(local_data = list(
     Regions = rlang::expr(HMISdata::Regions),
     rm_dates = rlang::expr(HMISprep::load_dates()),
-    co_clients_served = HMISdata::load_hmis_parquet("co_clients_served.parquet"))
+    co_clients_served = HMISdata::load_hmis_parquet("co_clients_served.parquet"),
+    program_lookup = HMISdata::load_hmis_parquet("program_lookup.parquet"))
   )
 })
   
