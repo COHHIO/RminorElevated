@@ -1,4 +1,4 @@
-goals <-  arrow::read_feather("data/mahoning_goals.feather") |>
+goals <-  HMISdata::load_hmis_csv("mahoning_goals.csv", bucket = "shiny-data-cohhio", folder = "RME") |>
   tidyr::pivot_longer(- tidyselect::all_of(c("Measure", "Operator")),  names_to = "ProjectType",
                       values_to = "Goal") |>
   dplyr::mutate(ProjectType = as.numeric(ProjectType)) |>
