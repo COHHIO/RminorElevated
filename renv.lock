@@ -56,6 +56,7 @@
       "Description": "HMIS (Homeless Management Information Systems) is a data collection  system defined by the US Dept of Housing and Urban Development (HUD). For more  information, please visit https://www.hudexchange.info/programs/hmis/. This  package will help HMIS Data Analysts work with homeless services data.",
       "License": "AGPL-3",
       "Encoding": "UTF-8",
+      "LazyData": "true",
       "Imports": [
         "lubridate",
         "purrr",
@@ -72,15 +73,14 @@
         "vctrs",
         "fs"
       ],
+      "Author": "Genelle Denzin [aut, cre], Stephen Holsenbeck [ctb, ctr]",
+      "Maintainer": "Genelle Denzin <genelledenzin@cohhio.org>",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "HMIS",
       "RemoteUsername": "COHHIO",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "45b14ece4d6326ebd212461930ba8d6c8455c6e2",
-      "NeedsCompilation": "no",
-      "Author": "Genelle Denzin [aut, cre], Stephen Holsenbeck [ctb, ctr]",
-      "Maintainer": "Genelle Denzin <genelledenzin@cohhio.org>"
+      "RemoteRepo": "HMIS",
+      "RemoteRef": "main",
+      "RemoteSha": "45b14ece4d6326ebd212461930ba8d6c8455c6e2"
     },
     "MASS": {
       "Package": "MASS",
@@ -274,6 +274,7 @@
       "Description": "A package for universally useful functions",
       "License": "AGPL-3",
       "Encoding": "UTF-8",
+      "LazyData": "true",
       "Roxygen": "list(markdown = TRUE)",
       "RoxygenNote": "7.3.1",
       "Imports": [
@@ -297,19 +298,18 @@
       ],
       "Collate": "'aaa_imports.R' 'infixes.R' 'onload.R' 'universal_useful.R' 'utils_condition_signaling.R' 'utils_conditionals.R' 'utils_css_color.R' 'utils_date_time.R' 'utils_environments_namespaces.R' 'utils_file.R' 'utils_file_io.R' 'utils_file_navigation.R' 'utils_load.R' 'utils_math.R' 'utils_opts.R' 'utils_package_dev.R' 'utils_profiling.R' 'utils_rounding.R' 'utils_scraping.R' 'utils_setup.R' 'utils_shiny.R' 'utils_vectors.R'",
       "URL": "https://yogat3ch.github.io/UU/",
+      "Author": "Stephen Holsenbeck [aut, cre]",
+      "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "UU",
       "RemoteUsername": "yogat3ch",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "bab19ed0a5b881f39996e2e1dcf47575671035c4",
-      "NeedsCompilation": "no",
-      "Author": "Stephen Holsenbeck [aut, cre]",
-      "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>"
+      "RemoteRepo": "UU",
+      "RemoteRef": "main",
+      "RemoteSha": "bab19ed0a5b881f39996e2e1dcf47575671035c4"
     },
     "arrow": {
       "Package": "arrow",
-      "Version": "20.0.0.2",
+      "Version": "21.0.0",
       "Source": "Repository",
       "Title": "Integration to 'Apache' 'Arrow'",
       "Authors@R": "c( person(\"Neal\", \"Richardson\", email = \"neal.p.richardson@gmail.com\", role = c(\"aut\")), person(\"Ian\", \"Cook\", email = \"ianmcook@gmail.com\", role = c(\"aut\")), person(\"Nic\", \"Crane\", email = \"thisisnic@gmail.com\", role = c(\"aut\")), person(\"Dewey\", \"Dunnington\", role = c(\"aut\"), email = \"dewey@fishandwhistle.net\", comment = c(ORCID = \"0000-0002-9415-4582\")), person(\"Romain\", \"Fran\\u00e7ois\", role = c(\"aut\"), comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Jonathan\", \"Keane\", email = \"jkeane@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Drago\\u0219\", \"Moldovan-Gr\\u00fcnfeld\", email = \"dragos.mold@gmail.com\", role = c(\"aut\")), person(\"Jeroen\", \"Ooms\", email = \"jeroen@berkeley.edu\", role = c(\"aut\")), person(\"Jacob\", \"Wujciak-Jens\", email = \"jacob@wujciak.de\", role = c(\"aut\")), person(\"Javier\", \"Luraschi\", email = \"javier@rstudio.com\", role = c(\"ctb\")), person(\"Karl\", \"Dunkle Werner\", email = \"karldw@users.noreply.github.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0003-0523-7309\")), person(\"Jeffrey\", \"Wong\", email = \"jeffreyw@netflix.com\", role = c(\"ctb\")), person(\"Apache Arrow\", email = \"dev@arrow.apache.org\", role = c(\"aut\", \"cph\")) )",
@@ -322,7 +322,7 @@
       "BugReports": "https://github.com/apache/arrow/issues",
       "Encoding": "UTF-8",
       "Language": "en-US",
-      "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and openssl (optional); cmake >= 3.16 (build-time only, and only for full source build)",
+      "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and openssl (optional); cmake >= 3.25 (build-time only, and only for full source build)",
       "Biarch": "true",
       "Imports": [
         "assertthat",
@@ -398,539 +398,6 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
-      "Repository": "CRAN"
-    },
-    "assertive": {
-      "Package": "assertive",
-      "Version": "0.3-6",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Readable Check Functions to Ensure Code Integrity",
-      "Date": "2020-07-30",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "Lots of predicates (is_* functions) to check the state of your variables, and assertions (assert_* functions) to throw errors if they aren't in the right form.",
-      "URL": "https://bitbucket.org/richierocks/assertive",
-      "BugReports": "https://bitbucket.org/richierocks/assertive/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-4)",
-        "assertive.properties (>= 0.0-2)",
-        "assertive.types (>= 0.0-2)",
-        "assertive.numbers",
-        "assertive.strings",
-        "assertive.datetimes",
-        "assertive.files",
-        "assertive.sets (>= 0.0-2)",
-        "assertive.matrices",
-        "assertive.models",
-        "assertive.data",
-        "assertive.data.uk",
-        "assertive.data.us",
-        "assertive.reflection (>= 0.0-2)",
-        "assertive.code",
-        "knitr"
-      ],
-      "Suggests": [
-        "testthat",
-        "markdown"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "VignetteBuilder": "knitr",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medicine - Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "RoxygenNote": "7.1.1",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.base": {
-      "Package": "assertive.base",
-      "Version": "0.0-9",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "A Lightweight Core of the 'assertive' Package",
-      "Date": "2021-02-07",
-      "Author": "Richard Cotton [aut, cre], Sunkyu Choi [trl], Ivanka Skakun [trl], Gergely Dar<c3><b3>czi [trl], Anton Antonov [trl], Hisham Ben Hamidane [trl], Anja Billing [trl], Aditya Bhagwat [trl], Rasmus B<c3><a5><c3><a5>th [trl], Mine Cetinkaya-Rundel [trl], Aspasia Chatziefthymiou [trl]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "c(person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\"), person(\"Sunkyu\", \"Choi\", role = \"trl\", email = \"szc2010@qatar-med.cornell.edu\"), person(\"Ivanka\", \"Skakun\", role = \"trl\", email = \"ivanka.skakun@gmail.com\"), person(\"Gergely\", \"Dar<c3><b3>czi\", role = \"trl\", email = \"daroczig@rapporter.net\"), person(\"Anton\", \"Antonov\", role = \"trl\", email = \"tonytonov@gmail.com\"), person(\"Hisham\", \"Ben Hamidane\", role = \"trl\", email = \"hbh2002@qatar-med.cornell.edu\"), person(\"Anja\", \"Billing\", role = \"trl\", email = \"anb2061@qatar-med.cornell.edu\"), person(\"Aditya\", \"Bhagwat\", role = \"trl\", email = \"bhagwataditya@gmail.com\"), person(\"Rasmus\", \"B<c3><a5><c3><a5>th\", role = \"trl\", email = \"rasmus.baath@lucs.lu.se\"), person(\"Mine\", \"Cetinkaya-Rundel\", role = \"trl\", email = \"mine@stat.duke.edu\"), person(\"Aspasia\", \"Chatziefthymiou\", role = \"trl\", email = \"asc2006@qatar-med.cornell.edu\"))",
-      "Description": "A minimal set of predicates and assertions used by the assertive package.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.base",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.base/issues",
-      "Depends": [
-        "R (>= 3.5.0)"
-      ],
-      "Imports": [
-        "methods",
-        "utils"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <https://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation. Ukranian translations were supported by www.coupofy.com.",
-      "RoxygenNote": "7.1.1",
-      "ByteCompile": "true",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.code": {
-      "Package": "assertive.code",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Code",
-      "Date": "2018-10-21",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of code. This is mainly for use by other package developers who want to include run-time testing features in their own packages. End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.code",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.code/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.properties",
-        "assertive.types",
-        "methods"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-code.R' 'is-code.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.data": {
-      "Package": "assertive.data",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Data",
-      "Date": "2018-11-20",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of (country independent) complex data types.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.data",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.data/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.strings"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-data.R' 'is-data.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.data.uk": {
-      "Package": "assertive.data.uk",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Strings",
-      "Date": "2018-10-21",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of UK-specific complex data types.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.data.uk",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.data.uk/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.strings"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-data-uk.R' 'is-data-uk.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.data.us": {
-      "Package": "assertive.data.us",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Strings",
-      "Date": "2018-10-21",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of US-specific complex data types.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.data.us",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.data.us/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.strings"
-      ],
-      "Suggests": [
-        "testthat",
-        "devtools"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-data-us.R' 'is-data-us.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.datetimes": {
-      "Package": "assertive.datetimes",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Dates and Times",
-      "Date": "2020-07-30",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of dates and times.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.datetimes",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.datetimes/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-7)",
-        "assertive.types"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "RoxygenNote": "7.1.1",
-      "Collate": "'assert-is-date-string.R' 'imports.R' 'assert-is-time.R' 'is-date-string.R' 'workaround.R' 'is-time.R'",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.files": {
-      "Package": "assertive.files",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Files",
-      "Date": "2016-05-10",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of files and connections.  This is mainly for use by other package developers who want to include run-time testing features in their own packages. End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.files",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.files/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.numbers"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-connection.R' 'assert-is-file-size.R' 'assert-is-file.R' 'internal-connection.R' 'is-connection.R' 'is-file-size.R' 'is-file.R'",
-      "RoxygenNote": "5.0.1",
-      "ByteCompile": "true",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.matrices": {
-      "Package": "assertive.matrices",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Matrices",
-      "Date": "2018-11-20",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of matrices.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.matrices",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.matrices/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-matrix.R' 'is-matrix.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.models": {
-      "Package": "assertive.models",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Models",
-      "Date": "2018-10-21",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of models.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.models",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.models/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "stats"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-has-terms.R' 'assert-is-empty-model.R' 'has-terms.R' 'is-empty-model.R'",
-      "RoxygenNote": "6.1.0",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.numbers": {
-      "Package": "assertive.numbers",
-      "Version": "0.0-2",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Numbers",
-      "Date": "2016-05-05",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of numbers.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.numbers",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.numbers/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'assert-is-divisible-by.R' 'assert-is-equal-to.R' 'imports.R' 'assert-is-in-range.R' 'assert-is-infinity-nan.R' 'assert-is-real-imaginary.R' 'assert-is-whole-number.R' 'is-divisible-by.R' 'is-equal-to.R' 'is-in-range.R' 'is-infinity-nan.R' 'is-real-imaginary.R' 'is-whole-number.R'",
-      "RoxygenNote": "5.0.1",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.properties": {
-      "Package": "assertive.properties",
-      "Version": "0.0-5",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Variables",
-      "Date": "2022-04-18",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of variables, such as length, names and attributes.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.properties",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.properties/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-7)",
-        "methods"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'are-same-size.R' 'assert-are-same-size.R' 'imports.R' 'assert-has-attributes.R' 'assert-has-dims.R' 'assert-has-dupes.R' 'assert-has-names.R' 'assert-has-slot.R' 'assert-is-atomic-recursive-vector.R' 'assert-is-empty-scalar.R' 'assert-is-monotonic.R' 'assert-is-null.R' 'assert-is-unsorted.R' 'has-attributes.R' 'has-dims.R' 'has-dupes.R' 'has-names.R' 'has-slot.R' 'is-atomic-recursive-vector.R' 'is-empty-scalar.R' 'is-monotonic.R' 'is-null.R' 'is-unsorted.R' 'utils.R'",
-      "RoxygenNote": "7.1.2",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.reflection": {
-      "Package": "assertive.reflection",
-      "Version": "0.0-5",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions for Checking the State of R",
-      "Date": "2020-07-30",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the state and capabilities of R, the operating system it is running on, and the IDE being used.  This is mainly for use by other package developers who want to include run-time testing features in their own packages. End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.reflection",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.reflection/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-7)",
-        "utils"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-32-64-bit.R' 'assert-is-current.R' 'assert-is-decimal-point.R' 'assert-is-ide.R' 'assert-is-on-os-path.R' 'assert-is-os.R' 'assert-is-r-mode.R' 'assert-is-r-version.R' 'assert-r-has-capability.R' 'is-32-64-bit.R' 'is-current.R' 'is-decimal-point.R' 'is-ide.R' 'is-on-os-path.R' 'is-os.R' 'is-r-mode.R' 'is-r-version.R' 'locale.R' 'r-has-capability.R'",
-      "RoxygenNote": "7.1.1",
-      "Repository": "CRAN",
-      "NeedsCompilation": "no"
-    },
-    "assertive.sets": {
-      "Package": "assertive.sets",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Sets",
-      "Date": "2016-12-30",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the properties of sets.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.sets",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.sets/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-7)"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "RoxygenNote": "5.0.1",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.strings": {
-      "Package": "assertive.strings",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Properties of Strings",
-      "Date": "2016-03-08",
-      "Author": "Richard Cotton [aut, cre], Aditya Bhagwat [ctb]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "c(person(\"Richard\", \"Cotton\",  role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\"),  person(\"Aditya\",  \"Bhagwat\", role = c(\"ctb\"),        email = \"bhagwataditya@gmail.com\"))",
-      "Description": "A set of predicates and assertions for checking the properties of strings.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.strings",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.strings/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-2)",
-        "assertive.types",
-        "stringi"
-      ],
-      "Suggests": [
-        "testthat"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "RoxygenNote": "5.0.1",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
-    "assertive.types": {
-      "Package": "assertive.types",
-      "Version": "0.0-3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Assertions to Check Types of Variables",
-      "Date": "2016-12-30",
-      "Author": "Richard Cotton [aut, cre]",
-      "Maintainer": "Richard Cotton <richierocks@gmail.com>",
-      "Authors@R": "person(\"Richard\", \"Cotton\", role = c(\"aut\", \"cre\"), email = \"richierocks@gmail.com\")",
-      "Description": "A set of predicates and assertions for checking the types of variables.  This is mainly for use by other package developers who want to include run-time testing features in their own packages.  End-users will usually want to use assertive directly.",
-      "URL": "https://bitbucket.org/richierocks/assertive.types",
-      "BugReports": "https://bitbucket.org/richierocks/assertive.types/issues",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "assertive.base (>= 0.0-7)",
-        "assertive.properties",
-        "codetools",
-        "methods",
-        "stats"
-      ],
-      "Suggests": [
-        "testthat",
-        "data.table",
-        "dplyr",
-        "xml2"
-      ],
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "LazyData": "yes",
-      "Acknowledgments": "Development of this package was partially funded by the Proteomics Core at Weill Cornell Medical College in Qatar <http://qatar-weill.cornell.edu>.  The Core is supported by 'Biomedical Research Program' funds, a program funded by Qatar Foundation.",
-      "Collate": "'imports.R' 'assert-is-a-type.R' 'assert-is-condition.R' 'assert-is-date.R' 'assert-is-formula.R' 'assert-is-function.R' 'assert-is-type-base.R' 'assert-is-type-data.table.R' 'assert-is-type-dplyr.R' 'assert-is-type-grDevices.R' 'assert-is-type-methods.R' 'assert-is-type-stats.R' 'assert-is-type-utils.R' 'is-a-type.R' 'is-condition.R' 'is-date.R' 'is-formula.R' 'is-function.R' 'is-type-base.R' 'is-type-data.table.R' 'is-type-dplyr.R' 'is-type-grDevices.R' 'is-type-methods.R' 'is-type-stats.R' 'is-type-utils.R'",
-      "RoxygenNote": "5.0.1",
-      "ByteCompile": "true",
-      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "assertthat": {
@@ -1071,45 +538,53 @@
     "bs4Dash": {
       "Package": "bs4Dash",
       "Version": "2.3.4",
-      "Source": "Repository",
+      "Source": "GitHub",
       "Type": "Package",
       "Title": "A 'Bootstrap 4' Version of 'shinydashboard'",
-      "Authors@R": "c( person(\"David\", \"Granjon\", email = \"dgranjon@ymail.com\", role = c(\"aut\", \"cre\")), person(family = \"RinteRface\", role = \"cph\"), person(family = \"Almasaeed Studio\", role = c(\"ctb\", \"cph\"), comment = \"AdminLTE3 theme for Bootstrap 4\"), person(\"Winston\", \"Chang\", role = c(\"ctb\", \"cph\"), comment = \"Utils functions from shinydashboard\"))",
+      "Authors@R": "c( person(\"David\", \"Granjon\", , \"dgranjon@ymail.com\", role = c(\"aut\", \"cre\")), person(, \"RinteRface\", role = \"cph\"), person(, \"Almasaeed Studio\", role = c(\"ctb\", \"cph\"), comment = \"AdminLTE3 theme for Bootstrap 4\"), person(\"Winston\", \"Chang\", role = c(\"ctb\", \"cph\"), comment = \"Utils functions from shinydashboard\") )",
       "Maintainer": "David Granjon <dgranjon@ymail.com>",
-      "Description": "Make 'Bootstrap 4' Shiny dashboards. Use the full power of 'AdminLTE3', a dashboard template built on top of 'Bootstrap 4'  <https://github.com/ColorlibHQ/AdminLTE>.",
+      "Description": "Make 'Bootstrap 4' Shiny dashboards. Use the full power of 'AdminLTE3', a dashboard template built on top of 'Bootstrap 4' <https://github.com/ColorlibHQ/AdminLTE>.",
+      "License": "GPL (>= 2) | file LICENSE",
       "URL": "https://github.com/RinteRface/bs4Dash, https://bs4dash.rinterface.com/",
       "BugReports": "https://github.com/RinteRface/bs4Dash/issues",
-      "License": "GPL (>= 2) | file LICENSE",
-      "Imports": [
-        "shiny (>= 1.6.0)",
-        "htmltools (>= 0.5.1.1)",
-        "jsonlite (>= 0.9.16)",
-        "fresh",
-        "waiter (>= 0.2.3)",
-        "httpuv (>= 1.5.2)",
-        "lifecycle",
-        "bslib (>= 0.2.4)",
-        "httr"
-      ],
-      "Suggests": [
-        "knitr",
-        "rmarkdown",
-        "testthat (>= 2.1.0)",
-        "golem",
-        "DT",
-        "thematic (>= 0.1.2)"
-      ],
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.2",
-      "VignetteBuilder": "knitr",
-      "Collate": "'feedbacks.R' 'useful-items.R' 'tabs.R' 'render-functions.R' 'cards.R' 'dashboardSidebar.R' 'dashboardBody.R' 'dashboardFooter.R' 'dashboardControlbar.R' 'dashboardHeader.R' 'dashboardPage.R' 'aliases.R' 'auto-color.R' 'bs4Dash-package.r' 'bs4DashGallery.R' 'deps.R' 'grid.R' 'inputs.R' 'skinSelector.R' 'utils.R'",
-      "RdMacros": "lifecycle",
       "Depends": [
         "R (>= 2.10)"
       ],
-      "NeedsCompilation": "no",
+      "Imports": [
+        "bslib (>= 0.2.4)",
+        "cli",
+        "fresh",
+        "htmltools (>= 0.5.1.1)",
+        "httpuv (>= 1.5.2)",
+        "httr",
+        "jsonlite (>= 0.9.16)",
+        "lifecycle",
+        "rlang (>= 1.1.0)",
+        "shiny (>= 1.6.0)",
+        "waiter (>= 0.2.3)"
+      ],
+      "Suggests": [
+        "DT",
+        "golem",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.0.0)",
+        "thematic (>= 0.1.2)"
+      ],
+      "VignetteBuilder": "knitr",
+      "RdMacros": "lifecycle",
+      "Encoding": "UTF-8",
+      "Roxygen": "list(markdown = TRUE)",
+      "RoxygenNote": "7.3.2.9000",
+      "Collate": "'feedbacks.R' 'useful-items.R' 'tabs.R' 'render-functions.R' 'cards.R' 'dashboardSidebar.R' 'dashboardBody.R' 'dashboardFooter.R' 'dashboardControlbar.R' 'dashboardHeader.R' 'dashboardPage.R' 'aliases.R' 'auto-color.R' 'bs4Dash-package.r' 'bs4DashGallery.R' 'deps.R' 'grid.R' 'import-standalone-obj-type.R' 'import-standalone-types-check.R' 'inputs.R' 'skinSelector.R' 'utils.R'",
+      "Config/testthat/edition": "3",
       "Author": "David Granjon [aut, cre], RinteRface [cph], Almasaeed Studio [ctb, cph] (AdminLTE3 theme for Bootstrap 4), Winston Chang [ctb, cph] (Utils functions from shinydashboard)",
-      "Repository": "CRAN"
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "RinteRface",
+      "RemoteRepo": "bs4Dash",
+      "RemoteRef": "master",
+      "RemoteSha": "f383d584cbd7328f0634e4f977f9720f8af3115e"
     },
     "bslib": {
       "Package": "bslib",
@@ -1236,38 +711,50 @@
     },
     "clarity.looker": {
       "Package": "clarity.looker",
-      "Version": "0.0.0.9002",
+      "Version": "0.1.0",
       "Source": "GitHub",
       "Title": "A package for retrieve HMIS data and HUD Export items from the BitFocus Clarity Looker API",
-      "Description": "Retrieve HUD Export CSVs and other HMIS data from the Clarity Looker API",
+      "Description": "This package retrieves HUD Export CSVs and other HMIS data from the Clarity Looker API.",
       "Authors@R": "c(person(\"Stephen\",\"Holsenbeck\", email = \"sholsen@alumni.emory.edu\", role = c(\"aut\",\"cre\")), person(\"Genelle\", \"Denzin\", email = \"\", role = c(\"aut\")))",
       "License": "AGPL (>= 3)",
       "Encoding": "UTF-8",
       "Imports": [
-        "arrow",
         "cli",
         "dplyr",
-        "httpuv",
+        "glue",
+        "htmltools",
         "httr",
         "lookr",
+        "lubridate",
+        "purrr",
         "readr",
         "rlang (>= 1.0.0)",
+        "rvest",
+        "slider",
+        "stringdist",
         "stringr",
-        "UU"
+        "tibble",
+        "tidyr",
+        "tidyselect",
+        "UU",
+        "xml2"
+      ],
+      "Suggests": [
+        "arrow"
       ],
       "LazyData": "true",
       "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.1.2",
+      "RoxygenNote": "7.3.2",
       "Collate": "'aaa_imports.R' 'hud_extras.R' 'hud_export.R' 'clarity_api_r6.R' 'export_fields.R' 'helpers.R' 'hud_export_2020.R' 'hud_export_2022.R' 'knn_c.R' 'model_names.R' 'setup_looker.R'",
       "Author": "Stephen Holsenbeck [aut, cre], Genelle Denzin [aut]",
       "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>",
       "RemoteType": "github",
-      "Remotes": "yogat3ch/UU, COHHIO/lookr",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "clarity.looker",
       "RemoteUsername": "COHHIO",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "8c7765838d9d4824ab05dbaa3af12a0b90acf109"
+      "RemoteRepo": "clarity.looker",
+      "RemoteRef": "main",
+      "RemoteSha": "0945918a4b4fd0abbf60791624f2238c4e8fbe34",
+      "Remotes": "yogat3ch/UU, COHHIO/lookr"
     },
     "cli": {
       "Package": "cli",
@@ -1345,23 +832,6 @@
       "NeedsCompilation": "no",
       "Author": "Matthew Lincoln [aut, cre] (<https://orcid.org/0000-0002-4387-3384>), Louis Maddox [ctb], Steve Simpson [ctb], Jennifer Bryan [ctb]",
       "Maintainer": "Matthew Lincoln <matthew.d.lincoln@gmail.com>",
-      "Repository": "CRAN"
-    },
-    "codetools": {
-      "Package": "codetools",
-      "Version": "0.2-20",
-      "Source": "Repository",
-      "Priority": "recommended",
-      "Author": "Luke Tierney <luke-tierney@uiowa.edu>",
-      "Description": "Code analysis tools for R.",
-      "Title": "Code Analysis Tools for R",
-      "Depends": [
-        "R (>= 2.1)"
-      ],
-      "Maintainer": "Luke Tierney <luke-tierney@uiowa.edu>",
-      "URL": "https://gitlab.com/luke-tierney/codetools",
-      "License": "GPL",
-      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "commonmark": {
@@ -3030,11 +2500,13 @@
     },
     "lookr": {
       "Package": "lookr",
-      "Version": "1.0.1",
+      "Version": "3.0.0",
       "Source": "GitHub",
-      "Date": "2018-04-27",
+      "Date": "2021-10-28T17:08:48.816-04:00",
       "Title": "LookR",
-      "Authors@R": "c(person(\"Maxie\", \"Corbin\", role = c(\"aut\", \"cre\"), email = \"maxie@looker.com\"))",
+      "Author": "Mike DeAngelo <drstrangelove@google.com>",
+      "Maintainer": "Mike DeAngelo <drstrangelove@google.com>",
+      "Authors@R": "c( person(\"Google LLC\", role = c(\"cph\"), email = \"opensource@google.com\"), person(\"Maxie\", \"Corbin\", role = c(\"cre\"), email = \"maxie@looker.com\"), person(\"Mike\", \"DeAngelo\", role = c(\"aut\"), email = \"drstrangelove@google.com\") )",
       "Depends": [
         "R (>= 3.4.3)"
       ],
@@ -3042,26 +2514,24 @@
         "R6",
         "httr",
         "configr",
-        "jsonlite",
-        "readr"
+        "jsonlite"
       ],
       "License": "MIT + file LICENSE",
       "Description": "Software Development Kit for connecting to Looker and making requests via the API. Built on top of bindings generated automatically using Swagger.",
       "URL": "https://github.com/looker/lookr",
-      "BugReports": "https://github.com/looker/lookr/issues",
+      "BugReports": "https://github.com/looker-open-source/lookr/issues",
       "Suggests": [
         "testthat",
         "httpuv"
       ],
-      "RoxygenNote": "6.0.1",
-      "Author": "Maxie Corbin [aut, cre]",
-      "Maintainer": "Maxie Corbin <maxie@looker.com>",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.2",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "lookr",
       "RemoteUsername": "COHHIO",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "fc8e6c2044a2833a0891da7cc57b0759651cb67a"
+      "RemoteRepo": "lookr",
+      "RemoteRef": "main",
+      "RemoteSha": "df80e1f2b0c5e687b8358ca14c0cfbfe063dcc05"
     },
     "lubridate": {
       "Package": "lubridate",
@@ -3139,48 +2609,6 @@
       "Author": "Stefan Milton Bache [aut, cph] (Original author and creator of magrittr), Hadley Wickham [aut], Lionel Henry [cre], RStudio [cph, fnd]",
       "Maintainer": "Lionel Henry <lionel@rstudio.com>",
       "Repository": "CRAN"
-    },
-    "maleta": {
-      "Package": "maleta",
-      "Version": "0.0.0.9000",
-      "Source": "GitHub",
-      "Title": "maleta (suitcase): for 'carrying' app dependencies",
-      "Authors@R": "person(\"Stephen\", \"Holsenbeck\", , \"sholsen@alumni.emory.edu\", role = c(\"cre\", \"aut\"))",
-      "Description": "An open-source Shiny app dependency management package",
-      "License": "`use_mit_license()`, `use_gpl3_license()` or friends to pick a license",
-      "URL": "https://github.com/yogat3ch/maleta",
-      "BugReports": "https://github.com/yogat3ch/maleta/issues",
-      "Depends": [
-        "R (>= 4.1.0)"
-      ],
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.1.2",
-      "Imports": [
-        "base",
-        "cli",
-        "fs",
-        "pkgload",
-        "purrr",
-        "rdrop2",
-        "rlang",
-        "stringr",
-        "UU"
-      ],
-      "Suggests": [
-        "rdrop2",
-        "testthat (>= 3.0.0)"
-      ],
-      "Author": "Stephen Holsenbeck [cre, aut]",
-      "Maintainer": "Stephen Holsenbeck <sholsen@alumni.emory.edu>",
-      "RemoteType": "github",
-      "Remotes": "yogat3ch/UU, yogat3ch/rdrop2",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "maleta",
-      "RemoteUsername": "yogat3ch",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "712e476df50b2a39435d9266c769f91afa6a6071"
     },
     "memoise": {
       "Package": "memoise",
@@ -3904,42 +3332,6 @@
       "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
       "Repository": "CRAN"
     },
-    "rdrop2": {
-      "Package": "rdrop2",
-      "Version": "0.8.2.1",
-      "Source": "GitHub",
-      "Title": "Programmatic Interface to the 'Dropbox' API",
-      "Authors@R": "c(person(\"Karthik\", \"Ram\", email = \"karthik.ram@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Clayton\", \"Yochum\", role = \"aut\"), person(\"Caleb\", \"Scheidel\", role = \"ctb\"), person(\"Akhil\", \"Bhel\", role = \"cph\") )",
-      "Description": "Provides full programmatic access to the 'Dropbox' file hosting platform <https://dropbox.com>, including support for all standard file operations.",
-      "Depends": [
-        "R (>= 3.1.1)"
-      ],
-      "License": "MIT + file LICENSE",
-      "BugReports": "https://github.com/karthik/rdrop2/issues",
-      "LazyData": "true",
-      "Imports": [
-        "assertive",
-        "digest",
-        "dplyr",
-        "httr",
-        "jsonlite",
-        "magrittr",
-        "purrr"
-      ],
-      "Suggests": [
-        "testthat",
-        "uuid"
-      ],
-      "RoxygenNote": "7.1.1",
-      "Author": "Karthik Ram [aut, cre], Clayton Yochum [aut], Caleb Scheidel [ctb], Akhil Bhel [cph]",
-      "Maintainer": "Karthik Ram <karthik.ram@gmail.com>",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "rdrop2",
-      "RemoteUsername": "yogat3ch",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "ae5a94561ae40987609fdbc35aa36bd3a84a447d"
-    },
     "readr": {
       "Package": "readr",
       "Version": "2.1.5",
@@ -4215,6 +3607,55 @@
       "Author": "Kevin Ushey [aut, cre], JJ Allaire [aut], Hadley Wickham [aut], Gary Ritchie [aut], RStudio [cph]",
       "Repository": "CRAN"
     },
+    "rvest": {
+      "Package": "rvest",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Title": "Easily Harvest (Scrape) Web Pages",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Wrappers around the 'xml2' and 'httr' packages to make it easy to download, then manipulate, HTML and XML.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://rvest.tidyverse.org/, https://github.com/tidyverse/rvest",
+      "BugReports": "https://github.com/tidyverse/rvest/issues",
+      "Depends": [
+        "R (>= 3.6)"
+      ],
+      "Imports": [
+        "cli",
+        "glue",
+        "httr (>= 0.5)",
+        "lifecycle (>= 1.0.3)",
+        "magrittr",
+        "rlang (>= 1.1.0)",
+        "selectr",
+        "tibble",
+        "xml2 (>= 1.3)"
+      ],
+      "Suggests": [
+        "chromote",
+        "covr",
+        "knitr",
+        "R6",
+        "readr",
+        "repurrrsive",
+        "rmarkdown",
+        "spelling",
+        "stringi (>= 0.3.1)",
+        "testthat (>= 3.0.2)",
+        "webfakes"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "RoxygenNote": "7.3.1",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.10",
@@ -4293,6 +3734,36 @@
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Dana Seidel [aut], Posit Software, PBC [cph, fnd] (03wc8by49)",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+      "Repository": "CRAN"
+    },
+    "selectr": {
+      "Package": "selectr",
+      "Version": "0.4-2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Translate CSS Selectors to XPath Expressions",
+      "Date": "2019-11-20",
+      "Authors@R": "c(person(\"Simon\", \"Potter\", role = c(\"aut\", \"trl\", \"cre\"), email = \"simon@sjp.co.nz\"), person(\"Simon\", \"Sapin\", role = \"aut\"), person(\"Ian\", \"Bicking\", role = \"aut\"))",
+      "License": "BSD_3_clause + file LICENCE",
+      "Depends": [
+        "R (>= 3.0)"
+      ],
+      "Imports": [
+        "methods",
+        "stringr",
+        "R6"
+      ],
+      "Suggests": [
+        "testthat",
+        "XML",
+        "xml2"
+      ],
+      "URL": "https://sjp.co.nz/projects/selectr",
+      "BugReports": "https://github.com/sjp/selectr/issues",
+      "Description": "Translates a CSS3 selector into an equivalent XPath expression. This allows us to use CSS selectors when working with the XML package as it can only evaluate XPath expressions. Also provided are convenience functions useful for using CSS selectors on XML nodes. This package is a port of the Python package 'cssselect' (<https://cssselect.readthedocs.io/>).",
+      "NeedsCompilation": "no",
+      "Author": "Simon Potter [aut, trl, cre], Simon Sapin [aut], Ian Bicking [aut]",
+      "Maintainer": "Simon Potter <simon@sjp.co.nz>",
       "Repository": "CRAN"
     },
     "shiny": {
@@ -4433,6 +3904,49 @@
       "Maintainer": "Dean Attali <daattali@gmail.com>",
       "Repository": "CRAN"
     },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.3.2",
+      "Source": "Repository",
+      "Title": "Sliding Window Functions",
+      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Provides type-stable rolling window functions over any R data type. Cumulative and expanding windows are also supported. For more advanced usage, an index can be used as a secondary vector that defines how sliding windows are to be created.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/r-lib/slider, https://slider.r-lib.org",
+      "BugReports": "https://github.com/r-lib/slider/issues",
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "Imports": [
+        "cli (>= 3.6.1)",
+        "rlang (>= 1.1.1)",
+        "vctrs (>= 0.6.3)",
+        "warp"
+      ],
+      "Suggests": [
+        "covr",
+        "dplyr (>= 1.0.0)",
+        "knitr",
+        "lubridate",
+        "rmarkdown",
+        "testthat (>= 3.0.0)"
+      ],
+      "LinkingTo": [
+        "vctrs (>= 0.6.3)"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/build/compilation-database": "true",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/usethis/last-upkeep": "2024-10-25",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Collate": "'arithmetic.R' 'block.R' 'conditions.R' 'hop-common.R' 'hop-index-common.R' 'hop-index.R' 'hop-index2.R' 'hop.R' 'hop2.R' 'phop-index.R' 'phop.R' 'slide-index2.R' 'pslide-index.R' 'slide-period2.R' 'pslide-period.R' 'slide2.R' 'pslide.R' 'segment-tree.R' 'slide-common.R' 'slide-index-common.R' 'slide-index.R' 'slide-period-common.R' 'slide-period.R' 'slide.R' 'slider-package.R' 'summary-index.R' 'summary-slide.R' 'utils.R' 'zzz.R'",
+      "NeedsCompilation": "yes",
+      "Author": "Davis Vaughan [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Davis Vaughan <davis@posit.co>",
+      "Repository": "CRAN"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -4453,6 +3967,34 @@
       "BugReports": "https://github.com/kevinushey/sourcetools/issues",
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
+    "stringdist": {
+      "Package": "stringdist",
+      "Version": "0.9.15",
+      "Source": "Repository",
+      "Maintainer": "Mark van der Loo <mark.vanderloo@gmail.com>",
+      "License": "GPL-3",
+      "Title": "Approximate String Matching, Fuzzy Text Search, and String Distance Functions",
+      "Type": "Package",
+      "LazyLoad": "yes",
+      "Authors@R": "c( person(\"Mark\", \"van der Loo\", role=c(\"aut\",\"cre\") , email=\"mark.vanderloo@gmail.com\" , comment= c(ORCID=\"0000-0002-9807-4686\")) , person(\"Jan\", \"van der Laan\", role=\"ctb\") , person(\"R Core Team\",\"\"     , role=\"ctb\") , person(\"Nick\",\"Logan\"       , role=\"ctb\") , person(\"Chris\",\"Muir\"       , role=\"ctb\") , person(\"Johannes\", \"Gruber\" , role=\"ctb\") , person(\"Brian\",\"Ripley\"     , role=\"ctb\"))",
+      "Description": "Implements an approximate string matching version of R's native 'match' function. Also offers fuzzy text search based on various string distance measures. Can calculate various string distances based on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal sting alignment), qgrams (q- gram, cosine, jaccard distance) or heuristic metrics (Jaro, Jaro-Winkler). An implementation of soundex is provided as well. Distances can be computed between character vectors while taking proper care of encoding or between integer vectors representing generic sequences. This package is built for speed and runs in parallel by using 'openMP'. An API for C or C++ is exposed as well. Reference: MPJ van der Loo (2014) <doi:10.32614/RJ-2014-011>.",
+      "Depends": [
+        "R (>= 2.15.3)"
+      ],
+      "URL": "https://github.com/markvanderloo/stringdist",
+      "BugReports": "https://github.com/markvanderloo/stringdist/issues",
+      "Suggests": [
+        "tinytest"
+      ],
+      "Imports": [
+        "parallel"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Mark van der Loo [aut, cre] (<https://orcid.org/0000-0002-9807-4686>), Jan van der Laan [ctb], R Core Team [ctb], Nick Logan [ctb], Chris Muir [ctb], Johannes Gruber [ctb], Brian Ripley [ctb]",
       "Repository": "CRAN"
     },
     "stringi": {
@@ -5077,6 +4619,34 @@
       "Maintainer": "John Coene <jcoenep@gmail.com>",
       "Repository": "CRAN"
     },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Title": "Group Dates",
+      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Tooling to group dates by a variety of periods including: yearly, monthly, by second, by week of the month, and more.  The groups are defined in such a way that they also represent the distance between dates in terms of the period. This extracts valuable information that can be used in further calculations that rely on a specific temporal spacing between observations.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/DavisVaughan/warp, https://davisvaughan.github.io/warp/",
+      "BugReports": "https://github.com/DavisVaughan/warp/issues",
+      "Depends": [
+        "R (>= 3.2)"
+      ],
+      "Suggests": [
+        "covr",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.0.0)"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "NeedsCompilation": "yes",
+      "Author": "Davis Vaughan [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Davis Vaughan <davis@posit.co>",
+      "Repository": "CRAN"
+    },
     "whisker": {
       "Package": "whisker",
       "Version": "0.4.1",
@@ -5179,6 +4749,47 @@
       "NeedsCompilation": "yes",
       "Author": "Yihui Xie [aut, cre, cph] (<https://orcid.org/0000-0003-0645-5666>, https://yihui.org), Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann [ctb] (<https://orcid.org/0000-0002-5329-5987>), Christophe Dervieux [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
+    "xml2": {
+      "Package": "xml2",
+      "Version": "1.3.8",
+      "Source": "Repository",
+      "Title": "Parse XML",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Jim\", \"Hester\", role = \"aut\"), person(\"Jeroen\", \"Ooms\", email = \"jeroenooms@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(\"R Foundation\", role = \"ctb\", comment = \"Copy of R-project homepage cached as example\") )",
+      "Description": "Bindings to 'libxml2' for working with XML data using a simple,  consistent interface based on 'XPath' expressions. Also supports XML schema validation; for 'XSLT' transformations see the 'xslt' package.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://xml2.r-lib.org, https://r-lib.r-universe.dev/xml2",
+      "BugReports": "https://github.com/r-lib/xml2/issues",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "Imports": [
+        "cli",
+        "methods",
+        "rlang (>= 1.1.0)"
+      ],
+      "Suggests": [
+        "covr",
+        "curl",
+        "httr",
+        "knitr",
+        "magrittr",
+        "mockery",
+        "rmarkdown",
+        "testthat (>= 3.2.0)",
+        "xslt"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "SystemRequirements": "libxml2: libxml2-dev (deb), libxml2-devel (rpm)",
+      "Collate": "'S4.R' 'as_list.R' 'xml_parse.R' 'as_xml_document.R' 'classes.R' 'format.R' 'import-standalone-obj-type.R' 'import-standalone-purrr.R' 'import-standalone-types-check.R' 'init.R' 'nodeset_apply.R' 'paths.R' 'utils.R' 'xml2-package.R' 'xml_attr.R' 'xml_children.R' 'xml_document.R' 'xml_find.R' 'xml_missing.R' 'xml_modify.R' 'xml_name.R' 'xml_namespaces.R' 'xml_node.R' 'xml_nodeset.R' 'xml_path.R' 'xml_schema.R' 'xml_serialize.R' 'xml_structure.R' 'xml_text.R' 'xml_type.R' 'xml_url.R' 'xml_write.R' 'zzz.R'",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "yes",
+      "Author": "Hadley Wickham [aut], Jim Hester [aut], Jeroen Ooms [aut, cre], Posit Software, PBC [cph, fnd], R Foundation [ctb] (Copy of R-project homepage cached as example)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
     },
     "xtable": {
