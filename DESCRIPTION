@@ -30,7 +30,7 @@ Imports:
     usethis,
     UU
 Remotes:
-    COHHIO/HMISdata
+    COHHIO/HMISdata,
     COHHIO/HMIS,
     COHHIO/clarity.looker,
     yogat3ch/UU,
