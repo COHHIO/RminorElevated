@@ -7,6 +7,7 @@ Description: An open-source HMIS custom reporting Shiny app
 License: AGPL (>= 3)
 Imports: 
     arrow,
+    aws.s3,
     bs4Dash,
     clarity.looker,
     config (>= 0.3.1),
@@ -29,6 +30,7 @@ Imports:
     usethis,
     UU
 Remotes:
+    COHHIO/HMISdata
     COHHIO/HMIS,
     COHHIO/clarity.looker,
     yogat3ch/UU,
