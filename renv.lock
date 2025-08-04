@@ -449,6 +449,64 @@
       "Maintainer": "Colin Fay <contact@colinfay.me>",
       "Repository": "CRAN"
     },
+    "aws.s3": {
+      "Package": "aws.s3",
+      "Version": "0.3.21",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'AWS S3' Client Package",
+      "Authors@R": "c(person(\"Thomas J.\", \"Leeper\", role = \"aut\", email = \"thosjleeper@gmail.com\", comment = c(ORCID = \"0000-0003-4097-6326\")), person(\"Boettiger\", \"Carl\", role = \"ctb\"), person(\"Andrew\", \"Martin\", role = \"ctb\"), person(\"Mark\", \"Thompson\", role = \"ctb\"), person(\"Tyler\", \"Hunt\", role = \"ctb\"), person(\"Steven\", \"Akins\", role = \"ctb\"), person(\"Bao\", \"Nguyen\", role = \"ctb\"), person(\"Thierry\", \"Onkelinx\", role = \"ctb\"), person(\"Andrii\", \"Degtiarov\", role = \"ctb\"), person(\"Dhruv\", \"Aggarwal\", role = \"ctb\"), person(\"Alyssa\", \"Columbus\", role = \"ctb\"), person(\"Simon\", \"Urbanek\", role = c(\"cre\", \"ctb\"), email = \"simon.urbanek@R-project.org\") )",
+      "Maintainer": "Simon Urbanek <simon.urbanek@R-project.org>",
+      "Description": "A simple client package for the Amazon Web Services ('AWS') Simple Storage Service ('S3') 'REST' 'API' <https://aws.amazon.com/s3/>.",
+      "License": "GPL (>= 2)",
+      "URL": "https://github.com/cloudyr/aws.s3",
+      "BugReports": "https://github.com/cloudyr/aws.s3/issues",
+      "Encoding": "UTF-8",
+      "Imports": [
+        "utils",
+        "tools",
+        "curl",
+        "httr",
+        "xml2 (> 1.0.0)",
+        "base64enc",
+        "digest",
+        "aws.signature (>= 0.3.7)"
+      ],
+      "Suggests": [
+        "testthat",
+        "datasets"
+      ],
+      "RoxygenNote": "7.0.2",
+      "NeedsCompilation": "no",
+      "Author": "Thomas J. Leeper [aut] (<https://orcid.org/0000-0003-4097-6326>), Boettiger Carl [ctb], Andrew Martin [ctb], Mark Thompson [ctb], Tyler Hunt [ctb], Steven Akins [ctb], Bao Nguyen [ctb], Thierry Onkelinx [ctb], Andrii Degtiarov [ctb], Dhruv Aggarwal [ctb], Alyssa Columbus [ctb], Simon Urbanek [cre, ctb]",
+      "Repository": "CRAN"
+    },
+    "aws.signature": {
+      "Package": "aws.signature",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Amazon Web Services Request Signatures",
+      "Date": "2020-06-01",
+      "Authors@R": "c(person(\"Thomas J.\", \"Leeper\", role = c(\"aut\"), email = \"thosjleeper@gmail.com\", comment = c(ORCID = \"0000-0003-4097-6326\")), person(\"Jonathan\", \"Stott\", email = \"jonathan.stott@magairports.com\", role = c(\"cre\", \"aut\")), person(\"Mike\", \"Kaminsky\", email = \"kaminsky.michael@gmail.com\", role = \"ctb\") )",
+      "Description": "Generates version 2 and version 4 request signatures for Amazon Web Services ('AWS') <https://aws.amazon.com/> Application Programming Interfaces ('APIs') and provides a mechanism for retrieving credentials from environment variables, 'AWS' credentials files, and 'EC2' instance metadata. For use on 'EC2' instances, users will need to install the suggested package 'aws.ec2metadata' <https://cran.r-project.org/package=aws.ec2metadata>.",
+      "License": "GPL (>= 2)",
+      "Imports": [
+        "digest",
+        "base64enc"
+      ],
+      "Suggests": [
+        "testthat (>= 2.1.0)",
+        "aws.ec2metadata (>= 0.1.6)"
+      ],
+      "URL": "https://github.com/cloudyr/aws.signature",
+      "BugReports": "https://github.com/cloudyr/aws.signature/issues",
+      "RoxygenNote": "7.1.0",
+      "NeedsCompilation": "no",
+      "Author": "Thomas J. Leeper [aut] (<https://orcid.org/0000-0003-4097-6326>), Jonathan Stott [cre, aut], Mike Kaminsky [ctb]",
+      "Maintainer": "Jonathan Stott <jonathan.stott@magairports.com>",
+      "Repository": "CRAN"
+    },
     "base64enc": {
       "Package": "base64enc",
       "Version": "0.1-3",
