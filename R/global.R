@@ -23,18 +23,95 @@ if (!exists("create_accessors_s3")) {
   }
 }
 
-# Create the accessor functions
-cli::cli_alert_info("Initializing S3 accessor functions...")
-.time <- system.time({
-  create_accessors_s3(local_data = list(
-    Regions = rlang::expr(HMISdata::Regions),
-    rm_dates = rlang::expr(HMISprep::load_dates()),
-    co_clients_served = HMISdata::load_hmis_parquet("co_clients_served.parquet"),
-    program_lookup = HMISdata::load_hmis_parquet("program_lookup.parquet"))
-  )
-})
+# Initialize global data store
+cli::cli_alert_info("Starting one-time data download from S3...")
+.download_time <- system.time({
   
-cli::cli_alert_success("S3 accessors created in {(.time['elapsed'])} seconds")
+  # Pre-download all S3 data files
+  s3_data <- list()
+  
+  # Get list of available S3 files
+  tryCatch({
+    s3_objects <- aws.s3::get_bucket(bucket = "shiny-data-cohhio", prefix = "RME", region = "us-east-2")
+    s3_files <- purrr::map_chr(s3_objects, ~.x$Key) |>
+      basename()
+    s3_files <- s3_files[s3_files != "" & tools::file_ext(s3_files) %in% c("rds", "parquet")]
+    
+    cli::cli_alert_info("Found {length(s3_files)} data files in S3")
+    
+    # Download each file once and store in memory
+    s3_data <- purrr::map(
+      rlang::set_names(s3_files, tools::file_path_sans_ext(s3_files)),
+      function(file_name) {
+        cli::cli_alert_info("Loading {file_name}...")
+        load_s3_file(file_name)
+      }
+    )
+    
+    # Remove any NULL entries (failed downloads)
+    s3_data <- purrr::compact(s3_data)
+    
+  }, error = function(e) {
+    cli::cli_alert_danger("Error accessing S3: {e$message}")
+    s3_data <- list()
+  })
+  
+  # Load local/computed data
+  local_data <- list()
+  tryCatch({
+    local_data$Regions <- HMISdata::Regions
+    local_data$rm_dates <- HMISprep::load_dates()
+    local_data$co_clients_served <- HMISdata::load_hmis_parquet("co_clients_served.parquet")
+    local_data$program_lookup <- HMISdata::load_hmis_parquet("program_lookup.parquet")
+  }, error = function(e) {
+    cli::cli_alert_warning("Some local data failed to load: {e$message}")
+  })
+  
+  # Combine all data
+  APP_DATA <- c(s3_data, local_data)
+})
+
+# Get refresh timestamp
+DATA_REFRESH_TIME <- get_s3_refresh_date()
+
+cli::cli_alert_success("Data loading completed in {(.download_time['elapsed'])} seconds")
+cli::cli_alert_info("Loaded {length(APP_DATA)} datasets: {paste(names(APP_DATA), collapse = ', ')}")
+cli::cli_alert_info("Data refresh time: {DATA_REFRESH_TIME}")
+
+# Create simple accessor functions that just return the pre-loaded data
+create_data_accessors <- function(data_list) {
+  accessor_functions <- purrr::map(data_list, function(dataset) {
+    function() dataset  # Return the already-loaded dataset
+  })
+  
+  # Assign to global environment so they're available throughout the app
+  purrr::iwalk(accessor_functions, function(func, name) {
+    assign(name, func, envir = .GlobalEnv)
+  })
+  
+  cli::cli_alert_success("Created {length(accessor_functions)} data accessor functions")
+  invisible(accessor_functions)
+}
+
+# Create the accessor functions
+if (length(APP_DATA) > 0) {
+  create_data_accessors(APP_DATA)
+}
+
+# Optional: Create a function to check data freshness
+check_data_freshness <- function() {
+  current_s3_time <- get_s3_refresh_date()
+  if (current_s3_time > DATA_REFRESH_TIME) {
+    cli::cli_alert_warning("S3 data has been updated since app startup. Consider restarting the app.")
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+# Clean up temporary variables
+rm(.download_time)
+
+cli::cli_alert_success("Global environment setup complete!")
 
 if (exists("validation")) {
   programs <- validation() |>
