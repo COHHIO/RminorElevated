@@ -23,6 +23,35 @@ if (!exists("create_accessors_s3")) {
   }
 }
 
+# Function to apply data linking (extracted from deps_to_destination logic)
+apply_data_linking <- function(data_list) {
+  cli::cli_alert_info("Applying data linking to datasets...")
+  
+  linked_data <- purrr::map(data_list, function(df) {
+    if (!is.data.frame(df) || !UU::is_legit(names(df))) {
+      return(df)
+    }
+    
+    # Apply linking logic from deps_to_destination
+    linked_df <- df
+    
+    # Check for PersonalID + UniqueID combination
+    if (all(c("PersonalID", "UniqueID") %in% names(df))) {
+      linked_df <- clarity.looker::make_linked_df(df, UniqueID)
+      cli::cli_alert_info("Applied UniqueID linking to dataset")
+    }
+    # Check for PersonalID + EnrollmentID combination
+    else if (all(c("PersonalID", "EnrollmentID") %in% names(df))) {
+      linked_df <- clarity.looker::make_linked_df(df, EnrollmentID)
+      cli::cli_alert_info("Applied EnrollmentID linking to dataset")
+    }
+    
+    return(linked_df)
+  })
+  
+  return(linked_data)
+}
+
 # Initialize global data store
 cli::cli_alert_info("Starting one-time data download from S3...")
 .download_time <- system.time({
@@ -68,7 +97,10 @@ cli::cli_alert_info("Starting one-time data download from S3...")
   })
   
   # Combine all data
-  APP_DATA <- c(s3_data, local_data)
+  all_data <- c(s3_data, local_data)
+  
+  # Apply data linking to relevant datasets
+  APP_DATA <- apply_data_linking(all_data)
 })
 
 # Get refresh timestamp
