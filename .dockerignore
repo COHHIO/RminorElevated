@@ -1,0 +1,10 @@
+# IDE & OS files to ignore
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.DS_Store
+
+# Git folder can be excluded
+.git/

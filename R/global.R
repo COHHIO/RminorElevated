@@ -14,126 +14,136 @@
 #' @include utils_helpers.R
 Sys.setenv(TZ = "America/New_York")
 
-clean_null <- function(files) {
-  .rds <- stringr::str_subset(files, "rds$")
-  .sizes <- file.size(.rds)
-  file.remove(.rds[.sizes == 44])
-  files[!files %in% .rds[.sizes == 44]]
+# global.R
+# Ensure S3 accessor functions are created first
+if (!exists("create_accessors_s3")) {
+  # If running in development, load the function
+  if (file.exists("R/fct_s3.R")) {
+    source("R/fct_s3.R")
+  }
 }
 
-# accessor_create <- function(.x, do_update) rlang::new_function(args =
-#                                                                  rlang::pairlist2(
-#                                                                    path = rlang::expr(!!.x),
-#                                                                    dep_update = maleta::update_dropbox,
-#                                                                    do_update = rlang::expr(!!do_update),
-#                                                                    ... = ,
-#                                                                  ),
-#                                                                body = base::quote({
-#                                                                  if (do_update)
-#                                                                    dep_update(path)
-#                                                                  UU::file_fn(path)(path, ...)
-#                                                                }))
-
-# accessor_create <- function(.x, do_update) {
-#   cat("Creating accessor for path:", .x, "\n")
-#   
-#   rlang::new_function(
-#     args = rlang::pairlist2(
-#       path = rlang::expr(!!.x),
-#       dep_update = maleta::update_dropbox,
-#       do_update = rlang::expr(!!do_update),
-#       ... = ,
-#     ),
-#     body = rlang::expr({
-#       cat("Accessor function called with path:", path, "\n")
-#       
-#       if (is.null(path) || length(path) == 0 || path == "") {
-#         stop("Invalid path in accessor function: ", path)
-#       }
-#       
-#       if (do_update)
-#         dep_update(path)
-#       
-#       file_func <- UU::file_fn(path)
-#       file_func(path, ...)
-#     })
-#   )
-# }
-
-accessor_create <- function(.x, do_update) {
-  cat("Creating accessor for path:", .x, "\n")
+# Function to apply data linking (extracted from deps_to_destination logic)
+apply_data_linking <- function(data_list) {
+  cli::cli_alert_info("Applying data linking to datasets...")
   
-  rlang::new_function(
-    args = rlang::pairlist2(
-      path = rlang::expr(!!.x),
-      dep_update = maleta::update_dropbox,
-      do_update = rlang::expr(!!do_update),
-      ... = ,
-    ),
-    body = rlang::expr({
-      cat("Accessor function called with path:", path, "\n")
-      
-      if (is.null(path) || length(path) == 0 || path == "") {
-        stop("Invalid path in accessor function: ", path)
-      }
-      
-      if (do_update)
-        dep_update(path)
-      
-      # Check file extension and handle differently
-      if (tools::file_ext(path) == "rds") {
-        # For .rds files, maybe use readRDS directly?
-        readRDS(path)
-      } else {
-        file_func <- UU::file_fn(path)
-        file_func(path, ...)
-      }
-    })
-  )
-}
-
-create_accessors <- function(dep_dir = "data", deps = NULL, dep_update = maleta::dep_update_dropbox, update_all = TRUE) {
-  if (is.null(deps))
-    deps <- clean_null(UU::list.files2(dep_dir)) |>
-      stringr::str_subset("\\.png$", negate = TRUE)
-  deps <- fs::path_abs(deps)
-  UU::mkpath(dep_dir)
-  if (update_all)
-    dep_update(deps)
-  accessor_funs <- purrr::map(rlang::set_names(deps, fs::path_ext_remove(basename(deps))), accessor_create, do_update = !update_all)
-  do_assignment(accessor_funs)
-}
-
-do_assignment <- function(funs, ns = pkgload::pkg_name()) {
-  if (UU::is_legit(try(ns, silent = TRUE))) {
-    namespace <- rlang::ns_env(ns)
+  linked_data <- purrr::map(data_list, function(df) {
+    if (!is.data.frame(df) || !UU::is_legit(names(df))) {
+      return(df)
+    }
     
-    purrr::iwalk(funs, ~{
-      # Unlock the specific binding if it exists
-      if (exists(.y, envir = namespace, inherits = FALSE))
-        rlang::env_binding_unlock(namespace, .y)
-      
-      # Assign to namespace
-      assign(.y, .x, envir = namespace)
-      assignInNamespace(.y, .x, ns, envir = namespace)
-      
-      # Lock the binding again
-      rlang::env_binding_lock(namespace, .y)
-    })
-  } else
-    funs
+    # Apply linking logic from deps_to_destination
+    linked_df <- df
+    
+    # Check for PersonalID + UniqueID combination
+    if (all(c("PersonalID", "UniqueID") %in% names(df))) {
+      linked_df <- clarity.looker::make_linked_df(df, UniqueID)
+      cli::cli_alert_info("Applied UniqueID linking to dataset")
+    }
+    # Check for PersonalID + EnrollmentID combination
+    else if (all(c("PersonalID", "EnrollmentID") %in% names(df))) {
+      linked_df <- clarity.looker::make_linked_df(df, EnrollmentID)
+      cli::cli_alert_info("Applied EnrollmentID linking to dataset")
+    }
+    
+    return(linked_df)
+  })
+  
+  return(linked_data)
 }
 
-# Debug: Check what files are found
-files <- UU::list.files2("data")
-print(paste("Found files:", paste(files, collapse = ", ")))
-
-.time <- system.time({
-  create_accessors("data")
+# Initialize global data store
+cli::cli_alert_info("Starting one-time data download from S3...")
+.download_time <- system.time({
+  
+  # Pre-download all S3 data files
+  s3_data <- list()
+  
+  # Get list of available S3 files
+  tryCatch({
+    s3_objects <- aws.s3::get_bucket(bucket = "shiny-data-cohhio", prefix = "RME", region = "us-east-2")
+    s3_files <- purrr::map_chr(s3_objects, ~.x$Key) |>
+      basename()
+    s3_files <- s3_files[s3_files != "" & tools::file_ext(s3_files) %in% c("rds", "parquet")]
+    
+    cli::cli_alert_info("Found {length(s3_files)} data files in S3")
+    
+    # Download each file once and store in memory
+    s3_data <- purrr::map(
+      rlang::set_names(s3_files, tools::file_path_sans_ext(s3_files)),
+      function(file_name) {
+        cli::cli_alert_info("Loading {file_name}...")
+        load_s3_file(file_name)
+      }
+    )
+    
+    # Remove any NULL entries (failed downloads)
+    s3_data <- purrr::compact(s3_data)
+    
+  }, error = function(e) {
+    cli::cli_alert_danger("Error accessing S3: {e$message}")
+    s3_data <- list()
+  })
+  
+  # Load local/computed data
+  local_data <- list()
+  tryCatch({
+    local_data$Regions <- HMISdata::Regions
+    local_data$rm_dates <- HMISprep::load_dates()
+    local_data$co_clients_served <- HMISdata::load_hmis_parquet("co_clients_served.parquet")
+    local_data$program_lookup <- HMISdata::load_hmis_parquet("program_lookup.parquet")
+  }, error = function(e) {
+    cli::cli_alert_warning("Some local data failed to load: {e$message}")
+  })
+  
+  # Combine all data
+  all_data <- c(s3_data, local_data)
+  
+  # Apply data linking to relevant datasets
+  APP_DATA <- apply_data_linking(all_data)
 })
-# Create accessor functions
 
-# rm_dates() <- HMISprep::load_dates()
+# Get refresh timestamp
+DATA_REFRESH_TIME <- get_s3_refresh_date()
+
+cli::cli_alert_success("Data loading completed in {(.download_time['elapsed'])} seconds")
+cli::cli_alert_info("Loaded {length(APP_DATA)} datasets: {paste(names(APP_DATA), collapse = ', ')}")
+cli::cli_alert_info("Data refresh time: {DATA_REFRESH_TIME}")
+
+# Create simple accessor functions that just return the pre-loaded data
+create_data_accessors <- function(data_list) {
+  accessor_functions <- purrr::map(data_list, function(dataset) {
+    function() dataset  # Return the already-loaded dataset
+  })
+  
+  # Assign to global environment so they're available throughout the app
+  purrr::iwalk(accessor_functions, function(func, name) {
+    assign(name, func, envir = .GlobalEnv)
+  })
+  
+  cli::cli_alert_success("Created {length(accessor_functions)} data accessor functions")
+  invisible(accessor_functions)
+}
+
+# Create the accessor functions
+if (length(APP_DATA) > 0) {
+  create_data_accessors(APP_DATA)
+}
+
+# Optional: Create a function to check data freshness
+check_data_freshness <- function() {
+  current_s3_time <- get_s3_refresh_date()
+  if (current_s3_time > DATA_REFRESH_TIME) {
+    cli::cli_alert_warning("S3 data has been updated since app startup. Consider restarting the app.")
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+# Clean up temporary variables
+rm(.download_time)
+
+cli::cli_alert_success("Global environment setup complete!")
 
 if (exists("validation")) {
   programs <- validation() |>

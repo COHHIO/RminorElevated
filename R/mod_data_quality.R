@@ -9,6 +9,10 @@
 #' @importFrom shiny NS tagList 
 mod_data_quality_ui <- function(id){
   ns <- NS(id)
+  
+  df <- dq_providers_df()
+  dq_choices <- setNames(df$ProjectID, df$ProjectName)
+  
   tagList(
   tabItem(
     tabName = "dqTab",
@@ -19,7 +23,7 @@ mod_data_quality_ui <- function(id){
       pickerInput(
         label = "Select Provider",
         inputId = ns("providerListDQ"),
-        choices = dq_providers,
+        choices = dq_choices,
         options = pickerOptions(
           liveSearch = TRUE,
           liveSearchStyle = 'contains',

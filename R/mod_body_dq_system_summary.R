@@ -34,22 +34,45 @@ mod_body_dq_system_summary_server <- function(id){
     dq_aps_referrals <- programs |> 
       {\(x) {tibble::tibble(ProjectID = x, ProjectName = names(x))}}() |> 
       dplyr::filter(stringr::str_detect(ProjectName, "^zz", negate = TRUE) & stringr::str_detect(ProjectName, "\\sAP\\s?") & !ProjectID %in% dq_aps_no_referrals$ProjectID) 
-      
-      
+    
     output$ce <- renderUI({
-      ui_row(title = "Coordinated Entry", 
-             dq_APs() |> 
-               {\(x) {bs4Dash::bs4MultiProgressBar(value = x$percent * 100, status = c("danger", "success"), striped = c(TRUE, FALSE), animated = rep(FALSE, length(x$percent)), label = paste0(x$category, ": ", x$count, " (", scales::percent(x$percent),")"))}}(),
-             fluidRow(
-               bs4Dash::column(6,
-                               datatable_default(dq_aps_no_referrals, add_options = list(pageLength = 20))
-                               ),
-               bs4Dash::column(6,
-                               datatable_default(dq_aps_referrals, add_options = list(pageLength = 20)))
-             )
-             
+      ui_row(
+        title = "Coordinated Entry",
+        
+        # Render multiple progress bars
+        tagList({
+          x <- dq_APs()
+          values <- as.integer(round(x$percent * 100, 0))  # Round to integers
+          cat("Integer values:", values, "\n")
+          cat("Sum of integers:", sum(values), "\n")
+          
+          statuses <- c("danger", "success")  # Match this to the number of values
+          
+          lapply(seq_along(values), function(i) {
+            bs4Dash::progressBar(
+              value = values[i],
+              status = statuses[i],
+              label = paste0(
+                x$category[i], ": ", 
+                x$count[i], " (", 
+                scales::percent(x$percent[i]), ")"
+              )
+            )
+          })
+        }),
+        
+        # Data tables
+        fluidRow(
+          bs4Dash::column(6,
+                          datatable_default(dq_aps_no_referrals, add_options = list(pageLength = 20))
+          ),
+          bs4Dash::column(6,
+                          datatable_default(dq_aps_referrals, add_options = list(pageLength = 20))
+          )
+        )
       )
     })
+    
     dq_summary <- dq_summary()
     
     dq_summary_args <- tibble::tribble(

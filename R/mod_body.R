@@ -29,13 +29,21 @@ mod_body_server <- function(id){
     output$bodyui <- renderUI({
       req(active$ui)
       message("Tab: ", active$tab)
-      if (exists(active$server))
-        rlang::exec(active$server, id = paste0("body_", active$tab), .env = e)
-      # Render the body UIs here
-      if (exists(active$ui)) {
-        rlang::exec(active$ui, id = paste0(ns("body_"), active$tab))
-      } else {
+      
+      # Define tabs that should show coming soon
+      coming_soon_tabs <- c("coc_competition", "coc_competition_mahoning")
+      
+      if (active$tab %in% coming_soon_tabs) {
         rlang::exec("mod_coming_soon_ui", id = "coming_soon")
+      } else {
+        if (exists(active$server))
+          rlang::exec(active$server, id = paste0("body_", active$tab), .env = e)
+        
+        if (exists(active$ui)) {
+          rlang::exec(active$ui, id = paste0(ns("body_"), active$tab))
+        } else {
+          rlang::exec("mod_coming_soon_ui", id = "coming_soon")
+        }
       }
         
     })

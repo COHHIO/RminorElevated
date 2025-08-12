@@ -7,6 +7,7 @@ Description: An open-source HMIS custom reporting Shiny app
 License: AGPL (>= 3)
 Imports: 
     arrow,
+    aws.s3,
     bs4Dash,
     clarity.looker,
     config (>= 0.3.1),
@@ -15,8 +16,9 @@ Imports:
     feather,
     golem (>= 0.3.1.9001),
     HMIS,
+    HMISdata,
+    HMISprep,
     lubridate,
-    maleta,
     pkgload,
     plotly,
     prettydoc,
@@ -31,9 +33,10 @@ Imports:
     UU
 Remotes:
     COHHIO/HMIS,
+    COHHIO/HMISdata,
+    COHHIO/HMISprep,
     COHHIO/clarity.looker,
     yogat3ch/UU,
-    yogat3ch/maleta,
     RinteRface/bs4Dash
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
@@ -45,6 +48,7 @@ Collate:
     'app_config.R'
     'app_server.R'
     'app_ui.R'
+    'fct_s3.R'
     'feather_save.R'
     'find_instances.R'
     'utils_helpers.R'
