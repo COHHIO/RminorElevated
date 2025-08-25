@@ -37,12 +37,12 @@ apply_data_linking <- function(data_list) {
     
     # Check for PersonalID + UniqueID combination
     if (all(c("PersonalID", "UniqueID") %in% names(df))) {
-      linked_df <- clarity.looker::make_linked_df(df, UniqueID)
+      linked_df <- clarity.looker::make_linked_df(linked_df, UniqueID)
       cli::cli_alert_info("Applied UniqueID linking to dataset")
     }
     # Check for PersonalID + EnrollmentID combination
-    else if (all(c("PersonalID", "EnrollmentID") %in% names(df))) {
-      linked_df <- clarity.looker::make_linked_df(df, EnrollmentID)
+    if (all(c("PersonalID", "EnrollmentID") %in% names(df))) {
+      linked_df <- clarity.looker::make_linked_df(linked_df, EnrollmentID)
       cli::cli_alert_info("Applied EnrollmentID linking to dataset")
     }
     
