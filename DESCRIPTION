@@ -19,6 +19,7 @@ Imports:
     HMISdata,
     HMISprep,
     lubridate,
+    markdown,
     pkgload,
     plotly,
     prettydoc,
