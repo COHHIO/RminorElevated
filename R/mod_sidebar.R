@@ -135,6 +135,11 @@ mod_sidebar_ui <- function(id){
           tabName = "program_lookup",
           icon = shiny::icon("search")
         ),
+        bs4Dash::bs4SidebarMenuItem(
+          "News & Updates",
+          tabName = "news",
+          icon = shiny::icon("newspaper")
+        ),
         actionButton(
           inputId = "logOut",
           label = "Log Out",
