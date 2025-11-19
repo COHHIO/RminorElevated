@@ -1,3 +1,13 @@
+## Prioritization Report
+
+#### Updates 11-19-2025
+- We changed how households in Street Outreach (SO) projects get added to the prioritization report. 
+It's now factored on an household's most recent living situation. This ensures clients 
+are prioritized based on current circumstances rather than current project enrollment alone.
+- Most recent living situation is created for individuals in Coordinated Entry (CE) projects,
+Services Only (SSO) projects, and Street Outreach projects. Previously we only looked at 'Previous Living Situation'.
+
+
 ## Data Quality Changes
 
 #### Updates 11-11-2025
