@@ -442,14 +442,38 @@ mod_body_coc_competition_server <- function(id){
       
     })
     
-    hud_specs <- HUD_specs()
-    times <-  hud_specs |>
-      dplyr::filter(DataElement == "TimesHomelessPastThreeYears") |>
-      dplyr::select(ReferenceNo, Description)
+    # TimesHomelessLastThreeYears
+    times <- tibble::tribble(
+      ~ReferenceNo, ~Description,
+      1,  "One time",
+      2,  "Two times",
+      3,  "Three times",
+      4,  "Four or more times",
+      8,  "Client doesn't know",
+      9,  "Client prefers not to answer",
+      99, "Data not collected"
+    )
 
-    months <-  hud_specs |>
-      dplyr::filter(DataElement == "MonthsHomelessPastThreeYears") |>
-      dplyr::select(ReferenceNo, Description)
+    # MonthsHomelessLastThreeYears
+    months <- tibble::tribble(
+      ~ReferenceNo, ~Description,
+      8,   "Client doesn't know",
+      9,   "Client prefers not to answer",
+      99,  "Data not collected",
+      101, "1",
+      102, "2",
+      103, "3",
+      104, "4",
+      105, "5",
+      106, "6",
+      107, "7",
+      108, "8",
+      109, "9",
+      110, "10",
+      111, "11",
+      112, "12",
+      113, "More than 12 months"
+    )
 
     pe_homeless_history <- pe_homeless_history_index() |>
       dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
