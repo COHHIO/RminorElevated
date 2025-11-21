@@ -1,5 +1,8 @@
 ## Prioritization Report
 
+#### Updates 11-21-2025
+- Released the 2025 Balance of State Continuum of Care (CoC) Competition Renewal Project Evaluation.
+
 #### Updates 11-19-2025
 - We changed how households in Street Outreach (SO) projects get added to the prioritization report. 
 It's now factored on an household's most recent living situation. This ensures clients 
