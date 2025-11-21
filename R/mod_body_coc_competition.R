@@ -72,8 +72,8 @@ mod_body_coc_competition_ui <- function(id){
 mod_body_coc_competition_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$header <- renderUI(server_header("2024 CoC Competition Renewal Project Evaluation",
-                                            x = shiny::h3(paste0("Reporting Period: 1/1/23 - 12/31/23")),
+    output$header <- renderUI(server_header("2025 CoC Competition Renewal Project Evaluation",
+                                            x = shiny::h3(paste0("Reporting Period: 1/1/24 - 12/31/24")),
                                             shiny::p("For more information visit the", a("Ohio BoSCoC CoC Program website", href = "https://cohhio.org/boscoc/coc-program/"))))
     
     pe_summary <- pe_summary_final_scoring() |> 
