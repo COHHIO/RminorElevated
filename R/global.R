@@ -203,6 +203,53 @@ if (exists("Regions")) {
       )
     )}}()
   
+  #' @title Living Situation Reference Number Translation `r lifecycle::badge("deprecated")`
+  #' @description Deprecated in favor of `hud_translations`. Return a human-readable living situation character vector provided with an integer reference number
+  #' @param ReferenceNo \code{(integer)} Reference number for living situation type
+  #' @return \code{(character)} Human-readable living situation type
+  #' @export
+  living_situation <- function(ReferenceNo) {
+    dplyr::case_when(
+      # Homeless Situations (100-199)
+      ReferenceNo == 116 ~ "Place not meant for habitation",
+      ReferenceNo == 101 ~ "Emergency shelter, including hotel or motel paid for with emergency shelter voucher, Host Home shelter",
+      ReferenceNo == 118 ~ "Safe Haven",
+      # Institutional Situations (200-299)
+      ReferenceNo == 215 ~ "Foster care home or foster care group home",
+      ReferenceNo == 206 ~ "Hospital or other residential non-psychiatric medical facility",
+      ReferenceNo == 207 ~ "Jail, prison, or juvenile detention facility",
+      ReferenceNo == 225 ~ "Long-term care facility or nursing home",
+      ReferenceNo == 204 ~ "Psychiatric hospital or other psychiatric facility",
+      ReferenceNo == 205 ~ "Substance abuse treatment facility or detox center",
+      # Temporary Housing Situations (300-399)
+      ReferenceNo == 302 ~ "Transitional housing for homeless persons (including homeless youth)",
+      ReferenceNo == 329 ~ "Residential project or halfway house with no homeless criteria",
+      ReferenceNo == 314 ~ "Hotel or motel paid for without emergency shelter voucher",
+      ReferenceNo == 332 ~ "Host Home (non-crisis)",
+      ReferenceNo == 312 ~ "Staying or living with family, temporary tenure",
+      ReferenceNo == 313 ~ "Staying or living with friends, temporary tenure",
+      ReferenceNo == 327 ~ "Moved from one HOPWA funded project to HOPWA TH",
+      ReferenceNo == 336 ~ "Staying or living in a friend's room, apartment, or house",
+      ReferenceNo == 335 ~ "Staying or living in a family member's room, apartment, or house",
+      # Permanent Housing Situations (400-499)
+      ReferenceNo == 422 ~ "Staying or living with family, permanent tenure",
+      ReferenceNo == 423 ~ "Staying or living with friends, permanent tenure",
+      ReferenceNo == 426 ~ "Moved from one HOPWA funded project to HOPWA PH",
+      ReferenceNo == 410 ~ "Rental by client, no ongoing housing subsidy",
+      ReferenceNo == 435 ~ "Rental by client, with ongoing housing subsidy",
+      ReferenceNo == 421 ~ "Owned by client, with ongoing housing subsidy",
+      ReferenceNo == 411 ~ "Owned by client, no ongoing housing subsidy",
+      # Other (1-99)
+      ReferenceNo == 30 ~ "No exit interview completed",
+      ReferenceNo == 17 ~ "Other",
+      ReferenceNo == 24 ~ "Deceased",
+      ReferenceNo == 37 ~ "Worker unable to determine",
+      ReferenceNo == 8 ~ "Client doesn't know",
+      ReferenceNo == 9 ~ "Client prefers not to answer",
+      ReferenceNo == 99 ~ "Data not collected"
+    )
+  }
+  
 }
 
 
