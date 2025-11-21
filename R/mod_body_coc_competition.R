@@ -32,6 +32,10 @@ mod_body_coc_competition_ui <- function(id){
             DT::dataTableOutput(ns("pe_ExitsToPH"))
     ),
     ui_row(
+      title = "Returns to Homelessness",
+      DT::dataTableOutput(ns("pe_ReturnToHomelessness"))
+    ),
+    ui_row(
       title = "Benefits & Health Insurance at Exit",
             DT::dataTableOutput(ns("pe_BenefitsAtExit"))
     ),
@@ -48,23 +52,15 @@ mod_body_coc_competition_ui <- function(id){
       DT::dataTableOutput(ns("pe_IncreaseIncome"))
     ),
     ui_row(
-      title = "Length of Stay",
-            DT::dataTableOutput(ns("pe_LengthOfStay"))
-    ),
-    ui_row(
-      title = "Rapid Placement into Housing",
-      DT::dataTableOutput(ns("pe_OwnHousing"))
+      title = "Increased Earned Income",
+      DT::dataTableOutput(ns("pe_IncreaseEarnedIncome"))
     ),
     ui_row(
       title = "Median Homeless History Index",
             DT::dataTableOutput(ns("pe_MedianHHI"))
     ),
     ui_row(
-      title = "Long Term Homeless",
-            DT::dataTableOutput(ns("pe_LongTermHomeless"))
-    ),
-    ui_row(
-      title = "VISPDAT Score Completion",
+      title = "VISPDAT/HARP Score Completion",
             DT::dataTableOutput(ns("pe_ScoredAtPHEntry"))
     )
   )
@@ -98,19 +94,16 @@ mod_body_coc_competition_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
-            "Average Length of Stay" = AverageLoSPoints,
-            "Rapid Placement into Housing" = OwnHousingPoints,
+            "Returns to Homelessness" = ReturnToHomelessnessPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
             "Increased Income" = IncreasedIncomePoints,
+            "Increased Earned Income" = IncreasedEarnedIncomePoints,
             "Median Homeless History Index" = MedianHHIPoints,
-            "Long Term Homeless" = LongTermHomelessPoints,
-            "VISPDAT Completion at Entry" = ScoredAtEntryPoints,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPoints,
             "Data Quality" = DQPoints,
-            "Prioritization Workgroup" = PrioritizationWorkgroupScore,
-            # "Housing First" = HousingFirstScore,
-            "Total Points" = TotalScore,
-            "Prioritization of Chronic" = ChronicPrioritizationScore
+            "Total Points" = TotalScore
+
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
@@ -121,16 +114,13 @@ mod_body_coc_competition_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
-            "Average Length of Stay" = AverageLoSDQ,
-            "Rapid Placement into Housing" = OwnHousingDQ,
+            "Returns to Homelessness" = ReturnToHomelessnessDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
             "Increased Income" = IncreasedIncomeDQ,
+            "Increased Earned Income" = IncreasedEarnedIncomeDQ,
             "Median Homeless History Index" = MedianHHIDQ,
-            "Long Term Homeless" = LTHomelessDQ,
-            "VISPDAT Completion at Entry" = ScoredAtEntryDQ,
-            # "Housing First" = HousingFirstDQ,
-            "Prioritization of Chronic" = ChronicPrioritizationDQ
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryDQ
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
@@ -141,19 +131,14 @@ mod_body_coc_competition_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
-            "Average Length of Stay" = AverageLoSPossible,
-            "Rapid Placement into Housing" = OwnHousingPossible,
+            "Returns to Homelessness" = ReturnToHomelessnessPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
             "Increased Income" = IncreasedIncomePossible,
+            "Increased Earned Income" = IncreasedEarnedIncomePossible,
             "Median Homeless History Index" = MedianHHIPossible,
-            "Long Term Homeless" = LongTermHomelessPossible,
-            "VISPDAT Completion at Entry" =
-              ScoredAtEntryPossible,
-            "Data Quality" = DQPossible,
-            "Prioritization Workgroup" = PrioritizationWorkgroupPossible,
-            # "Housing First" = HousingFirstPossible,
-            "Prioritization of Chronic" = ChronicPrioritizationPossible
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPossible,
+            "Data Quality" = DQPossible
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
@@ -164,19 +149,14 @@ mod_body_coc_competition_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
-            "Average Length of Stay" = AverageLoSMath,
-            "Rapid Placement into Housing" = OwnHousingMath,
+            "Returns to Homelessness" = ReturnToHomelessnessMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
             "Increased Income" = IncreasedIncomeMath,
+            "Increased Earned Income" = IncreasedEarnedIncomeMath,
             "Median Homeless History Index" = MedianHHIMath,
-            "Long Term Homeless" = LongTermHomelessMath,
-            "VISPDAT Completion at Entry" =
-              ScoredAtEntryMath,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryMath,
             "Data Quality" = DQMath,
-            # "Prioritization Workgroup" = PrioritizationWorkgroupMath,
-            # "Housing First" = HousingFirstMath,
-            # "Prioritization of Chronic" = ChronicPrioritizationMath
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
@@ -197,31 +177,7 @@ mod_body_coc_competition_server <- function(id){
               DQflag == 5 ~ "" # "Docs received past the due date"
             )
           ) |> 
-          dplyr::filter(!Measure %in% c("Prioritization of Chronic",
-                                        "Prioritization Workgroup")) |>
           dplyr::filter(!is.na(`Estimated Score`))
-        
-        # psh <-  estimated_score_dq |>
-        #   dplyr::filter(!Measure %in% c("Moved into Own Housing",
-        #                          "Average Length of Stay",
-        #                          "Prioritization of Chronic",
-        #                          "Prioritization Workgroup")) |>
-        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
-        # 
-        # rrh <- estimated_score_dq |>
-        #   dplyr::filter(!Measure %in%
-        #            c("Long Term Homeless",
-        #              "Prioritization of Chronic",
-        #              "Prioritization Workgroup")) |>
-        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
-        # 
-        # th <- estimated_score_dq |>
-        #   dplyr::filter(!Measure %in% c(
-        #     "Long Term Homeless",
-        #     "Prioritization of Chronic",
-        #     "Prioritization Workgroup"
-        #   )) |>
-        #   dplyr::select(1, Calculation, 2, "Possible Score" = 4, "Data Quality" = DQ)
         
         
 
@@ -232,17 +188,14 @@ mod_body_coc_competition_server <- function(id){
                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
                                                                 list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
                                                                                                                                          75, 100, 1000), lengthChange = TRUE, pageLength = 10)
-          # purrr::when(ptc,
-          #             . == 3 ~ psh,
-          #             . == 13 ~ rrh,
-          #             . == 2 ~ th
-          # )
         )
       })
     
+    # Exits to Permanent Housing
+    # Measure 1
     pe_exits <- pe_exits_to_ph() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
-                    Destination = HMIS::living_situation(Destination))
+                    Destination = living_situation(Destination))
     pe_exits_to_ph_filter <- eventReactive(input$pe_provider, {
       pe_exits |>
         dplyr::filter(AltProjectName == input$pe_provider)
@@ -270,7 +223,41 @@ mod_body_coc_competition_server <- function(id){
                           ))
 
     })
-
+    
+    # Measure 2 NEW
+    # % heads of household who returned to homelessness at program exit
+    pe_return <- pe_return_to_homelessness() |>
+      dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
+                    Destination = living_situation(Destination))
+    pe_return_to_homelessness_filter <- eventReactive(input$pe_provider, {
+      pe_return |>
+        dplyr::filter(AltProjectName == input$pe_provider)
+    })
+    output$pe_ReturnToHomelessness <- DT::renderDataTable({
+      pe_return_to_homelessness_filter() |>
+        dplyr::select("Client ID" = UniqueID,
+                      "Entry Date" = EntryDate,
+                      "Move In Date" = MoveInDateAdjust,
+                      "Exit Date" = ExitDate,
+                      Destination,
+                      "Destination Group" = DestinationGroup,
+                      "Meets Objective" = MeetsObjective
+        ) |>
+        datatable_default(caption = "Return to Homelessness",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
+      
+    })
+    
+    # Benefits at Exit
+    # Measure 3
     pe_benefits <- pe_benefits_at_exit() |>
       dplyr::mutate(
         BenefitsFromAnySource = dplyr::case_when(
@@ -312,6 +299,8 @@ mod_body_coc_competition_server <- function(id){
 
     })
     
+    # Meaure 6
+    # % adult who entered project during the date range and came from streets/emergency shelter only
     pe_res <- pe_res_prior() |>
       dplyr::mutate(
         LivingSituation = HMIS::living_situation(LivingSituation),
@@ -344,6 +333,8 @@ mod_body_coc_competition_server <- function(id){
 
     })
 
+    # Measure 7
+    # %  adult who entered project during the date range with no income
     pe_entries <- pe_entries_no_income() |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
@@ -380,7 +371,9 @@ mod_body_coc_competition_server <- function(id){
 
     })
 
-    # Increased Income
+    # Measure 4
+    # % adult participants who gained or increased their total income (from all sources) 
+    # as of the end of the reporting period or at program exit
     pe_increase <- pe_increase_income() |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
@@ -414,54 +407,29 @@ mod_body_coc_competition_server <- function(id){
       
     })
     
-    # Length of Stay
-    pe_length_filter <- eventReactive(input$pe_provider, {
-      pe_length_of_stay() |>
-        dplyr::filter(AltProjectName == input$pe_provider &
-                        ProjectType %in% c(2, 8, 13)) |>
-        dplyr::mutate(DaysInProject = DaysInProject / 86400)
-    })
+    # Measure 5
+    # % adult participants who increased earned income at program exit.
+    pe_increase_earned <- pe_increase_earned_income() |> 
+      dplyr::mutate(
+        MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
+      )
     
-    output$pe_LengthOfStay <- DT::renderDataTable({
-      pe_length_filter() |>
+    pe_increase_earned_filter <- eventReactive(input$pe_provider, {
+      pe_increase_earned |>
+        dplyr::filter(AltProjectName == input$pe_provider)
+    })
+    output$pe_IncreaseEarnedIncome <- DT::renderDataTable({
+      pe_increase_earned_filter() |>
         dplyr::select(
           "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
-          "Move-In Date" = MoveInDateAdjust,
           "Exit Date" = ExitDate,
-          "Days in Project" = DaysInProject
+          "Earned Income at Entry" = EarnedIncomeAtEntry,
+          "Most Recent Earned Income" = EarnedIncomeMostRecent,
+          "Meets Objective" = MeetsObjective
         ) |> 
-      datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
-                        escape = FALSE,
-                        options = list(
-                          initComplete = DT::JS(
-                            "function(settings, json) {",
-                            "$('th').css({'text-align': 'center'});",
-                            "$('td').css({'text-align': 'center'});",
-                            "}"
-                          )
-                        ))
-
-    })
-
-    # Rapid Placement into Housing
-    pe_own_filter <- eventReactive(input$pe_provider, {
-      pe_own_housing() |>
-        dplyr::filter(AltProjectName == input$pe_provider &
-                        ProjectType %in% c(3, 13)) |> 
-        dplyr::mutate(DaysInProject = DaysInProject / 86400)
-    })
-    
-    output$pe_OwnHousing <- DT::renderDataTable({
-      pe_own_filter() |>
-        dplyr::select(
-          "Client ID" = UniqueID,
-          "Entry Date" = EntryDate,
-          "Move-In Date" = MoveInDateAdjust,
-          "Exit Date" = ExitDate,
-          "Days in Project" = DaysInProject
-        ) |> 
-        datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
+        datatable_default(caption = "ALL Project Types: Adults who entered the project
+              during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -521,46 +489,9 @@ mod_body_coc_competition_server <- function(id){
 
     })
     
-    pe_long_homeless <- pe_long_term_homeless() |>
-      dplyr::filter(ProjectType == 3) |>
-      dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
-      dplyr::select(-Description) |>
-      dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(MonthsHomelessPastThreeYears = Description,
-                    MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")) |>
-      dplyr::select(-Description)
-      
-    pe_long_homeless_filter <- eventReactive(input$pe_provider, {
-      pe_long_homeless |>
-        dplyr::filter(AltProjectName == input$pe_provider)
-    })
-    output$pe_LongTermHomeless <- DT::renderDataTable({
-      pe_long_homeless_filter() |>
-        dplyr::select(
-          "Client ID" = UniqueID,
-          "Entry Date" = EntryDate,
-          "Exit Date" = ExitDate,
-          "Approximate Date Homeless" = DateToStreetESSH,
-          "Days Homeless at Entry" = CurrentHomelessDuration,
-          "Times Homeless Past 3 Years" = TimesHomelessPastThreeYears,
-          "Months Homeless Past 3 Years" = MonthsHomelessPastThreeYears,
-          "Meets Objective" = MeetsObjective
-        ) |> 
-        datatable_default(caption = "PSH: Adults who entered the project during the
-              reporting period",
-                          escape = FALSE,
-                          options = list(
-                            initComplete = DT::JS(
-                              "function(settings, json) {",
-                              "$('th').css({'text-align': 'center'});",
-                              "$('td').css({'text-align': 'center'});",
-                              "}"
-                            )
-                          ))
-
-    })
-
+    # Measure 9
+    # % heads of household who entered the project during the date range and had an assessment (VI-SPDAT or HARP) recorded in HMIS 
+    # (excludes clients for whom a current episode of DV was reported or who reported as currently fleeing)
     pe_scored_at_ph <- pe_scored_at_ph_entry() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
     pe_scored_at_ph_filter <- eventReactive(input$pe_provider, {
