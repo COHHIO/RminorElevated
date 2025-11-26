@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var new_els = ['welcome', 'dq_program_level', 'dq_timeliness', 'dq_region_level', 'client_counts', 'utilization', 'prioritization', 'coc_competition', 'vet_active_list', 'dq_system_summary', 'mpo', 'qpr_community_need_ph', 'qpr_community_need_lh', 'qpr_length_of_stay', 'qpr_noncash_benefits', 'qpr_permanent_housing', 'qpr_income_growth', 'qpr_health_insurance', 'qpr_rrh_placement', 'qpr_rrh_spending', 'program_lookup', 'news'];
+  var new_els = ['welcome', 'dq_program_level', 'dq_timeliness', 'dq_region_level', 'client_counts', 'utilization', 'prioritization', 'coc_competition', 'coc_competition_mahoning', 'vet_active_list', 'dq_system_summary', 'mpo', 'qpr_community_need_ph', 'qpr_community_need_lh', 'qpr_length_of_stay', 'qpr_noncash_benefits', 'qpr_permanent_housing', 'qpr_income_growth', 'qpr_health_insurance', 'qpr_rrh_placement', 'qpr_rrh_spending', 'program_lookup', 'news'];
 
   new_els.map(function(id) {
     var checkExist = setInterval(function() {

@@ -1,4 +1,4 @@
-#' body_coc_competition_mahoning UI Function
+#' body_coc_competition UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -32,6 +32,10 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       DT::dataTableOutput(ns("pe_ExitsToPHMahoning"))
     ),
     ui_row(
+      title = "Returns to Homelessness",
+      DT::dataTableOutput(ns("pe_ReturnToHomelessnessMahoning"))
+    ),
+    ui_row(
       title = "Benefits & Health Insurance at Exit",
       DT::dataTableOutput(ns("pe_BenefitsAtExitMahoning"))
     ),
@@ -47,69 +51,59 @@ mod_body_coc_competition_mahoning_ui <- function(id){
       title = "Increased Income",
       DT::dataTableOutput(ns("pe_IncreaseIncomeMahoning"))
     ),
-    # ui_row(
-    #   title = "Length of Stay",
-    #   DT::dataTableOutput(ns("pe_LengthOfStayMahoning"))
-    # ),
     ui_row(
-      title = "Rapid Placement into Housing",
-      DT::dataTableOutput(ns("pe_OwnHousingMahoning"))
-    ),
-    # ui_row(
-    #   title = "Median Homeless History Index",
-    #   DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
-    # ),
-    ui_row(
-      title = "Long Term Homeless",
-      DT::dataTableOutput(ns("pe_LongTermHomelessMahoning"))
+      title = "Increased Earned Income",
+      DT::dataTableOutput(ns("pe_IncreaseEarnedIncomeMahoning"))
     ),
     ui_row(
-      title = "VISPDAT Score Completion",
+      title = "Median Homeless History Index",
+      DT::dataTableOutput(ns("pe_MedianHHIMahoning"))
+    ),
+    ui_row(
+      title = "VISPDAT/HARP Score Completion",
       DT::dataTableOutput(ns("pe_ScoredAtPHEntryMahoning"))
     )
   )
 }
-    
-#' body_coc_competition_mahoning Server Functions
+
+#' body_coc_competition Server Functions
 #'
 #' @noRd 
 mod_body_coc_competition_mahoning_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$header <- renderUI(server_header("2024 CoC Competition Renewal Project Evaluation",
-                                            x = shiny::h3(paste0("Reporting Period: 1/1/23 - 12/31/23")),
-                                            shiny::p("For more information visit the", a("Mahoning CoC Competition website", href = "https://www.mahoningcountyoh.gov/1043/CoC-Competition"))))
+    output$header <- renderUI(server_header("2025 CoC Competition Renewal Project Evaluation",
+                                            x = shiny::h3(paste0("Reporting Period: 1/1/24 - 12/31/24")),
+                                            shiny::p("For more information visit the", a("Ohio BoSCoC CoC Program website", href = "https://cohhio.org/boscoc/coc-program/"))))
+    
     pe_summary <- pe_summary_final_scoring_mahoning() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
-                                  function(x) gsub("/", "÷", x))) |>
-      dplyr::distinct()
-
+                                  function(x) gsub("/", "÷", x)))
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
       pe_summary |>
         dplyr::filter(AltProjectName %in% input$pe_provider)
     })
-
+    
+    
     output$pe_ProjectSummaryMahoning <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
           dplyr::pull(ProjectType)
-
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPoints,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPoints,
-            "Increased Income" = IncreasedIncomePoints,
-            "Rapid Placement into Housing" = OwnHousingPoints,
+            "Returns to Homelessness" = ReturnToHomelessnessPoints,
             "Living Situation at Entry" = LHResPriorPoints,
             "No Income at Entry" = NoIncomeAtEntryPoints,
-            # "Median Homeless History Index" = MedianHHIPoints,
-            "Long Term Homeless" = LongTermHomelessPoints,
-            "VISPDAT Completion at Entry" = ScoredAtEntryPoints,
+            "Increased Income" = IncreasedIncomePoints,
+            "Increased Earned Income" = IncreasedEarnedIncomePoints,
+            "Median Homeless History Index" = MedianHHIPoints,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPoints,
             "Data Quality" = DQPoints,
-            "Prioritization Workgroup" = PrioritizationWorkgroupScore,
-            # "Housing First" = HousingFirstScore,
-            "Prioritization of Chronic" = ChronicPrioritizationScore
+            "Total Points" = TotalScore
+            
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                               names_to = "Measure",
@@ -120,15 +114,13 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHDQ,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitDQ,
-            "Increased Income" = IncreasedIncomeDQ,
-            "Rapid Placement into Housing" = OwnHousingDQ,
+            "Returns to Homelessness" = ReturnToHomelessnessDQ,
             "Living Situation at Entry" = LHResPriorDQ,
             "No Income at Entry" = NoIncomeAtEntryDQ,
-            # "Median Homeless History Index" = MedianHHIDQ,
-            "Long Term Homeless" = LTHomelessDQ,
-            "VISPDAT Completion at Entry" = ScoredAtEntryDQ,
-            # "Housing First" = HousingFirstDQ,
-            "Prioritization of Chronic" = ChronicPrioritizationDQ
+            "Increased Income" = IncreasedIncomeDQ,
+            "Increased Earned Income" = IncreasedEarnedIncomeDQ,
+            "Median Homeless History Index" = MedianHHIDQ,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryDQ
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                               names_to = "Measure",
@@ -139,18 +131,14 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHPossible,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitPossible,
-            "Increased Income" = IncreasedIncomePossible,
-            "Rapid Placement into Housing" = OwnHousingPossible,
+            "Returns to Homelessness" = ReturnToHomelessnessPossible,
             "Living Situation at Entry" = LHResPriorPossible,
             "No Income at Entry" = NoIncomeAtEntryPossible,
-            # "Median Homeless History Index" = MedianHHIPossible,
-            "Long Term Homeless" = LongTermHomelessPossible,
-            "VISPDAT Completion at Entry" =
-              ScoredAtEntryPossible,
-            "Data Quality" = DQPossible,
-            "Prioritization Workgroup" = PrioritizationWorkgroupPossible,
-            # "Housing First" = HousingFirstPossible,
-            "Prioritization of Chronic" = ChronicPrioritizationPossible
+            "Increased Income" = IncreasedIncomePossible,
+            "Increased Earned Income" = IncreasedEarnedIncomePossible,
+            "Median Homeless History Index" = MedianHHIPossible,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPossible,
+            "Data Quality" = DQPossible
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                               names_to = "Measure",
@@ -161,18 +149,14 @@ mod_body_coc_competition_mahoning_server <- function(id){
             "Project Name" = AltProjectName,
             "Exits to Permanent Housing" = ExitsToPHMath,
             "Benefits & Health Insurance at Exit" = BenefitsAtExitMath,
-            "Increased Income" = IncreasedIncomeMath,
-            "Rapid Placement into Housing" = OwnHousingMath,
+            "Returns to Homelessness" = ReturnToHomelessnessMath,
             "Living Situation at Entry" = LHResPriorMath,
             "No Income at Entry" = NoIncomeAtEntryMath,
-            # "Median Homeless History Index" = MedianHHIMath,
-            "Long Term Homeless" = LongTermHomelessMath,
-            "VISPDAT Completion at Entry" =
-              ScoredAtEntryMath,
+            "Increased Income" = IncreasedIncomeMath,
+            "Increased Earned Income" = IncreasedEarnedIncomeMath,
+            "Median Homeless History Index" = MedianHHIMath,
+            "VISPDAT/HARP Completion at Entry" = ScoredAtEntryMath,
             "Data Quality" = DQMath,
-            # "Prioritization Workgroup" = PrioritizationWorkgroupMath,
-            # "Housing First" = HousingFirstMath,
-            # "Prioritization of Chronic" = ChronicPrioritizationMath
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                               names_to = "Measure",
@@ -193,12 +177,10 @@ mod_body_coc_competition_mahoning_server <- function(id){
               DQflag == 5 ~ "" # "Docs received past the due date"
             )
           ) |> 
-          dplyr::filter(!Measure %in% c("Prioritization of Chronic",
-                                        "Prioritization Workgroup")) |>
           dplyr::filter(!is.na(`Estimated Score`))
         
         
-
+        
         datatable_default(
           estimated_score_dq |> 
             dplyr::select(1, Calculation, 2, "Estimated Score", "Possible Score" = 5, "Data Quality" = DQ),
@@ -209,9 +191,11 @@ mod_body_coc_competition_mahoning_server <- function(id){
         )
       })
     
+    # Exits to Permanent Housing
+    # Measure 1
     pe_exits <- pe_exits_to_ph_mahoning() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
-                    Destination = HMIS::living_situation(Destination))
+                    Destination = living_situation(Destination))
     pe_exits_to_ph_filter <- eventReactive(input$pe_provider, {
       pe_exits |>
         dplyr::filter(AltProjectName == input$pe_provider)
@@ -240,6 +224,40 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
+    # Measure 2 NEW
+    # % heads of household who returned to homelessness at program exit
+    pe_return <- pe_return_to_homelessness_mahoning() |>
+      dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
+                    Destination = living_situation(Destination))
+    pe_return_to_homelessness_filter <- eventReactive(input$pe_provider, {
+      pe_return |>
+        dplyr::filter(AltProjectName == input$pe_provider)
+    })
+    output$pe_ReturnToHomelessnessMahoning <- DT::renderDataTable({
+      pe_return_to_homelessness_filter() |>
+        dplyr::select("Client ID" = UniqueID,
+                      "Entry Date" = EntryDate,
+                      "Move In Date" = MoveInDateAdjust,
+                      "Exit Date" = ExitDate,
+                      Destination,
+                      "Destination Group" = DestinationGroup,
+                      "Meets Objective" = MeetsObjective
+        ) |>
+        datatable_default(caption = "Return to Homelessness",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
+      
+    })
+    
+    # Benefits at Exit
+    # Measure 3
     pe_benefits <- pe_benefits_at_exit_mahoning() |>
       dplyr::mutate(
         BenefitsFromAnySource = dplyr::case_when(
@@ -281,6 +299,8 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
+    # Meaure 6
+    # % adult who entered project during the date range and came from streets/emergency shelter only
     pe_res <- pe_res_prior_mahoning() |>
       dplyr::mutate(
         LivingSituation = HMIS::living_situation(LivingSituation),
@@ -313,6 +333,8 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
+    # Measure 7
+    # %  adult who entered project during the date range with no income
     pe_entries <- pe_entries_no_income_mahoning() |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
@@ -349,51 +371,30 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
-    # pe_length_filter <- eventReactive(input$pe_provider, {
-    #   pe_length_of_stay_mahoning() |>
-    #     dplyr::filter(AltProjectName == input$pe_provider &
-    #                     ProjectType %in% c(2, 8, 13))
-    # })
-    # output$pe_LengthOfStayMahoning <- DT::renderDataTable({
-    #   pe_length_filter() |>
-    #     dplyr::select(
-    #       "Client ID" = UniqueID,
-    #       "Entry Date" = EntryDate,
-    #       "Move-In Date" = MoveInDateAdjust,
-    #       "Exit Date" = ExitDate,
-    #       "Days in Project" = DaysInProject
-    #     ) |> 
-    #     datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
-    #                       escape = FALSE,
-    #                       options = list(
-    #                         initComplete = DT::JS(
-    #                           "function(settings, json) {",
-    #                           "$('th').css({'text-align': 'center'});",
-    #                           "$('td').css({'text-align': 'center'});",
-    #                           "}"
-    #                         )
-    #                       ))
-    #   
-    # })
+    # Measure 4
+    # % adult participants who gained or increased their total income (from all sources) 
+    # as of the end of the reporting period or at program exit
+    pe_increase <- pe_increase_income_mahoning() |> 
+      dplyr::mutate(
+        MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
+      )
     
-    # Rapid Placement into Housing
-    pe_own_filter <- eventReactive(input$pe_provider, {
-      pe_own_housing() |>
-        dplyr::filter(AltProjectName == input$pe_provider &
-                        ProjectType %in% c(3, 13)) |> 
-        dplyr::mutate(DaysInProject = DaysInProject / 86400)
+    pe_increase_filter <- eventReactive(input$pe_provider, {
+      pe_increase |>
+        dplyr::filter(AltProjectName == input$pe_provider)
     })
-    
-    output$pe_OwnHousingMahoning <- DT::renderDataTable({
-      pe_own_filter() |>
+    output$pe_IncreaseIncomeMahoning <- DT::renderDataTable({
+      pe_increase_filter() |>
         dplyr::select(
           "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
-          "Move-In Date" = MoveInDateAdjust,
           "Exit Date" = ExitDate,
-          "Days in Project" = DaysInProject
+          "Income at Entry" = IncomeAtEntry,
+          "Most Recent Income" = IncomeMostRecent,
+          "Meets Objective" = MeetsObjective
         ) |> 
-        datatable_default(caption = "RRH, TH: Client Leavers who moved into the project's housing",
+        datatable_default(caption = "ALL Project Types: Adults who entered the project
+              during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -406,80 +407,100 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
-    hud_specs <- HUD_specs()
-    times <-  hud_specs |>
-      dplyr::filter(DataElement == "TimesHomelessPastThreeYears") |>
-      dplyr::select(ReferenceNo, Description)
+    # Measure 5
+    # % adult participants who increased earned income at program exit.
+    pe_increase_earned <- pe_increase_earned_income_mahoning() |> 
+      dplyr::mutate(
+        MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
+      )
     
-    months <-  hud_specs |>
-      dplyr::filter(DataElement == "MonthsHomelessPastThreeYears") |>
-      dplyr::select(ReferenceNo, Description)
+    pe_increase_earned_filter <- eventReactive(input$pe_provider, {
+      pe_increase_earned |>
+        dplyr::filter(AltProjectName == input$pe_provider)
+    })
+    output$pe_IncreaseEarnedIncomeMahoning <- DT::renderDataTable({
+      pe_increase_earned_filter() |>
+        dplyr::select(
+          "Client ID" = UniqueID,
+          "Entry Date" = EntryDate,
+          "Exit Date" = ExitDate,
+          "Earned Income at Entry" = EarnedIncomeAtEntry,
+          "Most Recent Earned Income" = EarnedIncomeMostRecent,
+          "Meets Objective" = MeetsObjective
+        ) |> 
+        datatable_default(caption = "ALL Project Types: Adults who entered the project
+              during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
+      
+    })
     
-    # pe_homeless_history <- pe_homeless_history_index_mahoning() |>
-    #   dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
-    #   dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
-    #   dplyr::select(-Description) |>
-    #   dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
-    #   dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
-    #   dplyr::select(-Description)
-    # pe_homeless_history_filter <- eventReactive(input$pe_provider, {
-    #   pe_homeless_history |>
-    #     dplyr::filter(AltProjectName == input$pe_provider)
-    # })
-    # output$pe_MedianHHIMahoning <- DT::renderDataTable({
-    #   pe_homeless_history_filter() |>
-    #     dplyr::select(
-    #       "Client ID" = UniqueID,
-    #       "Entry Date" = EntryDate,
-    #       "Exit Date" = ExitDate,
-    #       "Approximate Date Homeless" = DateToStreetESSH,
-    #       "Days Homeless at Entry" = DaysHomelessAtEntry,
-    #       "Times Homeless Past 3 Years" = TimesHomelessPastThreeYears,
-    #       "Months Homeless Past 3 Years" = MonthsHomelessPastThreeYears,
-    #       "Homeless Hisory Index" = HHI
-    #     ) |>
-    #     datatable_default(caption = "ALL Project Types: Adults who entered the project
-    #           during the reporting period",
-    #                       escape = FALSE,
-    #                       options = list(
-    #                         initComplete = DT::JS(
-    #                           "function(settings, json) {",
-    #                           "$('th').css({'text-align': 'center'});",
-    #                           "$('td').css({'text-align': 'center'});",
-    #                           "}"
-    #                         )
-    #                       ))
-    #   
-    # })
+    # TimesHomelessLastThreeYears
+    times <- tibble::tribble(
+      ~ReferenceNo, ~Description,
+      1,  "One time",
+      2,  "Two times",
+      3,  "Three times",
+      4,  "Four or more times",
+      8,  "Client doesn't know",
+      9,  "Client prefers not to answer",
+      99, "Data not collected"
+    )
     
-    pe_long_homeless <- pe_long_term_homeless_mahoning() |>
-      dplyr::filter(ProjectType == 3) |>
+    # MonthsHomelessLastThreeYears
+    months <- tibble::tribble(
+      ~ReferenceNo, ~Description,
+      8,   "Client doesn't know",
+      9,   "Client prefers not to answer",
+      99,  "Data not collected",
+      101, "1",
+      102, "2",
+      103, "3",
+      104, "4",
+      105, "5",
+      106, "6",
+      107, "7",
+      108, "8",
+      109, "9",
+      110, "10",
+      111, "11",
+      112, "12",
+      113, "More than 12 months"
+    )
+    
+    pe_homeless_history <- pe_homeless_history_index_mahoning() |>
       dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
       dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
       dplyr::select(-Description) |>
       dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
-      dplyr::mutate(MonthsHomelessPastThreeYears = Description,
-                    MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")) |>
+      dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
       dplyr::select(-Description)
-    
-    pe_long_homeless_filter <- eventReactive(input$pe_provider, {
-      pe_long_homeless |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+    pe_homeless_history_filter <- eventReactive(input$pe_provider, {
+      pe_homeless_history |>
+        dplyr::filter(AltProjectName == input$pe_provider) |> 
+        dplyr::mutate(DaysHomelessAtEntry = DaysHomelessAtEntry / 86400)
     })
-    output$pe_LongTermHomelessMahoning <- DT::renderDataTable({
-      pe_long_homeless_filter() |>
+    output$pe_MedianHHIMahoning <- DT::renderDataTable({
+      pe_homeless_history_filter() |>
         dplyr::select(
           "Client ID" = UniqueID,
           "Entry Date" = EntryDate,
           "Exit Date" = ExitDate,
           "Approximate Date Homeless" = DateToStreetESSH,
-          "Days Homeless at Entry" = CurrentHomelessDuration,
+          "Days Homeless at Entry" = DaysHomelessAtEntry,
           "Times Homeless Past 3 Years" = TimesHomelessPastThreeYears,
           "Months Homeless Past 3 Years" = MonthsHomelessPastThreeYears,
-          "Meets Objective" = MeetsObjective
-        ) |> 
-        datatable_default(caption = "PSH: Adults who entered the project during the
-              reporting period",
+          "Homeless Hisory Index" = HHI
+        ) |>
+        datatable_default(caption = "ALL Project Types: Adults who entered the project
+              during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -492,6 +513,9 @@ mod_body_coc_competition_mahoning_server <- function(id){
       
     })
     
+    # Measure 9
+    # % heads of household who entered the project during the date range and had an assessment (VI-SPDAT or HARP) recorded in HMIS 
+    # (excludes clients for whom a current episode of DV was reported or who reported as currently fleeing)
     pe_scored_at_ph <- pe_scored_at_ph_entry_mahoning() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
     pe_scored_at_ph_filter <- eventReactive(input$pe_provider, {
@@ -524,9 +548,9 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
   })
 }
-    
+
 ## To be copied in the UI
-# mod_body_coc_competition_mahoning_ui("body_coc_competition_mahoning_1")
-    
+# mod_body_coc_competition_ui("body_coc_competition_1")
+
 ## To be copied in the server
-# mod_body_coc_competition_mahoning_server("body_coc_competition_mahoning_1")
+# mod_body_coc_competition_server("body_coc_competition_1")

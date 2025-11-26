@@ -31,7 +31,7 @@ mod_body_server <- function(id){
       message("Tab: ", active$tab)
       
       # Define tabs that should show coming soon
-      coming_soon_tabs <- c("coc_competition_mahoning")
+      coming_soon_tabs <- c()
       
       if (active$tab %in% coming_soon_tabs) {
         rlang::exec("mod_coming_soon_ui", id = "coming_soon")
