@@ -1,7 +1,10 @@
 ## Prioritization Report
 
+#### Updates 11-26-2025
+- Released the 2025 Mahoning Continuum of Care (CoC) Competition Renewal Project Evaluation.
+
 #### Updates 11-25-2025
-- Balance of State reporting now included in the daily automatic updates. Previously the competition
+- Balance of State CoC Competition reporting now included in the daily automatic updates. Previously the competition
 report data was being updated manually.
 
 #### Updates 11-21-2025
