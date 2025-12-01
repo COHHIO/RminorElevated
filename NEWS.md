@@ -1,4 +1,8 @@
-## Prioritization Report
+## Competition Report
+
+#### Updates 12-01-2025
+- Updated "Increase Income (all sources)" report. Previously only showing clients that exited. Now showing
+clients at the end of the reporting period or at program exit.
 
 #### Updates 11-26-2025
 - Released the 2025 Mahoning Continuum of Care (CoC) Competition Renewal Project Evaluation.
@@ -9,6 +13,8 @@ report data was being updated manually.
 
 #### Updates 11-21-2025
 - Released the 2025 Balance of State Continuum of Care (CoC) Competition Renewal Project Evaluation.
+
+## Prioritization Report
 
 #### Updates 11-19-2025
 - We changed how households in Street Outreach (SO) projects get added to the prioritization report. 
