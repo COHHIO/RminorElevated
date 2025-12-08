@@ -83,7 +83,15 @@ mod_body_coc_competition_server <- function(id){
         IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
         8,
         IncreasedEarnedIncomePoints
-      ))
+        ),
+        TotalScore = ifelse(
+          IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
+          TotalScore + 8,
+          TotalScore
+        )
+      )
+
+    
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
         pe_summary |>
           dplyr::filter(AltProjectName %in% input$pe_provider)
