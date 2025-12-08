@@ -78,7 +78,12 @@ mod_body_coc_competition_server <- function(id){
     
     pe_summary <- pe_summary_final_scoring() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
-                                  function(x) gsub("/", "÷", x)))
+                                  function(x) gsub("/", "÷", x))) |> 
+      dplyr::mutate(IncreasedEarnedIncomePoints = ifelse(
+        IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
+        8,
+        IncreasedEarnedIncomePoints
+      ))
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
         pe_summary |>
           dplyr::filter(AltProjectName %in% input$pe_provider)
@@ -89,6 +94,7 @@ mod_body_coc_competition_server <- function(id){
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
           dplyr::pull(ProjectType)
+
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
             "Project Name" = AltProjectName,
