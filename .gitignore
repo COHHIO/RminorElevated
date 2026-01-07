@@ -13,7 +13,6 @@ tests/
 golem_commands.R
 inst/auth
 .Renviron
-aws/
 
 .Rproj.user/
 
