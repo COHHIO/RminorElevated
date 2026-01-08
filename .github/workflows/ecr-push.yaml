@@ -3,10 +3,10 @@ name: Build and Push to ECR
 on:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
 
 permissions:
   id-token: write
