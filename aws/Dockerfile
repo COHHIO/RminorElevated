@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     libfribidi-dev \
     libfreetype6-dev \
     libpng-dev \
-    libtiff5-dev \
+    libtiff-dev \
     libjpeg-dev \
     libgit2-dev \
     pkg-config \
