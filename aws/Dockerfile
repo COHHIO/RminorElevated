@@ -1,8 +1,11 @@
 # Dockerfile for Shinyapps.io Deployment Runner
 FROM r-base:latest
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies with better error handling
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
@@ -18,8 +21,9 @@ RUN apt-get update && apt-get install -y \
     libgit2-dev \
     pkg-config \
     git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+    curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install renv and rsconnect
 RUN R -e "install.packages(c('renv', 'rsconnect'), repos = c(CRAN = 'https://cloud.r-project.org'))"
