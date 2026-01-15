@@ -11,16 +11,22 @@ mod_body_prioritization_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
-    ui_picker_program(
-      inputId = ns("region"),
-      label = "Select County/-ies",
-      multiple = TRUE,
-      choices = sort(Regions()$County),
-      options = shinyWidgets::pickerOptions(
-        liveSearch = TRUE,
-        liveSearchStyle = 'contains',
-        actionsBox = TRUE
-      )
+    ui_row(
+      ui_picker_program(
+        inputId = ns("region"),
+        label = "Select County/-ies",
+        multiple = TRUE,
+        choices = sort(Regions()$County),
+        options = shinyWidgets::pickerOptions(
+          liveSearch = TRUE,
+          liveSearchStyle = 'contains',
+          actionsBox = TRUE
+        )
+      ),
+      ui_date_range(start = rm_dates()$calc$data_goes_back_to,
+      label = "Entry Date Range"),
+      width = 12,
+      headerBorder = FALSE
     ),
     ui_row(title = "Prioritization Report", 
                DT::dataTableOutput(ns("summary")),
@@ -41,6 +47,9 @@ mod_body_prioritization_server <- function(id){
                               shiny::p("Answers for Approximate Date Homelessness Started and Total number of months homeless on the streets, in ES, or Safe Haven in the past three years can be nuanced. If the answers to these questions contradict one other, if they have not been filled in correctly, or if they have not been appropriately updated, they may create data quality issues. Please check the R minor elevated Data Quality Report to ensure that answers to these questions are cohesive.")))
    
    region <- eventReactive(input$region, {input$region}) |> debounce(1500)
+   
+   date_range <- eventReactive(input$date_range, {input$date_range}) |> debounce(1500)
+    
    pc <- prioritization_colors()
    output$summary <- DT::renderDT(server = FALSE, {
      req(region())
@@ -48,6 +57,7 @@ mod_body_prioritization_server <- function(id){
      prioritization() |>
        dplyr::filter(CountyServed %in% region() |
                 is.na(CountyServed)) |>
+       dplyr::filter(EntryDate >= input$date_range[1] & EntryDate <= input$date_range[2]) |>
        dplyr::arrange(dplyr::desc(HousingStatus)) |>
        dplyr::select(
          "HoH Unique ID" = UniqueID,

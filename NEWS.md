@@ -1,3 +1,8 @@
+## Prioritization Report
+
+#### Updates 01-15-2026
+- Added new filter for Entry Date
+
 ## Competition Report
 
 #### Updates 12-01-2025
