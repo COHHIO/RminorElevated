@@ -1,5 +1,5 @@
 # Dockerfile for Shinyapps.io Deployment Runner
-FROM r-base:latest
+FROM r-base:4.4.2
 
 # Install system dependencies with better error handling
 RUN apt-get clean && \
