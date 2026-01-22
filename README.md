@@ -1,0 +1,162 @@
+
+# RminorElevated
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+## Overview
+
+RminorElevated is a Shiny application that provides HMIS data quality
+monitoring and reporting tools for the Ohio Balance of State Continuum
+of Care (CoC) and the Mahoning County CoC. The application helps HMIS
+users verify that their data is accurate and complete through
+interactive reports and visualizations.
+
+**Note:** This application displays client-level data (without
+Personally Identifying Information) and requires authentication for
+access.
+
+## Key Features
+
+RminorElevated includes several reporting modules:
+
+- **Data Quality Reports** - Monitor and identify data completeness and
+  accuracy issues
+- **Prioritization Lists** - View and manage client prioritization for
+  housing placement
+- **Agency & Program Lookup** - Search and reference agency and program
+  information
+- Additional specialized reports for HMIS data analysis including
+  performance reporting, bed & unit counts, and veteran reporting
+
+## Installation
+
+### For Developers
+
+RminorElevated is not available on CRAN. To install the development
+version from GitHub:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("COHHIO/RminorElevated")
+```
+
+### Prerequisites
+
+This package depends on several internal COHHIO packages that handle
+data processing:
+
+- `HMISdata` - Data retrieval from AWS
+- `HMISprep` - Data preparation and cleaning  
+- `HMISserve` - Data serving utilities
+
+These packages must be installed and configured before RminorElevated
+will function properly.
+
+## Usage
+
+### Accessing the Application
+
+The production application is deployed at the [RminorElevated
+website](https://ohiobalanceofstatecoc.shinyapps.io/Rminor_elevated/)
+and requires login credentials. Contact your HMIS administrator for
+access.
+
+### Running Locally (for development)
+
+``` r
+library(RminorElevated)
+
+# Ensure you have proper AWS credentials configured
+# and that the daily data pipeline has run
+
+# Run the application
+shiny::runApp()
+```
+
+## Data Pipeline
+
+RminorElevated relies on a daily automated data pipeline that:
+
+1.  Retrieves HMIS CSV exports from AWS
+2.  Pulls supplementary data from Looker via AWS
+3.  Processes and prepares data using `HMISdata`, `HMISprep`, and
+    `HMISserve`
+4.  Stores processed data in AWS S3
+
+The application always displays the most recently processed data from
+this pipeline.
+
+## Target Users
+
+This application is designed for:
+
+- HMIS end users (case managers, housing navigators, program staff)
+- Agency administrators
+- CoC-level data analysts and coordinators
+- Data quality managers
+
+Users should have familiarity with HMIS data standards and their
+organization’s data entry workflows.
+
+## Package Ecosystem
+
+RminorElevated is part of COHHIO’s suite of HMIS tools:
+
+    HMISdata ──→ HMISprep ──→ HMISserve ──→ RminorElevated
+       ↓            ↓            ↓              ↓
+    (Extract)   (Transform)   (Serve)      (Visualize)
+
+This modular approach separates data pipeline concerns from the
+presentation layer, making each component easier to maintain and test.
+
+## For COHHIO Staff
+
+### Deployment
+
+The application is deployed to shinyapps.io. Deployment is managed
+through:
+
+``` r
+# Deploy to shinyapps.io
+rsconnect::deployApp()
+```
+
+### Configuration
+
+Key configuration files: - AWS credentials and region settings -
+Shinyapps.io account configuration  
+- Authentication provider settings
+
+See the `aws/` directory for deployment-related configuration.
+
+## Contributing
+
+This is an internal tool for the Ohio Balance of State CoC and Mahoning
+County CoC. If you’re part of the COHHIO team:
+
+1.  Create a feature branch from `main`
+2.  Make your changes with clear commit messages
+3.  Test thoroughly with recent data
+4.  Submit a pull request with a description of changes
+
+## Support
+
+For questions or issues:
+
+- **Users and Developers**: Open an issue on GitHub or contact the
+  [COHHIO HMIS team](mailto:hmis@cohhio.org)
+
+## License
+
+This project is licensed under the AGPL-3.0 License - see the
+[LICENSE.md](LICENSE.md) file for details.
+
+## Acknowledgments
+
+Developed and maintained by the Coalition on Homelessness and Housing in
+Ohio (COHHIO) to support the data quality and reporting needs of Ohio’s
+homeless services system.
