@@ -7,7 +7,7 @@
 datatable_add_bars(table, columns, valueColumns, ..., divergent = FALSE)
 }
 \arguments{
-\item{table}{a table object created from \code{\link[DT]{datatable}()}}
+\item{table}{a table object created from \code{\link[DT:datatable]{datatable()}}}
 
 \item{columns}{the indices of the columns to be formatted (can be character,
 numeric, logical, or a formula of the form \code{~ V1 + V2}, which is

@@ -43,7 +43,7 @@ do_assignment <- function(funs, ns = pkgload::pkg_name()) {
 load_s3_file <- function(
     file_name,
     bucket = "shiny-data-cohhio",
-    folder = "RME",
+    folder = get_golem_config("data_env"),
     region = "us-east-2"
 ) {
   tryCatch({
@@ -96,7 +96,7 @@ load_s3_file <- function(
 #' @return \code{(POSIXct)} Vector of last modified dates
 #' @noRd
 get_s3_refresh_date <- function(bucket = "shiny-data-cohhio", 
-                                folder = "RME", 
+                                folder = get_golem_config("data_env"), 
                                 region = "us-east-2") {
   tryCatch({
     # Get all objects in the S3 bucket/folder
@@ -149,7 +149,7 @@ get_s3_refresh_date <- function(bucket = "shiny-data-cohhio",
 create_accessors_s3 <- function(s3_files = NULL, 
                                 local_data = NULL,
                                 bucket = "shiny-data-cohhio", 
-                                folder = "RME", 
+                                folder = get_golem_config("data_env"), 
                                 region = "us-east-2") {
   
   # If no files specified, list them from S3
