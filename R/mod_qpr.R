@@ -64,8 +64,8 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
       bs4Dash::bs4Accordion(
         id = "about",
         bs4Dash::bs4AccordionItem(
-          title = "Ohio BoS Performance Management Plan",
-          tags$p(a("Ohio BoS 2024 Performance Managment Plan", href = "https://cohhio.org/wp-content/uploads/2024/04/Ohio-BoSCoC-2024-PMP_Final.pdf")),
+          title = "Governance and Policies",
+          tags$p(a("Ohio BoSCoC Performance Management Plan", href = "https://cohhio.org/ohio-boscoc/governance-policies/")),
           collapsed = TRUE
         ),
         bs4Dash::bs4AccordionItem(
