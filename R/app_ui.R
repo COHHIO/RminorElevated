@@ -9,6 +9,7 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     includeScript("inst/js/new_tab_badges.js"),
+    dev_banner_ui(),
     # Your application UI logic
     bs4Dash::dashboardPage(
       header = mod_navbar_ui("navbar"),

@@ -42,13 +42,14 @@ Remotes:
 Depends: R (>= 4.1.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
     'app_config.R'
     'app_server.R'
     'app_ui.R'
+    'dev_banner_ui.R'
     'fct_s3.R'
     'feather_save.R'
     'find_instances.R'
@@ -68,6 +69,7 @@ Collate:
     'mod_body_dq_timeliness.R'
     'mod_body_dq_unsheltered.R'
     'mod_body_mpo.R'
+    'mod_body_news.R'
     'mod_body_prioritization.R'
     'mod_body_program_lookup.R'
     'mod_body_qpr_community_need_lh.R'

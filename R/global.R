@@ -61,7 +61,10 @@ cli::cli_alert_info("Starting one-time data download from S3...")
   
   # Get list of available S3 files
   tryCatch({
-    s3_objects <- aws.s3::get_bucket(bucket = "shiny-data-cohhio", prefix = "RME", region = "us-east-2")
+    s3_folder <- get_golem_config("data_env")
+    cli::cli_alert_info("Loading data from S3 folder: {s3_folder}")
+    
+    s3_objects <- aws.s3::get_bucket(bucket = "shiny-data-cohhio", prefix = s3_folder, region = "us-east-2")
     s3_files <- purrr::map_chr(s3_objects, ~.x$Key) |>
       basename()
     s3_files <- s3_files[s3_files != "" & tools::file_ext(s3_files) %in% c("rds", "parquet")]

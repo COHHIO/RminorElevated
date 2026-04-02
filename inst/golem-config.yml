@@ -2,7 +2,13 @@ default:
   golem_name: RminorElevated
   golem_version: 0.0.0.9000
   app_prod: no
+  data_env: RME
+
 production:
   app_prod: yes
+  data_env: RME
+
 dev:
   golem_wd: !expr pkgload::pkg_path()
+  app_prod: no
+  data_env: RME_test
