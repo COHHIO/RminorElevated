@@ -9,7 +9,8 @@
 #' @importFrom shiny NS tagList 
 mod_body_coc_competition_ui <- function(id){
   ns <- NS(id)
-  pe_sum_val <- pe_summary_validation()
+  pe_sum_val <- pe_summary_validation() |> 
+    dplyr::filter(ProjectType %in% c(2, 3, 13))
   tagList(
     ui_header_row(),
     ui_picker_program(
