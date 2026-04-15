@@ -57,6 +57,10 @@ mod_body_coc_competition_ui <- function(id){
       DT::dataTableOutput(ns("pe_IncreaseEarnedIncome"))
     ),
     ui_row(
+      title = "Length of Stay",
+      DT::dataTableOutput(ns("pe_LengthOfStay"))
+    ),
+    ui_row(
       title = "Median Homeless History Index",
             DT::dataTableOutput(ns("pe_MedianHHI"))
     ),
@@ -114,6 +118,7 @@ mod_body_coc_competition_server <- function(id){
             "No Income at Entry" = NoIncomeAtEntryPoints,
             "Increased Income" = IncreasedIncomePoints,
             "Increased Earned Income" = IncreasedEarnedIncomePoints,
+            "Length of Stay" = AverageLoSPoints,
             "Median Homeless History Index" = MedianHHIPoints,
             "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPoints,
             "Data Quality" = DQPoints,
@@ -134,6 +139,7 @@ mod_body_coc_competition_server <- function(id){
             "No Income at Entry" = NoIncomeAtEntryDQ,
             "Increased Income" = IncreasedIncomeDQ,
             "Increased Earned Income" = IncreasedEarnedIncomeDQ,
+            "Length of Stay" = AverageLoSDQ,
             "Median Homeless History Index" = MedianHHIDQ,
             "VISPDAT/HARP Completion at Entry" = ScoredAtEntryDQ
           ) |>
@@ -151,6 +157,7 @@ mod_body_coc_competition_server <- function(id){
             "No Income at Entry" = NoIncomeAtEntryPossible,
             "Increased Income" = IncreasedIncomePossible,
             "Increased Earned Income" = IncreasedEarnedIncomePossible,
+            "Length of Stay" = AverageLoSPossible,
             "Median Homeless History Index" = MedianHHIPossible,
             "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPossible,
             "Data Quality" = DQPossible
@@ -169,6 +176,7 @@ mod_body_coc_competition_server <- function(id){
             "No Income at Entry" = NoIncomeAtEntryMath,
             "Increased Income" = IncreasedIncomeMath,
             "Increased Earned Income" = IncreasedEarnedIncomeMath,
+            "Length of Stay" = AverageLoSMath,
             "Median Homeless History Index" = MedianHHIMath,
             "VISPDAT/HARP Completion at Entry" = ScoredAtEntryMath,
             "Data Quality" = DQMath,
@@ -443,6 +451,31 @@ mod_body_coc_competition_server <- function(id){
           "Most Recent Earned Income" = EarnedIncomeMostRecent,
           "Meets Objective" = MeetsObjective
         ) |> 
+        datatable_default(caption = "ALL Project Types: Adults who entered the project
+              during the reporting period",
+                          escape = FALSE,
+                          options = list(
+                            initComplete = DT::JS(
+                              "function(settings, json) {",
+                              "$('th').css({'text-align': 'center'});",
+                              "$('td').css({'text-align': 'center'});",
+                              "}"
+                            )
+                          ))
+      
+    })
+    
+    # Measure 5.5
+    # Length of Stay
+    pe_length_of_stay <- pe_length_of_stay() |> 
+      dplyr::mutate(DaysInProject = (DaysInProject / 86400))
+    
+    pe_length_of_stay_filter <- eventReactive(input$pe_provider, {
+      pe_length_of_stay |>
+        dplyr::filter(AltProjectName == input$pe_provider)
+    })
+    output$pe_LengthOfStay <- DT::renderDataTable({
+      pe_length_of_stay_filter() |> 
         datatable_default(caption = "ALL Project Types: Adults who entered the project
               during the reporting period",
                           escape = FALSE,
