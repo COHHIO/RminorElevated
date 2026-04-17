@@ -40,10 +40,7 @@ mod_body_coc_competition_ui <- function(id){
       title = "Benefits & Health Insurance at Exit",
             DT::dataTableOutput(ns("pe_BenefitsAtExit"))
     ),
-    ui_row(
-      title = "Living Situation at Entry",
-            DT::dataTableOutput(ns("pe_LivingSituationAtEntry"))
-    ),
+    uiOutput(ns("ui_LivingSituationAtEntry")),
     ui_row(
       title = "No Income at Entry",
             DT::dataTableOutput(ns("pe_NoIncomeAtEntry"))
@@ -56,14 +53,8 @@ mod_body_coc_competition_ui <- function(id){
       title = "Increased Earned Income",
       DT::dataTableOutput(ns("pe_IncreaseEarnedIncome"))
     ),
-    ui_row(
-      title = "Length of Stay",
-      DT::dataTableOutput(ns("pe_LengthOfStay"))
-    ),
-    ui_row(
-      title = "Median Homeless History Index",
-            DT::dataTableOutput(ns("pe_MedianHHI"))
-    ),
+    uiOutput(ns("ui_LengthOfStay")),
+    uiOutput(ns("ui_MedianHHI")),
     ui_row(
       title = "VISPDAT/HARP Score Completion",
             DT::dataTableOutput(ns("pe_ScoredAtPHEntry"))
@@ -102,11 +93,25 @@ mod_body_coc_competition_server <- function(id){
           dplyr::filter(AltProjectName %in% input$pe_provider)
     })
     
-
+    measure_project_types <- list(
+      "Exits to Permanent Housing"           = c(2, 3, 13, 102, 103, 113),
+      "Returns to Homelessness"              = c(2, 3, 13, 102, 103, 113),
+      "Benefits & Health Insurance at Exit"  = c(2, 3, 13, 102, 103, 113),
+      "Increased Income"                     = c(2, 3, 13, 102, 103, 113),
+      "Increased Earned Income"              = c(2, 3, 13, 102, 103, 113),
+      "Living Situation at Entry"            = c(2, 3, 13, 103),
+      "No Income at Entry"                   = c(2, 3, 13, 102, 103, 113),
+      "Length of Stay"                       = c(113),
+      "Median Homeless History Index"        = c(2, 3, 13),
+      "VISPDAT/HARP Completion at Entry"     = c(2, 3, 13, 102, 103, 113),
+      "Data Quality"                         = c(2, 3, 13, 102, 103, 113),
+      "Total Points"                         = c(2, 3, 13, 102, 103, 113)
+    )
+    
     output$pe_ProjectSummary <-
       DT::renderDataTable({
         ptc <- pe_summary_final_filter() |>
-          dplyr::pull(ProjectType)
+          dplyr::pull(AltProjectType)
 
         estimated_score <- pe_summary_final_filter() |>
           dplyr::select(
@@ -160,7 +165,8 @@ mod_body_coc_competition_server <- function(id){
             "Length of Stay" = AverageLoSPossible,
             "Median Homeless History Index" = MedianHHIPossible,
             "VISPDAT/HARP Completion at Entry" = ScoredAtEntryPossible,
-            "Data Quality" = DQPossible
+            "Data Quality" = DQPossible,
+            "Total Points" = TotalPossible
           ) |>
           tidyr::pivot_longer(cols = -c("Project Name"),
                        names_to = "Measure",
@@ -202,15 +208,20 @@ mod_body_coc_competition_server <- function(id){
           ) |> 
           dplyr::filter(!is.na(`Estimated Score`))
         
+        applicable_measures <- purrr::keep(measure_project_types, 
+                                           ~as.numeric(ptc) %in% .x) |> 
+          names()
         
-
+        estimated_score_dq <- estimated_score_dq |>
+          dplyr::filter(Measure %in% applicable_measures)
+        
         datatable_default(
           estimated_score_dq |> 
             dplyr::select(1, Calculation, 2, "Estimated Score", "Possible Score" = 5, "Data Quality" = DQ),
           options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(15, 25, 50,
+                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 15)
         )
       })
     
@@ -333,6 +344,20 @@ mod_body_coc_competition_server <- function(id){
       pe_res |>
         dplyr::filter(AltProjectName == input$pe_provider)
     })
+    
+    output$ui_LivingSituationAtEntry <- renderUI({
+      req(input$pe_provider)
+      ptc <- pe_summary_final_filter() |>
+        dplyr::pull(AltProjectType) |>
+        as.numeric()
+      if (!ptc %in% c(2, 3, 13, 103)) return(NULL)
+      
+      ui_row(
+        title = "Living Situation at Entry",
+        DT::dataTableOutput(ns("pe_LivingSituationAtEntry"))
+      )
+    })
+    
     output$pe_LivingSituationAtEntry <- DT::renderDataTable({
       pe_res_filter() |>
         dplyr::select(
@@ -343,7 +368,7 @@ mod_body_coc_competition_server <- function(id){
           "Meets Objective" = MeetsObjective
         ) |>
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period",
+          during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -353,7 +378,6 @@ mod_body_coc_competition_server <- function(id){
                               "}"
                             )
                           ))
-
     })
 
     # Measure 7
@@ -474,10 +498,24 @@ mod_body_coc_competition_server <- function(id){
       pe_length_of_stay |>
         dplyr::filter(AltProjectName == input$pe_provider)
     })
+    
+    output$ui_LengthOfStay <- renderUI({
+      req(input$pe_provider)
+      ptc <- pe_summary_final_filter() |>
+        dplyr::pull(AltProjectType) |>
+        as.numeric()
+      if (!ptc %in% c(113)) return(NULL)
+      
+      ui_row(
+        title = "Length of Stay",
+        DT::dataTableOutput(ns("pe_LengthOfStay"))
+      )
+    })
+    
     output$pe_LengthOfStay <- DT::renderDataTable({
-      pe_length_of_stay_filter() |> 
+      pe_length_of_stay_filter() |>
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period",
+          during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -487,7 +525,6 @@ mod_body_coc_competition_server <- function(id){
                               "}"
                             )
                           ))
-      
     })
     
     # TimesHomelessLastThreeYears
@@ -535,6 +572,19 @@ mod_body_coc_competition_server <- function(id){
         dplyr::filter(AltProjectName == input$pe_provider) |> 
         dplyr::mutate(DaysHomelessAtEntry = DaysHomelessAtEntry / 86400)
     })
+    output$ui_MedianHHI <- renderUI({
+      req(input$pe_provider)
+      ptc <- pe_summary_final_filter() |>
+        dplyr::pull(AltProjectType) |>
+        as.numeric()
+      if (!ptc %in% c(2, 3, 13)) return(NULL)
+      
+      ui_row(
+        title = "Median Homeless History Index",
+        DT::dataTableOutput(ns("pe_MedianHHI"))
+      )
+    })
+    
     output$pe_MedianHHI <- DT::renderDataTable({
       pe_homeless_history_filter() |>
         dplyr::select(
@@ -548,7 +598,7 @@ mod_body_coc_competition_server <- function(id){
           "Homeless Hisory Index" = HHI
         ) |>
         datatable_default(caption = "ALL Project Types: Adults who entered the project
-              during the reporting period",
+          during the reporting period",
                           escape = FALSE,
                           options = list(
                             initComplete = DT::JS(
@@ -558,7 +608,6 @@ mod_body_coc_competition_server <- function(id){
                               "}"
                             )
                           ))
-
     })
     
     # Measure 9
