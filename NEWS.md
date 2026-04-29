@@ -1,3 +1,10 @@
+## DQ Report
+
+#### Updates 04-29-2026
+- Added new error checks for entering events that occur in the future from when the
+data was entered. Error checks include future entry date, future exit date, future move-in date,
+and future assessment date.
+
 ## Prioritization Report
 
 #### Updates 01-15-2026
