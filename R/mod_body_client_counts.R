@@ -85,6 +85,7 @@ mod_body_client_counts_server <- function(id){
         ) |>
         dplyr::arrange(dplyr::desc(sort), HouseholdID) |>
         dplyr::select(
+          "Project Name" = ProjectName,
           "County" = CountyServed,
           "Unique ID" = UniqueID,
           "Relationship to Head of Household" = RelationshipToHoH,
