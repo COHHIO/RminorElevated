@@ -43,7 +43,7 @@ mod_body_dq_program_level_ui <- function(id){
     shiny::fluidRow(uiOutput(ns("dq_Ineligible"))),
     shiny::fluidRow(uiOutput(ns("dq_OverlappingEEs"))),
     ui_solid_box(
-      dq_see_guidance(),
+      shiny::tags$p(dq_see_guidance()),
       DT::dataTableOutput(ns("dq_Errors")),
       title = "Data Quality Errors",
       width = 12,
@@ -51,7 +51,7 @@ mod_body_dq_program_level_ui <- function(id){
       status = "danger"
     ),
     ui_solid_box(
-      dq_see_guidance(),
+      shiny::tags$p(dq_see_guidance()),
       DT::dataTableOutput(ns("dq_Warnings")),
       title = "Data Quality Warnings",
       width = 12,
@@ -190,10 +190,12 @@ mod_body_dq_program_level_server <- function(id){
           id = "dup_ees",
           title = "Duplicate Entry Exits",
           status = "warning",
-          shiny::HTML(
-            guidance |> 
-              dplyr::filter(name == "duplicate_ees") |> 
-              dplyr::pull(value)
+          shiny::tags$p(
+            shiny::HTML(
+              guidance |> 
+                dplyr::filter(name == "duplicate_ees") |> 
+                dplyr::pull(value)
+            )
           ),
           datatable_default(DuplicateEEs, escape = FALSE)
         )
@@ -215,10 +217,12 @@ mod_body_dq_program_level_server <- function(id){
           id = "location",
           title = "Missing Contact (PATH)",
           status = "warning",
-          shiny::HTML(guidance |> 
-                 dplyr::filter(name == "missing_path_contact") |> 
-                 dplyr::pull(value)
-                 ),
+          shiny::tags$p(
+            shiny::HTML(guidance |> 
+                   dplyr::filter(name == "missing_path_contact") |> 
+                   dplyr::pull(value)
+                   )
+        ),
           datatable_default(MissingPathContact, escape = FALSE)
         )
       }
@@ -251,10 +255,12 @@ mod_body_dq_program_level_server <- function(id){
           status = "info",
           solidHeader = TRUE,
           width = 12,
-          shiny::HTML(
-            guidance |> 
-              dplyr::filter(name == "check_eligibility") |> 
-              dplyr::pull(value)
+          shiny::tags$p(
+            shiny::HTML(
+              guidance |> 
+                dplyr::filter(name == "check_eligibility") |> 
+                dplyr::pull(value)
+            )
           ),
           datatable_default(Ineligible, escape = FALSE)
         )
@@ -289,9 +295,11 @@ mod_body_dq_program_level_server <- function(id){
           title = "Overlapping Program Stays",
           status = "warning",
           width = 12,
-          shiny::HTML(guidance |> 
-                        dplyr::filter(name == "project_stays") |> 
-                        dplyr::pull(value)),
+          shiny::tags$p(
+            shiny::HTML(guidance |> 
+                          dplyr::filter(name == "project_stays") |> 
+                          dplyr::pull(value))
+          ),
           datatable_default(OverlappingEEs, escape = FALSE)
         )
       } else {
