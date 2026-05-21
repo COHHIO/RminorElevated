@@ -71,21 +71,21 @@ mod_body_coc_competition_server <- function(id){
     output$header <- renderUI(server_header("2026 CoC Competition Renewal Project Evaluation",
                                             x = shiny::h3(paste0("Reporting Period: 1/1/24 - 12/31/24")),
                                             shiny::p("For more information visit the", a("Ohio BoSCoC CoC Program website", href = "https://cohhio.org/boscoc/coc-program/"))))
-    
+
     pe_summary <- pe_summary_final_scoring() |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
-                                  function(x) gsub("/", "÷", x))) |> 
-      dplyr::mutate(IncreasedEarnedIncomePoints = ifelse(
-        IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
-        8,
-        IncreasedEarnedIncomePoints
-        ),
-        TotalScore = ifelse(
-          IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
-          TotalScore + 8,
-          TotalScore
-        )
-      )
+                                  function(x) gsub("/", "÷", x))) 
+      # dplyr::mutate(IncreasedEarnedIncomePoints = ifelse(
+      #   IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
+      #   8,
+      #   IncreasedEarnedIncomePoints
+      #   ),
+      #   TotalScore = ifelse(
+      #     IncreasedEarnedIncomeMath == "All points granted because 0 adults moved into the project's housing",
+      #     TotalScore + 8,
+      #     TotalScore
+      #   )
+      # )
 
     
     pe_summary_final_filter <- eventReactive(input$pe_provider, {
