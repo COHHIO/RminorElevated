@@ -1,5 +1,9 @@
 ## DQ Report
 
+#### Updates 06-03-2026
+- Added new error checks for entering events that occur in the future including
+future HARP date and future Approximate Date this Episode of Homelessness Started.
+
 #### Updates 04-29-2026
 - Added new error checks for entering events that occur in the future. Error checks include future entry date, future exit date, future move-in date,
 and future assessment date.
