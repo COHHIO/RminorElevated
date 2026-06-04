@@ -1,5 +1,9 @@
 ## DQ Report
 
+#### Updates 06-04-2026
+- Added new check for Missing Sex field. This check is only looking at enrollments
+after this element started to become required on 10/01/2025.
+
 #### Updates 06-03-2026
 - Added new error checks for entering events that occur in the future including
 future HARP date and future Approximate Date this Episode of Homelessness Started.
