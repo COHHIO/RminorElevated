@@ -4,61 +4,95 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd 
+#' @noRd
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList
 mod_body_dq_system_summary_ui <- function(id){
   ns <- NS(id)
   tagList(
     ui_header_row(),
+    selectInput(ns("window_selector"), "Time Window",
+                choices = c("Last Year"     = "last_year",
+                            "Last 6 Months" = "last_6months",
+                            "Last 3 Months" = "last_3months",
+                            "Last Month"    = "last_month"),
+                selected = "last_year"),
     uiOutput(ns("ce")),
     uiOutput(ns("summary")),
     uiOutput(ns("overlaps"))
   )
 }
 
-c("High Priority Issues & Errors by Program", "Error Types", "Warnings by Program", "Warning Types", "Household Errors by Program", "Old Referrals by Program", "Eligibility Issues by Program", "Clients without SPDAT by Program", "Programs with Overlaps")
-
 #' body_dq_system_summary Server Functions
 #'
-#' @noRd 
+#' @noRd
 mod_body_dq_system_summary_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    output$header <- output$header <- renderUI({
+
+    # HMISserve::data_quality_summary() now uploads a named list of per-window
+    # summaries (last_year / last_6months / last_3months / last_month) rather
+    # than a single flat summary. Fetch it once; index by the selected window.
+    dq_summary_all <- get_app_data("dq_summary")
+
+    current_summary <- reactive({
+      req(input$window_selector)
+      dq_summary_all[[input$window_selector]]
+    })
+
+    output$header <- renderUI({
+      req(input$window_selector)
+      # Match the offsets the backend actually filtered on (years/dmonths) so the
+      # displayed range lines up with the data in the selected window.
+      start_date <- switch(input$window_selector,
+                           last_year    = Sys.Date() - lubridate::years(1),
+                           last_6months = Sys.Date() - lubridate::dmonths(6),
+                           last_3months = Sys.Date() - lubridate::dmonths(3),
+                           last_month   = Sys.Date() - lubridate::dmonths(1),
+                           get_app_data("rm_dates")$hc$check_dq_back_to  # fallback
+      )
+
       server_header(title = "Data Quality",
                     shiny::h3("System Summary"),
-                    date_range = c(get_app_data("rm_dates")$hc$check_dq_back_to, Sys.Date()))
+                    date_range = c(start_date, Sys.Date()))
     })
-    dq_aps_no_referrals <- get_app_data("dq_aps_no_referrals")
-    dq_aps_referrals <- programs |> 
-      {\(x) {tibble::tibble(ProjectID = x, ProjectName = names(x))}}() |> 
-      dplyr::filter(stringr::str_detect(ProjectName, "^zz", negate = TRUE) & stringr::str_detect(ProjectName, "\\sAP\\s?") & !ProjectID %in% dq_aps_no_referrals$ProjectID) 
-    
+
+    # Coordinated Entry / AP section. APs are now computed per-window in the
+    # backend and live inside each window as $aps (progress-bar data) and
+    # $aps_no_referrals (table) — they are no longer standalone datasets.
     output$ce <- renderUI({
+      dq_summary <- current_summary()
+
+      x                   <- dq_summary$aps
+      dq_aps_no_referrals <- dq_summary$aps_no_referrals
+
+      dq_aps_referrals <- programs |>
+        {\(p) {tibble::tibble(ProjectID = p, ProjectName = names(p))}}() |>
+        dplyr::filter(stringr::str_detect(ProjectName, "^zz", negate = TRUE) &
+                        stringr::str_detect(ProjectName, "\\sAP\\s?") &
+                        !ProjectID %in% dq_aps_no_referrals$ProjectID)
+
       ui_row(
         title = "Coordinated Entry",
-        
+
         # Render multiple progress bars
         tagList({
-          x <- get_app_data("dq_APs")
           values <- as.integer(round(x$percent * 100, 0))  # Round to integers
-          
           statuses <- c("danger", "success")  # Match this to the number of values
-          
+
           lapply(seq_along(values), function(i) {
             bs4Dash::progressBar(
               value = values[i],
               status = statuses[i],
               label = paste0(
-                x$category[i], ": ", 
-                x$count[i], " (", 
+                x$category[i], ": ",
+                x$count[i], " (",
                 scales::percent(x$percent[i]), ")"
               )
             )
           })
         }),
-        
+
         # Data tables
         fluidRow(
           bs4Dash::column(6,
@@ -70,9 +104,9 @@ mod_body_dq_system_summary_server <- function(id){
         )
       )
     })
-    
-    dq_summary <- get_app_data("dq_summary")
-    
+
+    # Static spec for the summary boxes; the actual tables are rebuilt from the
+    # selected window on each render.
     dq_summary_args <- tibble::tribble(
       ~ id,
       ~ title,
@@ -114,34 +148,36 @@ mod_body_dq_system_summary_server <- function(id){
       "Incorrect Destinations by Project",
       "warning"
     )
-    
-    dq_summary_args <- dq_summary_args |>
-      dplyr::mutate(table = purrr::map(id, ~{
-        out <- dq_summary[[.x]]
-        if ("n_Issue" %in% names(out))
-          out <- dplyr::rename(out, `# of Issues` = "n_Issue")
-        out <- dplyr::select(out, -dplyr::any_of(c("Total Clients", "ProjectID"))) 
 
-        datatable_default(out, add_options = list(pageLength = 20)) |>
-          datatable_add_bars(divergent = TRUE) |>
-          datatable_options_update(hide_cols = "from_mean", options = list(columnDefs = list(
-            list(width = "20px", targets = which_cols(c(
-              "# of Issues", "Frequency"
-            ), out) - 1)
-          )))
-        
+    output$summary <- renderUI({
+      dq_summary <- current_summary()
+
+      args <- dq_summary_args |>
+        dplyr::mutate(table = purrr::map(id, ~{
+          out <- dq_summary[[.x]]
+          if ("n_Issue" %in% names(out))
+            out <- dplyr::rename(out, `# of Issues` = "n_Issue")
+          out <- dplyr::select(out, -dplyr::any_of(c("Total Clients", "ProjectID")))
+
+          datatable_default(out, add_options = list(pageLength = 20)) |>
+            datatable_add_bars(divergent = TRUE) |>
+            datatable_options_update(hide_cols = "from_mean", options = list(columnDefs = list(
+              list(width = "20px", targets = which_cols(c(
+                "# of Issues", "Frequency"
+              ), out) - 1)
+            )))
+
         }),
         solidHeader = TRUE,
         collapsed = TRUE)
-    
-    output$summary <- renderUI({
-        rlang::exec(ui_row, title = "System-wide Summary",
-               !!!make_columns(dq_summary_args, max_cols = 2, fn = bs4Dash::box),
-               width = 12,
-               box = TRUE)
+
+      rlang::exec(ui_row, title = "System-wide Summary",
+             !!!make_columns(args, max_cols = 2, fn = bs4Dash::box),
+             width = 12,
+             box = TRUE)
     })
-    
-    
+
+
     output$desk_time_medians <- renderPlot({
       ggplot(
         head(desk_time_medians, 10L),
@@ -159,11 +195,11 @@ mod_body_dq_system_summary_server <- function(id){
         theme_minimal(base_size = 18)
     })
   })
-  
+
 }
-    
+
 ## To be copied in the UI
 # mod_body_dq_system_summary_ui("body_dq_system_summary_1")
-    
+
 ## To be copied in the server
 # mod_body_dq_system_summary_server("body_dq_system_summary_1")
