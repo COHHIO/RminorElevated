@@ -7,10 +7,13 @@
 datatable_default(
   data,
   rownames = FALSE,
-  options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5", list(extend
-    = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-    list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-    75, 100), lengthChange = TRUE, pageLength = 10),
+  options = list(dom = "Blfrtip", buttons = list("copy", list(extend = "excel",
+    customizeData =
+    htmlwidgets::JS("function(data) {\\n                                        for (var i = 0; i < data.body.length; i++) {\\n                                          for (var j = 0; j < data.body[i].length; j++) {\\n                                            data.body[i][j] = '‌' + data.body[i][j];\\n                                          }\\n                                        }\\n                                      }")),
+    
+     "csvHtml5", list(extend = "csvHtml5", text = "Full CSV", filename =
+    "data_full", exportOptions = list(modifier = list(page = "all")))), responsive =
+    TRUE, lengthMenu = c(10, 25, 50, 75, 100), lengthChange = TRUE, pageLength = 10),
   filter = list(position = "top", clear = TRUE, plain = FALSE),
   width = "100\%",
   height = "auto",

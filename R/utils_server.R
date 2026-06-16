@@ -42,7 +42,18 @@ datatable_default <- function(data,
                                 dom = 'Blfrtip',
                                 buttons = list(
                                   'copy',
-                                  'excel',
+                                  list(
+                                    extend = "excel",
+                                    customizeData = htmlwidgets::JS(
+                                      "function(data) {
+                                        for (var i = 0; i < data.body.length; i++) {
+                                          for (var j = 0; j < data.body[i].length; j++) {
+                                            data.body[i][j] = '\u200C' + data.body[i][j];
+                                          }
+                                        }
+                                      }"
+                                    )
+                                  ),
                                   "csvHtml5",
                                   list(
                                     extend = "csvHtml5",
@@ -72,6 +83,28 @@ datatable_default <- function(data,
     options <- purrr::list_modify(options, !!!add_options)
   if (!missing(add_extensions))
     extensions <- c(extensions, add_extensions)
+  
+  # Replace any plain 'excel' string in buttons with the customizeData version
+  if (!is.null(options$buttons)) {
+    options$buttons <- lapply(options$buttons, function(btn) {
+      if (identical(btn, "excel")) {
+        list(
+          extend = "excel",
+          customizeData = htmlwidgets::JS(
+            "function(data) {
+            for (var i = 0; i < data.body.length; i++) {
+              for (var j = 0; j < data.body[i].length; j++) {
+                data.body[i][j] = '\u200C' + data.body[i][j];
+              }
+            }
+          }"
+          )
+        )
+      } else {
+        btn
+      }
+    })
+  }
   
   DT::datatable(
     data,
