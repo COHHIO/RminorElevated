@@ -151,8 +151,8 @@ mod_sidebar_ui <- function(id){
           id = "data_refresh",
           status = purrr::when(
             refreshed,
-            . > Sys.Date() ~ "success",
-            . > Sys.Date() - 7 ~ "warning",
+            . > Sys.Date() - lubridate::dhours(24) ~ "success",
+            . > Sys.Date() - lubridate::dhours(24 * 7) ~ "warning",
             ~ "danger"
           ),
           width = 12
