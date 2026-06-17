@@ -1,3 +1,15 @@
+#### Updates 06-17-2026
+- Date refreshed is now matched to when the HUD CSV is updated. There are multiple
+data sources updated that feed RME, but this is the best representation of when
+the data is refreshed. If there is an issue with the HUD CSV automator, this will
+be properly reflected now with this date.
+
+#### Updates 06-16-2026
+- There was a bug when downloading Excel reports from tables in RME, where some 
+values got incorrectly interepreted as very large numbers. Excel would display
+these values as NULL. A patch was implemented so the correct data is being displayed
+in Excel downloads.
+
 ## DQ Report
 
 #### Updates 06-04-2026
