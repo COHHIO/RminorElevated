@@ -17,7 +17,7 @@ mod_theme_ui <- function(id){
 #' theme Server Functions
 #'
 #' @noRd 
-mod_theme_server <- function(id){
+mod_theme_server <- function(id, active){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
  
