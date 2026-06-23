@@ -6,8 +6,9 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   
+  active <- reactiveValues()
+  
   # Inputs needed in submodules
-  active <<- reactiveValues()
   observe({
     active$ui <- paste0("mod_body_", input$active_tab, "_ui")
     active$server <-  paste0("mod_body_", input$active_tab, "_server")
@@ -17,6 +18,6 @@ app_server <- function( input, output, session ) {
   # Top-level Modules
   mod_navbar_server("navbar")
   mod_sidebar_server("sidebar")
-  mod_body_server("body")
-  mod_theme_server("color_theme")
+  mod_body_server("body", active)
+  mod_theme_server("color_theme", active)
 }
