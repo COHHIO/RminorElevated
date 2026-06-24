@@ -79,6 +79,10 @@ shiny::runApp()
 
 ## Data Pipeline
 
+### Documentation
+
+- [Data refresh workflow](docs/data-refresh-workflow.md)
+
 RminorElevated relies on a daily automated data pipeline that:
 
 1.  Retrieves HMIS CSV exports from AWS
