@@ -47,8 +47,10 @@ URL: https://github.com/COHHIO/RminorElevated
 BugReports: https://github.com/COHHIO/RminorElevated/issues
 Collate: 
     'app_config.R'
+    'app_data.R'
     'app_server.R'
     'app_ui.R'
+    'decorate_data.R'
     'dev_banner_ui.R'
     'fct_s3.R'
     'feather_save.R'
