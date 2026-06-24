@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 mod_sidebar_ui <- function(id){
   ns <- NS(id)
-  refreshed <- get_s3_refresh_date()
+  
   bs4Dash::bs4DashSidebar(
     id = "sidebar",
     status = "white",
@@ -147,10 +147,10 @@ mod_sidebar_ui <- function(id){
             "window.open(window.location.href + '__logout__/', '_self')"
         )
         , bs4Alert(
-          tags$strong("Data refreshed: ",tags$br(), refreshed),
+          tags$strong("Data refreshed: ",tags$br(), APP_META$refresh_time),
           id = "data_refresh",
           status = purrr::when(
-            refreshed,
+            APP_META$refresh_time,
             . > Sys.Date() - lubridate::dhours(24) ~ "success",
             . > Sys.Date() - lubridate::dhours(24 * 7) ~ "warning",
             ~ "danger"
