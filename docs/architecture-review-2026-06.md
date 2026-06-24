@@ -5,11 +5,12 @@
 | Finding | Status |
 |----------|----------|
 | Cross-session active bug | Fixed (#52/#53) |
-| Duplicate S3 refresh call | Open |
-| Startup loading architecture | Open (#55) |
-| Runtime error handling | Proposed |
-| DT server-side rendering | Proposed |
-| COHHIO branding | Proposed |
+| global.R S3-loading refactor | Done (#55/#59) |
+| Single `get_app_data()` accessor | Proposed below |
+| Duplicate S3 refresh call + refresh-workflow doc | Proposed below |
+| Runtime error handling | Filed (#56) |
+| DT server-side rendering | Filed (#57) |
+| COHHIO branding | Filed (#58) |
 
 ## Context
 
@@ -87,6 +88,74 @@ This is a small, surgical, low-risk change confined to 2-3 files. It should be d
 **Remaining gap — Priority 2 (crash hardening) and Priority 3 (DT server-side rendering, debounce, bindCache) aren't represented in #54/#55.** The roadmap's "Improve reliability of deployments" goal and Phase 3 smoke test cover *deployment* reliability, but not runtime reliability (uncaught reactive errors killing a session) or client-side datatable bloat — both plausible contributors to remaining "slow"/"crashing" reports now that #52 is fixed. These are independent of the `global.R` refactor and mechanical enough that someone could pick them up in parallel rather than waiting on Phase 1-2 to land. Still worth their own issue(s) — drafted below.
 
 **On bumping to 1.0 after this roadmap:** the phase structure (data refactor → perf → tests → docs/release) is sound for *architecture* maturity, and using 1.0 to mean "stable architecture" for an app already serving real users in production is a reasonable convention. With #52/#53 already shipped, the main remaining reliability gap before calling it 1.0 is the crash-hardening work (Priority 2) — recommend treating that as release-blocking alongside the phases already on the board, since it's a user-facing reliability bug rather than architecture debt. It's worth watching for a few days post-#53 to confirm the navigation complaints actually stop before assuming the rest of the roadmap's data-loading work is what's left to do.
+
+## Phase 1 follow-up (2026-06-24, after #55/#59 merged)
+
+`#55` closed with a narrower scope than its original draft — it covers moving S3/local loading out of `global.R` into `load_app_data()` ([app_data.R](R/app_data.R)) and `add_clarity_links()` ([decorate_data.R](R/decorate_data.R)), but dropped the "single accessor" / "remove direct reliance on global `APP_DATA`" items before closing. Checked the current code on `origin/main` against Phase 1 of the roadmap (#54):
+
+| Phase 1 item | Status |
+|---|---|
+| Move S3 loading logic out of `global.R` | ✅ Done |
+| Replace eager startup loading with cached/lazy loading where appropriate | ❌ Not done — substantively duplicates Phase 2 ("Add local S3 download cache," "Lazy load infrequently used reports," "Move expensive derived calculations out of app startup," which covers the `qpr_tab_choices`/`programs`/`regions` block still sitting in `global.R`). Recommend dropping this checkbox from Phase 1 and letting Phase 2 own it, rather than filing a third overlapping issue. |
+| Create single app data accessor (`get_app_data()`) | ❌ Not done — `global.R` still calls `create_data_accessors()`, assigning one global function per dataset name (`validation()`, `Regions()`, etc.) into `.GlobalEnv`. Report modules call these by name directly throughout the app. |
+| Remove duplicate S3 refresh calls | ❌ Not done — [mod_sidebar.R:12](R/mod_sidebar.R#L12) still calls `get_s3_refresh_date()` live on every page load, duplicating `APP_META$refresh_time` computed once in [global.R:31](R/global.R#L31). |
+| Document data refresh workflow | ❌ Not done |
+
+Two new issues proposed to close out Phase 1 (not yet created on GitHub):
+
+---
+
+### Issue: Replace per-dataset global accessors with a single `get_app_data()`
+
+**Summary**
+`global.R` still creates one global function per dataset name via `create_data_accessors()` (e.g. `validation()`, `Regions()`, `co_clients_served()`), assigned into `.GlobalEnv`. This was the original intent of #55 ("Create a single accessor (`get_app_data()`) for loaded data" / "Remove direct reliance on global `APP_DATA`"), but that part was descoped before #55 closed. Report modules across the app call these per-name global functions directly, making the data dependency graph implicit and hard to trace, mock, or test.
+
+**Current behavior**
+`global.R` calls `create_data_accessors(APP_DATA)`, which iterates over `APP_DATA` and `assign()`s a zero-arg function per dataset name into the global environment. Report modules call these by name directly (e.g. `qpr_income()`, `Regions()`, `validation()`).
+
+**Goal**
+Introduce a single `get_app_data(name)` accessor backed by the already-centralized `APP_DATA` (from `load_app_data()` in `app_data.R`), and migrate modules to use it, eventually removing `create_data_accessors()`/the per-name globals.
+
+**Proposed approach**
+- [ ] Add `get_app_data(name)` (and/or `get_app_data()` with no args returning the full list) backed by `APP_DATA`
+- [ ] Keep `create_data_accessors()` in place initially so nothing breaks during migration
+- [ ] Migrate report modules to `get_app_data("x")` incrementally (file-by-file / PR-by-PR)
+- [ ] Once all call sites are migrated, remove `create_data_accessors()` and the per-name global functions
+- [ ] Update any docs referencing the old accessor functions
+
+**Acceptance criteria**
+- [ ] `get_app_data()` exists and is the documented way to retrieve loaded datasets
+- [ ] No remaining direct calls to the per-dataset global functions
+- [ ] Existing reports produce the same results
+- [ ] App deployment continues to work
+
+**Notes**
+Larger and more invasive than #55 since it touches call sites across most report modules — migrate incrementally rather than in one PR. Completes the part of #55's original scope that got dropped.
+
+---
+
+### Issue: Remove duplicate S3 refresh call; document the data refresh workflow
+
+**Summary**
+Two small remaining Phase 1 items that #55 didn't cover: a leftover duplicate live S3 API call, and missing documentation of how/when app data refreshes.
+
+**Current behavior**
+- [mod_sidebar.R:12](R/mod_sidebar.R#L12) calls `get_s3_refresh_date()` live, on every single page load/session, hitting AWS S3 again even though [global.R:31](R/global.R#L31) already computed `APP_META$refresh_time` once at worker startup.
+- There's no documentation describing where S3 data comes from, what triggers a refresh upstream (e.g. the HUD CSV automator mentioned in `NEWS.md`), or how a running shinyapps.io worker picks up newly refreshed data (only on its next cold start, since `load_app_data()` only runs once at process startup).
+
+**Goal**
+Remove the redundant AWS call, and write down the data refresh workflow so it's not tribal knowledge.
+
+**Proposed approach**
+- [ ] Update `mod_sidebar.R` to read `APP_META$refresh_time` instead of calling `get_s3_refresh_date()` again
+- [ ] Write a short doc (e.g. `docs/data-refresh-workflow.md`) covering: what populates the S3 buckets, how often, how `APP_META$refresh_time` is computed, and how/when a running worker picks up newly refreshed data (cold start only)
+
+**Acceptance criteria**
+- [ ] Sidebar's displayed refresh date matches `APP_META$refresh_time` with no additional S3 API call
+- [ ] Data refresh workflow doc exists and is linked from README or architecture docs
+
+**Notes**
+Both small, low-risk, and independent of the `get_app_data()` accessor work above — can ship first or in parallel.
 
 ## Branding: COHHIO colors, and why not bslib
 
