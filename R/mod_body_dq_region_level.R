@@ -52,15 +52,17 @@ mod_body_dq_region_level_server <- function(id) {
     output$summary <- DT::renderDT(server = FALSE, {
       req(region())
       
-      dq_main() |>
-        dq_filter_between(date_range = input$date_range,
-                          ProjectRegion == region()) |>
-        dq_select_cols(ProjectName) |>
-        dplyr::group_by(ProjectName, Type, Issue) |>
-        dplyr::summarise(Clients = dplyr::n()) |>
-        dplyr::select("Program Name" = ProjectName, Type, Issue, Clients) |>
-        dplyr::arrange(Type, dplyr::desc(Clients)) |>
-        datatable_default()
+      safe_render({
+        dq_main() |>
+          dq_filter_between(date_range = input$date_range,
+                            ProjectRegion == region()) |>
+          dq_select_cols(ProjectName) |>
+          dplyr::group_by(ProjectName, Type, Issue) |>
+          dplyr::summarise(Clients = dplyr::n()) |>
+          dplyr::select("Program Name" = ProjectName, Type, Issue, Clients) |>
+          dplyr::arrange(Type, dplyr::desc(Clients)) |>
+          datatable_default()
+      })
       
     })
   })

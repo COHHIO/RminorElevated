@@ -93,25 +93,29 @@ mod_body_dq_program_level_server <- function(id){
 
     dq_main_time <- eventReactive(input$date_range, {
       req(input$date_range)
-      dq_p |> 
-        dq_filter_between(date_range = input$date_range)
-        
-    }) |> 
-      debounce(1500)
+      safe_render({
+        dq_p |>
+          dq_filter_between(date_range = input$date_range)
+      })
+    }) |> debounce(1500)
+    
     dq_main_time_proj <- eventReactive(c(input$date_range, input$program), {
       req(input$program, input$date_range, dq_main_time())
-      dq_main_time() |> 
-        dq_filter_between(program = input$program)
-    }) |> 
-      debounce(1500)
+      safe_render({
+        dq_main_time() |> 
+          dq_filter_between(program = input$program)
+      })
+    }) |> debounce(1500)
+    
     co_clients <- co_clients_served()
+    
     clients <- eventReactive(input$date_range, {
       req(input$date_range)
-      co_clients |> 
-        dq_filter_between(date_range = input$date_range)
-      
-    }) |> 
-      debounce(1500)
+      safe_render({
+        co_clients |> 
+          dq_filter_between(date_range = input$date_range)
+      })
+    }) |> debounce(1500)
     
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({

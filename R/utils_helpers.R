@@ -77,5 +77,45 @@ qpr_infobox <- function(.data,
   rlang::exec(bs4Dash::bs4InfoBox, !!!.ib_opts)
 }
 
+#' @title safe_reactive_quoted
+#' @description Function to safely return reactives if it fails
+#' @export
 
+safe_reactive_quoted <- function(expr, error_message = "Something went wrong loading this report.") {
+  shiny::reactive({
+    tryCatch(
+      rlang::eval_bare(expr, env = parent.frame()),
+      error = function(e) {
+        cli::cli_alert_danger("safe_reactive caught: {e$message}")
+        shinyalert::shinyalert(title = "Error", text = error_message, type = "error")
+        NULL
+      }
+    )
+  })
+}
 
+# For reactive()/eventReactive() pipelines
+safe_reactive <- function(fn, error_message = "Something went wrong loading this report.") {
+  reactive({
+    tryCatch(
+      fn(),
+      error = function(e) {
+        cli::cli_alert_danger("safe_reactive caught: {e$message}")
+        shinyalert::shinyalert(title = "Error", text = error_message, type = "error")
+        NULL
+      }
+    )
+  })
+}
+
+# For renderUI()/renderDT() blocks
+safe_render <- function(expr, error_message = "Something went wrong loading this report.") {
+  tryCatch(
+    expr,
+    error = function(e) {
+      cli::cli_alert_danger("safe_render caught: {e$message}")
+      shinyalert::shinyalert(title = "Error", text = error_message, type = "error")
+      NULL
+    }
+  )
+}
