@@ -8,7 +8,7 @@
 | global.R S3-loading refactor | Done (#55/#59) |
 | Single `get_app_data()` accessor | Filed (#60) |
 | Duplicate S3 refresh call + refresh-workflow doc | Filed (#61) |
-| Runtime error handling | Filed (#56) |
+| Runtime error handling | Done (#56) |
 | DT server-side rendering | Filed (#57) |
 | COHHIO branding | Filed (#58) |
 
