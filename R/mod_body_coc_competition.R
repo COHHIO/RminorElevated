@@ -87,10 +87,11 @@ mod_body_coc_competition_server <- function(id){
       #   )
       # )
 
+    pe_provider <- reactive(input$pe_provider) |> debounce(1500)
     
-    pe_summary_final_filter <- eventReactive(input$pe_provider, {
+    pe_summary_final_filter <- eventReactive(pe_provider(), {
         pe_summary |>
-          dplyr::filter(AltProjectName %in% input$pe_provider)
+          dplyr::filter(AltProjectName %in% pe_provider())
     })
     
     measure_project_types <- list(
@@ -230,9 +231,9 @@ mod_body_coc_competition_server <- function(id){
     pe_exits <- pe_exits_to_ph() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
                     Destination = living_situation(Destination))
-    pe_exits_to_ph_filter <- eventReactive(input$pe_provider, {
+    pe_exits_to_ph_filter <- eventReactive(pe_provider(), {
       pe_exits |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_ExitsToPH <- DT::renderDataTable({
       pe_exits_to_ph_filter() |>
@@ -263,9 +264,9 @@ mod_body_coc_competition_server <- function(id){
     pe_return <- pe_return_to_homelessness() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
                     Destination = living_situation(Destination))
-    pe_return_to_homelessness_filter <- eventReactive(input$pe_provider, {
+    pe_return_to_homelessness_filter <- eventReactive(pe_provider(), {
       pe_return |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_ReturnToHomelessness <- DT::renderDataTable({
       pe_return_to_homelessness_filter() |>
@@ -303,9 +304,9 @@ mod_body_coc_competition_server <- function(id){
           InsuranceFromAnySource == 0 ~ "No",
           is.na(InsuranceFromAnySource) ~ "Missing"),
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
-    pe_benefits_filter <- eventReactive(input$pe_provider, {
+    pe_benefits_filter <- eventReactive(pe_provider(), {
       pe_benefits |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_BenefitsAtExit <- DT::renderDataTable({
       pe_benefits_filter() |>
@@ -340,13 +341,13 @@ mod_body_coc_competition_server <- function(id){
         LivingSituation = HMIS::living_situation(LivingSituation),
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
       )
-    pe_res_filter <- eventReactive(input$pe_provider, {
+    pe_res_filter <- eventReactive(pe_provider(), {
       pe_res |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     
     output$ui_LivingSituationAtEntry <- renderUI({
-      req(input$pe_provider)
+      req(pe_provider())
       ptc <- pe_summary_final_filter() |>
         dplyr::pull(AltProjectType) |>
         as.numeric()
@@ -391,9 +392,9 @@ mod_body_coc_competition_server <- function(id){
           IncomeFromAnySource %in% c(8, 9) ~ "Don't Know/Refused",
           IncomeFromAnySource == 99 ~ "Missing")
     )
-    pe_entries_filter <- eventReactive(input$pe_provider, {
+    pe_entries_filter <- eventReactive(pe_provider(), {
       pe_entries |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_NoIncomeAtEntry <- DT::renderDataTable({
       pe_entries_filter() |>
@@ -426,9 +427,9 @@ mod_body_coc_competition_server <- function(id){
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
       )
     
-    pe_increase_filter <- eventReactive(input$pe_provider, {
+    pe_increase_filter <- eventReactive(pe_provider(), {
       pe_increase |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_IncreaseIncome <- DT::renderDataTable({
       pe_increase_filter() |>
@@ -461,9 +462,9 @@ mod_body_coc_competition_server <- function(id){
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
       )
     
-    pe_increase_earned_filter <- eventReactive(input$pe_provider, {
+    pe_increase_earned_filter <- eventReactive(pe_provider(), {
       pe_increase_earned |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_IncreaseEarnedIncome <- DT::renderDataTable({
       pe_increase_earned_filter() |>
@@ -494,13 +495,13 @@ mod_body_coc_competition_server <- function(id){
     pe_length_of_stay <- pe_length_of_stay() |> 
       dplyr::mutate(DaysInProject = (DaysInProject / 86400))
     
-    pe_length_of_stay_filter <- eventReactive(input$pe_provider, {
+    pe_length_of_stay_filter <- eventReactive(pe_provider(), {
       pe_length_of_stay |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     
     output$ui_LengthOfStay <- renderUI({
-      req(input$pe_provider)
+      req(pe_provider())
       ptc <- pe_summary_final_filter() |>
         dplyr::pull(AltProjectType) |>
         as.numeric()
@@ -567,13 +568,13 @@ mod_body_coc_competition_server <- function(id){
       dplyr::left_join(months, by = c("MonthsHomelessPastThreeYears" = "ReferenceNo")) |>
       dplyr::mutate(MonthsHomelessPastThreeYears = Description) |>
       dplyr::select(-Description)
-    pe_homeless_history_filter <- eventReactive(input$pe_provider, {
+    pe_homeless_history_filter <- eventReactive(pe_provider(), {
       pe_homeless_history |>
-        dplyr::filter(AltProjectName == input$pe_provider) |> 
+        dplyr::filter(AltProjectName == pe_provider()) |> 
         dplyr::mutate(DaysHomelessAtEntry = DaysHomelessAtEntry / 86400)
     })
     output$ui_MedianHHI <- renderUI({
-      req(input$pe_provider)
+      req(pe_provider())
       ptc <- pe_summary_final_filter() |>
         dplyr::pull(AltProjectType) |>
         as.numeric()
@@ -615,9 +616,9 @@ mod_body_coc_competition_server <- function(id){
     # (excludes clients for whom a current episode of DV was reported or who reported as currently fleeing)
     pe_scored_at_ph <- pe_scored_at_ph_entry() |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
-    pe_scored_at_ph_filter <- eventReactive(input$pe_provider, {
+    pe_scored_at_ph_filter <- eventReactive(pe_provider(), {
       pe_scored_at_ph |>
-        dplyr::filter(AltProjectName == input$pe_provider)
+        dplyr::filter(AltProjectName == pe_provider())
     })
     output$pe_ScoredAtPHEntry <- DT::renderDataTable({
       pe_scored_at_ph_filter() |>

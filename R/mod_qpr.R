@@ -119,7 +119,7 @@ mod_qpr_server <- function(id, header, ...){
     })
     
     # Process Data
-    data_env <- safe_reactive_quoted(qpr_expr[[.id]]$expr)
+    data_env <- safe_reactive_quoted(qpr_expr[[.id]]$expr) |> debounce(1500)
     if (UU::is_legit(qpr_expr[[.id]]$infobox)) {
       if (rlang::is_list(qpr_expr[[.id]]$infobox))
         x <- qpr_expr[[.id]]$infobox
