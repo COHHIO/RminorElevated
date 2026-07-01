@@ -41,7 +41,7 @@ mod_body_program_lookup_server <- function(id){
                                                   "StartDate", "EndDate",
                                                   "LastUpdatedDate"))
     output$header <- renderUI(server_header("Agency & Program Lookup"))
-    output$detail <- DT::renderDT(server = FALSE, {
+    output$detail <- DT::renderDT(server = TRUE, {
       program_lookup() |> 
         dplyr::arrange("ProgramName") |> 
         datatable_default(escape = FALSE) |> 

@@ -135,18 +135,18 @@ mod_qpr_server <- function(id, header, ...){
     
     if (rlang::is_list(qpr_expr[[.id]]$datatable)) {
       for (i in seq_along(qpr_expr[[.id]]$datatable)) {
-        output[[paste0("dt_detail",i)]] <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable[[i]], quoted = TRUE)
+        output[[paste0("dt_detail",i)]] <- DT::renderDT(server = TRUE, qpr_expr[[.id]]$datatable[[i]], quoted = TRUE)
       }
     } else {
-      output$dt_detail1 <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$datatable, quoted = TRUE)
+      output$dt_detail1 <- DT::renderDT(server = TRUE, qpr_expr[[.id]]$datatable, quoted = TRUE)
     }
     
     if (rlang::is_list(qpr_expr[[.id]]$details)) {
       for (i in seq_along(qpr_expr[[.id]]$details)) {
-        output[[paste0("dt_measures",i)]] <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$details[[i]], quoted = TRUE)
+        output[[paste0("dt_measures",i)]] <- DT::renderDT(server = TRUE, qpr_expr[[.id]]$details[[i]], quoted = TRUE)
       }
     } else {
-      output$dt_measures1 <- DT::renderDT(server = FALSE, qpr_expr[[.id]]$details, quoted = TRUE)
+      output$dt_measures1 <- DT::renderDT(server = TRUE, qpr_expr[[.id]]$details, quoted = TRUE)
     }
       
   }
