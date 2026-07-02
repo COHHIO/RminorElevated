@@ -4,7 +4,7 @@ qpr_expr$income_growth <- list()
 # input <- list(date_range = c(lubridate::ymd("2021-07-01"), lubridate::ymd("2022-01-01")),
 #               region = "Adams - Adams County Shelter for the Homeless - AP")
 qpr_expr$income_growth$expr <- rlang::expr({
-  qpr_income() |>
+  get_app_data("qpr_income") |>
     HMIS::stayed_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ProjectName == input$region)
 })

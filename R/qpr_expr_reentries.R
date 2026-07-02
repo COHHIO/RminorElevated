@@ -1,6 +1,6 @@
 qpr_expr$reentries <- list()
 qpr_expr$reentries$expr <- rlang::expr({
-  ExitsFromHP <- qpr_reentries() |>
+  ExitsFromHP <- get_app_data("qpr_reentries") |>
     dplyr::filter(LatestPermanentProject12 >= (input$date_range[1] - lubridate::years(1)) &
                     LatestPermanentProject12 <= input$date_range[2]) |> 
     dplyr::filter(ExitingHP %in% input$region) |> 
@@ -9,7 +9,7 @@ qpr_expr$reentries$expr <- rlang::expr({
     dplyr::filter(EntryDate == min_entry_date | is.na(EntryDate)) |> 
     dplyr::ungroup() |> 
     dplyr::select(-min_entry_date)
-  Reentries <- qpr_reentries() |> 
+  Reentries <- get_app_data("qpr_reentries") |> 
     HMIS::entered_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ExitingHP %in% input$region) |> 
     dplyr::group_by(UniqueID) |> 

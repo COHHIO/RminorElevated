@@ -2,7 +2,7 @@ qpr_expr$community_need_ph <- list()
 qpr_expr$community_need_ph$expr <- rlang::expr({
   req(input$date_range, input$region)
   # used in both summary and detail, filter by inputs
-  qpr_spdats_project() |>
+  get_app_data("qpr_spdats_project") |>
     HMIS::entered_between(input$date_range[1],
                           input$date_range[2]) |>
     dplyr::filter(Region %in% input$region)

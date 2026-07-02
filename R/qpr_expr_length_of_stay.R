@@ -1,7 +1,7 @@
 qpr_expr$length_of_stay <- list()
 qpr_expr$length_of_stay$expr <- rlang::expr({
   req(input$date_range, input$region)
-  qpr_leavers() |> 
+  get_app_data("qpr_leavers") |> 
     HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(((
       !is.na(MoveInDateAdjust) & ProjectType == 13

@@ -1,10 +1,10 @@
 qpr_expr$permanent_housing <- list()
 qpr_expr$permanent_housing$expr <- rlang::expr({
   req(input$date_range, input$region)
-  # input <- list(region = sample(qpr_leavers()$ProjectName, 1),
+  # input <- list(region = sample(get_app_data("qpr_leavers")$ProjectName, 1),
   #               date_range = c(start = lubridate::floor_date(lubridate::as_date(.qbegin - lubridate::dmonths(4)), "quarter"),
   #                               end = .qbegin))
-    .by_region <- qpr_leavers() |>
+    .by_region <- get_app_data("qpr_leavers") |>
       dplyr::filter(ProjectName == input$region)
     .exited <- .by_region |> 
       HMIS::exited_between(input$date_range[1], input$date_range[2], lgl = TRUE)

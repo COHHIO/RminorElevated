@@ -1,7 +1,7 @@
 qpr_expr$noncash_benefits <- list()
 qpr_expr$noncash_benefits$expr <- rlang::expr({
   req(input$date_range, input$region)
-  qpr_benefits() |>
+  get_app_data("qpr_benefits") |>
     HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ProjectName == input$region)
 })

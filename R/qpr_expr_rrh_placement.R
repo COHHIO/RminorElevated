@@ -1,6 +1,6 @@
 qpr_expr$rrh_placement <- list()
 qpr_expr$rrh_placement$expr <- rlang::expr({
-  qpr_rrh_enterers() |>
+  get_app_data("qpr_rrh_enterers") |>
     HMIS::entered_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(!is.na(MoveInDateAdjust) & ProjectName %in% input$region) 
 })
