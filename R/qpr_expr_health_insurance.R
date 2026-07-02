@@ -1,6 +1,6 @@
 qpr_expr$health_insurance <- list()
 qpr_expr$health_insurance$expr <- rlang::expr({
-  qpr_benefits() |>
+  get_app_data("qpr_benefits") |>
     HMIS::exited_between(input$date_range[1], input$date_range[2]) |> 
     dplyr::filter(ProjectName == input$region)
   # input <- list(region = "Richland - Harmony House Homeless Services - HCRP RRH",

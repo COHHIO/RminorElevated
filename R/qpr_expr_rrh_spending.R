@@ -8,7 +8,7 @@ spending_filter <- function(x, date_range, region, ProjectType) {
   )
 }
 qpr_expr$rrh_spending$expr <- rlang::expr({
-  .data <- qpr_spending()
+  .data <- get_app_data("qpr_spending")
   list(
     rrh = spending_dt(spending_filter(.data, input$date_range, input$region, 13)),
     hp = spending_dt(spending_filter(.data, input$date_range, input$region, 12))

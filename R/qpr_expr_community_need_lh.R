@@ -2,7 +2,7 @@ qpr_expr$community_need_lh <- list()
 qpr_expr$community_need_lh$expr <- rlang::expr({
   req(input$date_range, input$region)
   # counting all households who were scored AND SERVED between the report dates
-  qpr_spdats_county() |>
+  get_app_data("qpr_spdats_county") |>
     HMIS::served_between(input$date_range[1],
                    input$date_range[2]) |>
     dplyr::filter(Region == input$region)
