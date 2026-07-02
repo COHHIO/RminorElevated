@@ -25,6 +25,7 @@ if (!exists("create_accessors_s3")) {
 
 # Get app data
 APP_DATA <- load_app_data()
+set_app_data(APP_DATA)
 
 # Get refresh timestamp
 APP_META <- list(
