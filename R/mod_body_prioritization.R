@@ -51,7 +51,7 @@ mod_body_prioritization_server <- function(id){
    date_range <- eventReactive(input$date_range, {input$date_range}) |> debounce(1500)
     
    pc <- prioritization_colors()
-   output$summary <- DT::renderDT(server = FALSE, {
+   output$summary <- DT::renderDT(server = TRUE, {
      req(region())
 
      prioritization() |>

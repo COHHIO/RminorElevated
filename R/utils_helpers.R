@@ -78,15 +78,19 @@ qpr_infobox <- function(.data,
 }
 
 #' @title safe_reactive_quoted
-#' @description Function to safely return reactives if it fails
+#' @description Function to safely evaluate a quoted reactive expression,
+#'   surfacing errors via shinyalert instead of crashing the session.
 #' @export
-
-safe_reactive_quoted <- function(expr, error_message = "Something went wrong loading this report.") {
+safe_reactive_quoted <- function(expr,
+                                 error_message = "Something went wrong loading this report.") {
+  env <- rlang::caller_env()  # capture HERE, in the function body, before reactive()
   shiny::reactive({
     tryCatch(
-      rlang::eval_bare(expr, env = parent.frame()),
+      rlang::eval_bare(expr, env = env),
       error = function(e) {
-        cli::cli_alert_danger("safe_reactive caught: {e$message}")
+        message("ERROR CLASS: ", paste(class(e), collapse = ", "))
+        if (inherits(e, "shiny.silent.error")) stop(e)
+        cli::cli_alert_danger("safe_reactive_quoted caught: {e$message}")
         shinyalert::shinyalert(title = "Error", text = error_message, type = "error")
         NULL
       }
@@ -113,6 +117,7 @@ safe_render <- function(expr, error_message = "Something went wrong loading this
   tryCatch(
     expr,
     error = function(e) {
+      if (inherits(e, "shiny.silent.error")) stop(e)
       cli::cli_alert_danger("safe_render caught: {e$message}")
       shinyalert::shinyalert(title = "Error", text = error_message, type = "error")
       NULL

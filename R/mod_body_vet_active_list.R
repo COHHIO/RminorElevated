@@ -143,7 +143,7 @@ mod_body_vet_active_list_server <- function(id) {
     val <- veteran_active_list()
     # val2 <- vets_housed()
 
-    output$detail <- DT::renderDT(server = FALSE, {
+    output$detail <- DT::renderDT(server = TRUE, {
       req(input$county, input$vet_status, input$chronic_status, county(), vet_status(), chronic_status())
       
       
@@ -201,17 +201,6 @@ mod_body_vet_active_list_server <- function(id) {
                             )
                           ))
     })
-    
-    # output$housed <- DT::renderDT(server = FALSE,
-    #   val2 |> datatable_default(escape = FALSE,
-    #                             options = list(
-    #                               initComplete = DT::JS(
-    #                                 "function(settings, json) {",
-    #                                 "$('th').css({'text-align': 'center'});",
-    #                                 "$('td').css({'text-align': 'center'});",
-    #                                 "}"
-    #                               ))
-    #                             ))
     
     output$download <- shiny::downloadHandler(
       filename = "veteran_active_list.csv",

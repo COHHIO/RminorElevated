@@ -49,7 +49,7 @@ mod_body_dq_region_level_server <- function(id) {
         as.numeric(input$region)
       }) |> shiny::debounce(1000)
     
-    output$summary <- DT::renderDT(server = FALSE, {
+    output$summary <- DT::renderDT(server = TRUE, {
       req(region())
       
       safe_render({

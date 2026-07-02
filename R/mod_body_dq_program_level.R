@@ -311,7 +311,7 @@ mod_body_dq_program_level_server <- function(id){
       }
     })
     
-    output$dq_Errors <- DT::renderDT(server = FALSE, {
+    output$dq_Errors <- DT::renderDT(server = TRUE, {
       req(dq_main_time_proj())
       
       dq_main_time_proj() |>
@@ -332,7 +332,7 @@ mod_body_dq_program_level_server <- function(id){
         datatable_default(escape = FALSE)
     })
     
-    output$dq_Warnings <- DT::renderDT(server = FALSE, {
+    output$dq_Warnings <- DT::renderDT(server = TRUE, {
       req(dq_main_time_proj())
       DQWarnings <- dq_main_time_proj() |>
         dq_filter_between(
@@ -362,7 +362,7 @@ mod_body_dq_program_level_server <- function(id){
         dplyr::distinct(Issue, ProjectID, rank, p)
     })
       
-    output$dq_summary <- DT::renderDT(server = FALSE, {
+    output$dq_summary <- DT::renderDT(server = TRUE, {
       req(input$program, issues_by_program(), dq_main_time_proj())
       
       out <- dq_main_time_proj() |>

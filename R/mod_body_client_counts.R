@@ -43,7 +43,7 @@ mod_body_client_counts_server <- function(id){
       )
     })
     
-    output$dt_output <- DT::renderDT(server = FALSE, {
+    output$dt_output <- DT::renderDT(server = TRUE, {
       
       validation()  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
@@ -97,7 +97,7 @@ mod_body_client_counts_server <- function(id){
         datatable_default(escape = FALSE)
     })
     
-    output$summary <- DT::renderDT(server = FALSE, {
+    output$summary <- DT::renderDT(server = TRUE, {
       
       hhs <- validation() |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
