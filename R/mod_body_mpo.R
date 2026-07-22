@@ -78,7 +78,7 @@ mod_body_mpo_server <- function(id){
     #### Length of Stay
     mpo_leavers <- eventReactive(input$date_range, {
       req(input$date_range)
-      qpr_leavers() |>
+      get_app_data("qpr_leavers") |>
         dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |> 
@@ -130,7 +130,7 @@ mod_body_mpo_server <- function(id){
     
     #### Health Insurance
     mpo_benefits <- eventReactive(input$date_range, {
-      qpr_benefits() |>
+      get_app_data("qpr_benefits") |>
       HMIS::exited_between(input$date_range[1], input$date_range[2])
     })
     
@@ -239,7 +239,7 @@ mod_body_mpo_server <- function(id){
     
     #### Income Growth
     mpo_income <- eventReactive(input$date_range, {
-      qpr_income() |>
+      get_app_data("qpr_income") |>
       HMIS::served_between(input$date_range[1], input$date_range[2])
     })
     
@@ -296,7 +296,7 @@ mod_body_mpo_server <- function(id){
     
     #### Rapid Placement for RRH
     mpo_rrh_enterers <- eventReactive(input$date_range, {
-      qpr_rrh_enterers() |>
+      get_app_data("qpr_rrh_enterers") |>
       HMIS::exited_between(input$date_range[1], input$date_range[2])
     })
     
@@ -346,7 +346,7 @@ mod_body_mpo_server <- function(id){
     #### Exits to Permanent Housing
     
     SuccessfullyPlaced <- eventReactive(c(input$mpo_type,input$date_range), {
-      mpo_leavers <- qpr_leavers() |>
+      mpo_leavers <- get_app_data("qpr_leavers") |>
         dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>
@@ -385,7 +385,7 @@ mod_body_mpo_server <- function(id){
     })
     
     TotalHHsSuccessfulPlacement <- eventReactive(c(input$mpo_type,input$date_range), {
-      mpo_leavers <- qpr_leavers() |>
+      mpo_leavers <- get_app_data("qpr_leavers") |>
         dplyr::filter(ProgramCoC == "OH-504") |> 
         dplyr::filter(!(ProjectName %in% c("Mahoning - Family and Community Services - Veteran's Haven - GPD - TH",
                                            "Mahoning - Alliance for Children & Families, Inc. - TANF RRH"))) |>

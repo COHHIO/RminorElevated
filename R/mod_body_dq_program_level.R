@@ -10,7 +10,7 @@
 
 mod_body_dq_program_level_ui <- function(id){
   ns <- NS(id)
-  df <- dq_providers_df()
+  df <- get_app_data("dq_providers_df")
   
   dq_choices <- setNames(df$ProjectID, df$ProjectName)
   
@@ -27,7 +27,7 @@ mod_body_dq_program_level_ui <- function(id){
       multiple = TRUE,
       width = "100%",
       selected = "none"),
-      ui_date_range(start = rm_dates()$hc$check_dq_back_to),
+      ui_date_range(start = get_app_data("rm_dates")$hc$check_dq_back_to),
       width = 12,
       headerBorder = FALSE,
       p("If you have questions please email ", strong(a(href = "mailto:hmis@cohhio.org?subject=RminorElevated DQ Question", target = "_blank", "hmis@cohhio.org")), " and please include the selected Program name.")
@@ -86,10 +86,10 @@ mod_body_dq_program_level_server <- function(id){
       dplyr::mutate(value = unlist(value))
     
     
-    eligibility_detail <- dq_eligibility_detail()
+    eligibility_detail <- get_app_data("dq_eligibility_detail")
     server_debounce(input$program, input$date_range)
     
-    dq_p <- dq_main()
+    dq_p <- get_app_data("dq_main")
 
     dq_main_time <- eventReactive(input$date_range, {
       req(input$date_range)
@@ -107,7 +107,7 @@ mod_body_dq_program_level_server <- function(id){
       })
     }) |> debounce(1500)
     
-    co_clients <- co_clients_served()
+    co_clients <- get_app_data("co_clients_served")
     
     clients <- eventReactive(input$date_range, {
       req(input$date_range)
@@ -120,7 +120,7 @@ mod_body_dq_program_level_server <- function(id){
     # TODO Should be a descriptionBox, and go in a section with others.
     output$dq_APsNoReferrals <- renderUI({
       req(input$program, program())
-      AP_no_referrals <- dq_aps_no_referrals()  |> 
+      AP_no_referrals <- get_app_data("dq_aps_no_referrals")  |> 
         dplyr::filter(ProjectID %in% program() & 
                         (Sys.Date() < OperatingEndDate | is.na(OperatingEndDate)))
       
@@ -279,7 +279,7 @@ mod_body_dq_program_level_server <- function(id){
     
     output$dq_OverlappingEEs <- renderUI({
       req(input$program, input$date_range, program(), date_range())
-      OverlappingEEs <- dq_overlaps() |>
+      OverlappingEEs <- get_app_data("dq_overlaps") |>
         dq_filter_between(ProjectID %in% program(), date_range = date_range()) |>
         dq_select_cols(
           "UniqueID",

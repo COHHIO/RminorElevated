@@ -16,14 +16,14 @@ mod_body_prioritization_ui <- function(id){
         inputId = ns("region"),
         label = "Select County/-ies",
         multiple = TRUE,
-        choices = sort(Regions()$County),
+        choices = sort(get_app_data("Regions")$County),
         options = shinyWidgets::pickerOptions(
           liveSearch = TRUE,
           liveSearchStyle = 'contains',
           actionsBox = TRUE
         )
       ),
-      ui_date_range(start = rm_dates()$calc$data_goes_back_to,
+      ui_date_range(start = get_app_data("rm_dates")$calc$data_goes_back_to,
       label = "Entry Date Range"),
       width = 12,
       headerBorder = FALSE
@@ -41,7 +41,7 @@ mod_body_prioritization_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
    output$header <- renderUI(server_header("Prioritization Report",
-                              x = shiny::h3(paste0("Updated: ", rm_dates()$meta_HUDCSV$Export_End)),
+                              x = shiny::h3(paste0("Updated: ", get_app_data("rm_dates")$meta_HUDCSV$Export_End)),
                               shiny::p("Prioritization workgroups should use this report to prioritize clients. PSH, RRH, and TH programs are required to prioritize clients with the most severe needs and the longest homeless histories. Clients enrolled in domestic violence programs do not appear in the report and must be advocated for in prioritization meetings."),
                               shiny::p("This report is intended to identify households who may be chronically homeless. It should not serve as formal documentation of chronic homeless status. Please reference ", a("HUD Definition of Chronic Homelessness", href = "https://www.hudexchange.info/homelessness-assistance/coc-esg-virtual-binders/coc-esg-homeless-eligibility/definition-of-chronic-homelessness/"), "and", a("Recordkeeping Requirements for Chronic Status", href = "https://www.hudexchange.info/homelessness-assistance/coc-esg-virtual-binders/coc-esg-homeless-eligibility/definition-of-chronic-homelessness/recordkeeping-requirements/"), "for more information."),
                               shiny::p("Answers for Approximate Date Homelessness Started and Total number of months homeless on the streets, in ES, or Safe Haven in the past three years can be nuanced. If the answers to these questions contradict one other, if they have not been filled in correctly, or if they have not been appropriately updated, they may create data quality issues. Please check the R minor elevated Data Quality Report to ensure that answers to these questions are cohesive.")))
@@ -50,11 +50,11 @@ mod_body_prioritization_server <- function(id){
    
    date_range <- eventReactive(input$date_range, {input$date_range}) |> debounce(1500)
     
-   pc <- prioritization_colors()
+   pc <- get_app_data("prioritization_colors")
    output$summary <- DT::renderDT(server = TRUE, {
      req(region())
 
-     prioritization() |>
+     get_app_data("prioritization") |>
        dplyr::filter(CountyServed %in% region() |
                 is.na(CountyServed)) |>
        dplyr::filter(EntryDate >= input$date_range[1] & EntryDate <= input$date_range[2]) |>

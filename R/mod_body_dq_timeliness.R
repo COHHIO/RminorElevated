@@ -1,5 +1,5 @@
 
-dt_time <- validation() |>
+dt_time <- get_app_data("validation") |>
   dplyr::filter(ProjectType %in% c(0, 1, 2, 3, 4, 6, 8, 9, 12, 13, 14)) |>
   dplyr::mutate(
     DateCreated = lubridate::as_date(DateCreated, tz = NULL),
@@ -43,7 +43,7 @@ mod_body_dq_timeliness_ui <- function(id){
     ui_picker_program(choices = desk_time_providers,
                       multiple = FALSE,
                       width = "100%"),
-    ui_date_range(start = rm_dates()$hc$check_dq_back_to),
+    ui_date_range(start = get_app_data("rm_dates")$hc$check_dq_back_to),
     ui_row(shiny::plotOutput(ns("detail")),
                                title = "Detail"),
     ui_row(title = "Guidance", shiny::HTML("

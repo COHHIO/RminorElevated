@@ -28,9 +28,9 @@ mod_body_dq_system_summary_server <- function(id){
     output$header <- output$header <- renderUI({
       server_header(title = "Data Quality",
                     shiny::h3("System Summary"),
-                    date_range = c(rm_dates()$hc$check_dq_back_to, Sys.Date()))
+                    date_range = c(get_app_data("rm_dates")$hc$check_dq_back_to, Sys.Date()))
     })
-    dq_aps_no_referrals <- dq_aps_no_referrals()
+    dq_aps_no_referrals <- get_app_data("dq_aps_no_referrals")
     dq_aps_referrals <- programs |> 
       {\(x) {tibble::tibble(ProjectID = x, ProjectName = names(x))}}() |> 
       dplyr::filter(stringr::str_detect(ProjectName, "^zz", negate = TRUE) & stringr::str_detect(ProjectName, "\\sAP\\s?") & !ProjectID %in% dq_aps_no_referrals$ProjectID) 
@@ -41,7 +41,7 @@ mod_body_dq_system_summary_server <- function(id){
         
         # Render multiple progress bars
         tagList({
-          x <- dq_APs()
+          x <- get_app_data("dq_APs")
           values <- as.integer(round(x$percent * 100, 0))  # Round to integers
           cat("Integer values:", values, "\n")
           cat("Sum of integers:", sum(values), "\n")

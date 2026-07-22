@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 mod_body_coc_competition_mahoning_ui <- function(id){
   ns <- NS(id)
-  pe_sum_val <- pe_summary_validation_mahoning()
+  pe_sum_val <- get_app_data("pe_summary_validation_mahoning")
   tagList(
     ui_header_row(),
     ui_picker_program(
@@ -76,7 +76,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
                                             x = shiny::h3(paste0("Reporting Period: 1/1/24 - 12/31/24")),
                                             shiny::p("For more information visit the", a("Ohio BoSCoC CoC Program website", href = "https://cohhio.org/boscoc/coc-program/"))))
     
-    pe_summary <- pe_summary_final_scoring_mahoning() |> 
+    pe_summary <- get_app_data("pe_summary_final_scoring_mahoning") |> 
       dplyr::mutate(dplyr::across(tidyselect::ends_with("Math"),
                                   function(x) gsub("/", "÷", x)))
     
@@ -196,7 +196,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Exits to Permanent Housing
     # Measure 1
-    pe_exits <- pe_exits_to_ph_mahoning() |>
+    pe_exits <- get_app_data("pe_exits_to_ph_mahoning") |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
                     Destination = living_situation(Destination))
     pe_exits_to_ph_filter <- eventReactive(pe_provider(), {
@@ -229,7 +229,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Measure 2 NEW
     # % heads of household who returned to homelessness at program exit
-    pe_return <- pe_return_to_homelessness_mahoning() |>
+    pe_return <- get_app_data("pe_return_to_homelessness_mahoning") |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
                     Destination = living_situation(Destination))
     pe_return_to_homelessness_filter <- eventReactive(pe_provider(), {
@@ -261,7 +261,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Benefits at Exit
     # Measure 3
-    pe_benefits <- pe_benefits_at_exit_mahoning() |>
+    pe_benefits <- get_app_data("pe_benefits_at_exit_mahoning") |>
       dplyr::mutate(
         BenefitsFromAnySource = dplyr::case_when(
           BenefitsFromAnySource == 1 ~ "Yes",
@@ -304,7 +304,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Meaure 6
     # % adult who entered project during the date range and came from streets/emergency shelter only
-    pe_res <- pe_res_prior_mahoning() |>
+    pe_res <- get_app_data("pe_res_prior_mahoning") |>
       dplyr::mutate(
         LivingSituation = HMIS::living_situation(LivingSituation),
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
@@ -338,7 +338,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Measure 7
     # %  adult who entered project during the date range with no income
-    pe_entries <- pe_entries_no_income_mahoning() |> 
+    pe_entries <- get_app_data("pe_entries_no_income_mahoning") |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"),
         IncomeFromAnySource = dplyr::case_when(
@@ -377,7 +377,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     # Measure 4
     # % adult participants who gained or increased their total income (from all sources) 
     # as of the end of the reporting period or at program exit
-    pe_increase <- pe_increase_income_mahoning() |> 
+    pe_increase <- get_app_data("pe_increase_income_mahoning") |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
       )
@@ -412,7 +412,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     
     # Measure 5
     # % adult participants who increased earned income at program exit.
-    pe_increase_earned <- pe_increase_earned_income_mahoning() |> 
+    pe_increase_earned <- get_app_data("pe_increase_earned_income_mahoning") |> 
       dplyr::mutate(
         MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No")
       )
@@ -478,7 +478,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
       113, "More than 12 months"
     )
     
-    pe_homeless_history <- pe_homeless_history_index_mahoning() |>
+    pe_homeless_history <- get_app_data("pe_homeless_history_index_mahoning") |>
       dplyr::left_join(times, by = c("TimesHomelessPastThreeYears" = "ReferenceNo")) |>
       dplyr::mutate(TimesHomelessPastThreeYears = Description) |>
       dplyr::select(-Description) |>
@@ -519,7 +519,7 @@ mod_body_coc_competition_mahoning_server <- function(id){
     # Measure 9
     # % heads of household who entered the project during the date range and had an assessment (VI-SPDAT or HARP) recorded in HMIS 
     # (excludes clients for whom a current episode of DV was reported or who reported as currently fleeing)
-    pe_scored_at_ph <- pe_scored_at_ph_entry_mahoning() |>
+    pe_scored_at_ph <- get_app_data("pe_scored_at_ph_entry_mahoning") |>
       dplyr::mutate(MeetsObjective = dplyr::if_else(MeetsObjective == 1, "Yes", "No"))
     pe_scored_at_ph_filter <- eventReactive(pe_provider(), {
       pe_scored_at_ph |>

@@ -10,7 +10,7 @@
 mod_data_quality_ui <- function(id){
   ns <- NS(id)
   
-  df <- dq_providers_df()
+  df <- get_app_data("dq_providers_df")
   dq_choices <- setNames(df$ProjectID, df$ProjectName)
   
   tagList(
@@ -37,8 +37,8 @@ mod_data_quality_ui <- function(id){
         inputId = ns("dq_startdate"),
         label = "Report Start Date",
         format = "mm/dd/yyyy",
-        value = rm_dates()$hc$check_dq_back_to,
-        min = rm_dates()$meta_HUDCSV$Export_Start,
+        value = get_app_data("rm_dates")$hc$check_dq_back_to,
+        min = get_app_data("rm_dates")$meta_HUDCSV$Export_Start,
         width = "25%"
       ),
       width = 12
@@ -116,7 +116,7 @@ mod_data_quality_ui <- function(id){
           fluidRow(box(
             pickerInput(
               inputId = ns("regionList3"),
-              choices = c(unique(Regions()$RegionName)),
+              choices = c(unique(get_app_data("Regions")$RegionName)),
               options = pickerOptions(liveSearch = TRUE,
                                       liveSearchStyle = 'contains'),
               width = "70%"
@@ -125,7 +125,7 @@ mod_data_quality_ui <- function(id){
               inputId = ns("dq_region_startdate"),
               label = "Report Start Date",
               format = "mm/dd/yyyy",
-              value = ymd(rm_dates()$hc$check_dq_back_to),
+              value = ymd(get_app_data("rm_dates")$hc$check_dq_back_to),
               width = "25%"
             ),
             width = 12
@@ -149,7 +149,7 @@ mod_data_quality_ui <- function(id){
       pickerInput(
         inputId = ns("unshDefaultProvidersList"),
         label = "Select your DEFAULT Provider",
-        choices = sort(dq_unsheltered()$DefaultProvider) %>%
+        choices = sort(get_app_data("dq_unsheltered")$DefaultProvider) %>%
           unique(),
         options = pickerOptions(liveSearch = TRUE,
                                 liveSearchStyle = 'contains'),
@@ -159,7 +159,7 @@ mod_data_quality_ui <- function(id){
         inputId = ns("unsh_dq_startdate"),
         label = "Report Start Date",
         format = "mm/dd/yyyy",
-        value = ymd(rm_dates()$hc$check_dq_back_to),
+        value = ymd(get_app_data("rm_dates")$hc$check_dq_back_to),
         width = "25%"
       ),
       width = 12
@@ -352,7 +352,7 @@ mod_data_quality_ui <- function(id){
         pickerInput(
           inputId = ns("unshEntriesByMonth_County"),
           label = "Select County/-ies",
-          choices = sort(unsheltered_by_month()$County) %>%
+          choices = sort(get_app_data("unsheltered_by_month")$County) %>%
             unique(),
           selected = c("Lake",
                        "Ashtabula",
@@ -372,13 +372,13 @@ mod_data_quality_ui <- function(id){
           label = "Report Start Month",
           dateFormat = "MM yyyy",
           max =
-            ymd(floor_date(rm_dates()$meta_HUDCSV$Export_Date, unit = "month") - days(1)),
+            ymd(floor_date(get_app_data("rm_dates")$meta_HUDCSV$Export_Date, unit = "month") - days(1)),
           min =
-            ymd(floor_date(rm_dates()$meta_HUDCSV$Export_Start, unit = "month")),
+            ymd(floor_date(get_app_data("rm_dates")$meta_HUDCSV$Export_Start, unit = "month")),
           view = "month",
           value =
             ymd(floor_date(
-              rm_dates()$meta_HUDCSV$Export_Date - days(182), unit = "month"
+              get_app_data("rm_dates")$meta_HUDCSV$Export_Date - days(182), unit = "month"
             )),
           minView = "months",
           addon = "none",
