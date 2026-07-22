@@ -33,40 +33,22 @@ APP_META <- list(
   loaded_at = Sys.time()
 )
 
-# Create simple accessor functions that just return the pre-loaded data
-create_data_accessors <- function(data_list) {
-  accessor_functions <- purrr::map(data_list, function(dataset) {
-    function() dataset  # Return the already-loaded dataset
-  })
-  
-  # Assign to global environment so they're available throughout the app
-  purrr::iwalk(accessor_functions, function(func, name) {
-    assign(name, func, envir = .GlobalEnv)
-  })
-  
-  cli::cli_alert_success("Created {length(accessor_functions)} data accessor functions")
-  invisible(accessor_functions)
-}
+app_data_names <- names(get_app_data())
 
-# Create the accessor functions
-if (length(APP_DATA) > 0) {
-  create_data_accessors(APP_DATA)
-}
-
-
-if (exists("validation")) {
-  programs <- validation() |>
+if ("validation" %in% app_data_names) {
+  programs <- get_app_data("validation") |>
     dplyr::distinct(ProjectID, ProjectName) |>
     dplyr::arrange(ProjectName) |> 
       {\(x) {rlang::set_names(x$ProjectID, x$ProjectName)}}()
   
 }
   
-if (exists("Regions")) {
-  regions <- Regions() |> 
+if ("Regions" %in% app_data_names) {
+  regions <- get_app_data("Regions") |> 
     dplyr::distinct(Region, RegionName) |> 
     {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
-  counties <- sort(Regions()$County)
+  counties <- sort(get_app_data("Regions")$County)
+  .qpr_leavers <- get_app_data("qpr_leavers")
   qpr_tab_choices <- regions |>
     {\(x) {list(
       community_need_ph = list(
@@ -76,36 +58,36 @@ if (exists("Regions")) {
         choices = x
       ),
       length_of_stay = list(
-        choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(0, 1, 2, 8, 13)])
+        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0, 1, 2, 8, 13)])
       ),
       permanent_housing = list(
-        choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(0:4, 8:9, 12:13)])
+        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0:4, 8:9, 12:13)])
       ),
       temp_permanent_housing = list(
-        choices = unique(qpr_leavers()$ProjectName[qpr_leavers()$ProjectType %in% c(4)])
+        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(4)])
       ),
       noncash_benefits = list(
-        choices = unique(qpr_benefits()$ProjectName)
+        choices = unique(get_app_data("qpr_benefits")$ProjectName)
       ),
       health_insurance = list(
-        choices = unique(qpr_benefits()$ProjectName)
+        choices = unique(get_app_data("qpr_benefits")$ProjectName)
       ),
       income_growth = list(
-        choices = unique(qpr_income()$ProjectName)
+        choices = unique(get_app_data("qpr_income")$ProjectName)
       ),
       rrh_placement = list(
         choices = unique(sort(
-          qpr_rrh_enterers()$ProjectName
+          get_app_data("qpr_rrh_enterers")$ProjectName
         ))
       ),
       reentries = list(
         choices = unique(sort(
-          qpr_reentries()$ExitingHP
+          get_app_data("qpr_reentries")$ExitingHP
         ))
       ),
       rrh_spending = list(
         choices = unique(sort(
-          qpr_spending()$OrganizationName
+          get_app_data("qpr_spending")$OrganizationName
         ))
       )
     )}}()
