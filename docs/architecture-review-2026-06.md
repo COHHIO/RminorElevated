@@ -6,7 +6,7 @@
 |----------|----------|
 | Cross-session active bug | Done (#52/#53) |
 | global.R S3-loading refactor | Done (#55/#59) |
-| Single `get_app_data()` accessor | Filed (#60) |
+| Single `get_app_data()` accessor | Done (#60) |
 | Duplicate S3 refresh call + refresh-workflow doc | Filed (#61) |
 | Runtime error handling | Done (#56) |
 | DT server-side rendering | Done (#57) |
