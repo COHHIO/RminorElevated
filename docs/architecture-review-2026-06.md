@@ -97,7 +97,7 @@ This is a small, surgical, low-risk change confined to 2-3 files. It should be d
 |---|---|
 | Move S3 loading logic out of `global.R` | ✅ Done |
 | Replace eager startup loading with cached/lazy loading where appropriate | ❌ Not done — substantively duplicates Phase 2 ("Add local S3 download cache," "Lazy load infrequently used reports," "Move expensive derived calculations out of app startup," which covers the `qpr_tab_choices`/`programs`/`regions` block still sitting in `global.R`). Recommend dropping this checkbox from Phase 1 and letting Phase 2 own it, rather than filing a third overlapping issue. |
-| Create single app data accessor (`get_app_data()`) | ❌ Not done — `global.R` still calls `create_data_accessors()`, assigning one global function per dataset name (`validation()`, `Regions()`, etc.) into `.GlobalEnv`. Report modules call these by name directly throughout the app. |
+| Create single app data accessor (get_app_data())	✅ Done — closed via #60. get_app_data(name) added in app_data.R; all report modules and global.R's load-time lookups migrated off the per-name globals; create_data_accessors() removed. |
 | Remove duplicate S3 refresh calls | ❌ Not done — [mod_sidebar.R:12](R/mod_sidebar.R#L12) still calls `get_s3_refresh_date()` live on every page load, duplicating `APP_META$refresh_time` computed once in [global.R:31](R/global.R#L31). |
 | Document data refresh workflow | ❌ Not done |
 
@@ -117,20 +117,28 @@ Two new issues proposed to close out Phase 1 (not yet created on GitHub):
 Introduce a single `get_app_data(name)` accessor backed by the already-centralized `APP_DATA` (from `load_app_data()` in `app_data.R`), and migrate modules to use it, eventually removing `create_data_accessors()`/the per-name globals.
 
 **Proposed approach**
-- [ ] Add `get_app_data(name)` (and/or `get_app_data()` with no args returning the full list) backed by `APP_DATA`
-- [ ] Keep `create_data_accessors()` in place initially so nothing breaks during migration
-- [ ] Migrate report modules to `get_app_data("x")` incrementally (file-by-file / PR-by-PR)
-- [ ] Once all call sites are migrated, remove `create_data_accessors()` and the per-name global functions
-- [ ] Update any docs referencing the old accessor functions
+- [x] Add `get_app_data(name)` (and/or `get_app_data()` with no args returning the full list) backed by `APP_DATA`
+- [x] Keep `create_data_accessors()` in place initially so nothing breaks during migration
+- [x] Migrate report modules to `get_app_data("x")` incrementally (file-by-file / PR-by-PR)
+- [x] Once all call sites are migrated, remove `create_data_accessors()` and the per-name global functions
+- [x] Update any docs referencing the old accessor functions
 
 **Acceptance criteria**
-- [ ] `get_app_data()` exists and is the documented way to retrieve loaded datasets
-- [ ] No remaining direct calls to the per-dataset global functions
-- [ ] Existing reports produce the same results
-- [ ] App deployment continues to work
+- [x] `get_app_data()` exists and is the documented way to retrieve loaded datasets
+- [x] No remaining direct calls to the per-dataset global functions
+- [x] Existing reports produce the same results
+- [x] App deployment continues to work
 
 **Notes**
 Larger and more invasive than #55 since it touches call sites across most report modules — migrate incrementally rather than in one PR. Completes the part of #55's original scope that got dropped.
+
+**Resolved (2026-07-22) — see #60**
+Landed in four incremental PRs, in the order proposed above:
+1. Added `get_app_data(name)` / `set_app_data()` backed by an internal environment (`.app_data_env`) in `app_data.R`, alongside the existing `create_data_accessors()`.
+2. Migrated the quoted `qpr_expr_*.R` data pulls.
+3. Migrated all report modules and `utils_ui.R` (78 call sites across 16 files).
+4. Migrated `global.R`'s remaining load-time lookups (`programs`, `regions`, `counties`, `qpr_tab_choices`), replaced the `exists("validation")`/`exists("Regions")` guards with a check against `names(get_app_data())`, and removed `create_data_accessors()` entirely.
+
 
 ---
 
