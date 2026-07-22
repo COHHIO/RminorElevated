@@ -26,7 +26,7 @@ mod_DQunshIncorrectEEType_server <- function(id){
     output$unshIncorrectEETypeTable <- renderTable({
       ReportStart <- format.Date(input$unsh_dq_startdate, "%m-%d-%Y")
       ReportEnd <- format.Date(ymd(rm_dates$meta_HUDCSV$Export_End), "%m-%d-%Y")
-      EEType <- dq_unsheltered() %>%
+      EEType <- get_app_data("dq_unsheltered") %>%
         filter(
           Issue == "Incorrect Entry Exit Type" &
             DefaultProvider == input$unshDefaultProvidersList &
@@ -46,7 +46,7 @@ mod_DQunshIncorrectEEType_server <- function(id){
     output$unshIncorrectEEType <- renderUI({
       ReportStart <- format.Date(input$unsh_dq_startdate, "%m-%d-%Y")
       ReportEnd <- format.Date(ymd(rm_dates$meta_HUDCSV$Export_End), "%m-%d-%Y")
-      EEType <- dq_unsheltered() %>%
+      EEType <- get_app_data("dq_unsheltered") %>%
         filter(
           Issue == "Incorrect Entry Exit Type" &
             DefaultProvider == input$unshDefaultProvidersList &

@@ -12,7 +12,7 @@ mod_body_client_counts_ui <- function(id){
   shiny::tagList(
     ui_header_row(),
     ui_row(
-      tags$p(tags$em("Note:"), " if a program is absent from this list, it did not serve any clients since ", rm_dates()$calc$data_goes_back_to),
+      tags$p(tags$em("Note:"), " if a program is absent from this list, it did not serve any clients since ", get_app_data("rm_dates")$calc$data_goes_back_to),
       ui_picker_program(),
       ui_date_range(start = Sys.Date() - lubridate::days(90)),
       headerBorder = FALSE
@@ -45,7 +45,7 @@ mod_body_client_counts_server <- function(id){
     
     output$dt_output <- DT::renderDT(server = TRUE, {
       
-      validation()  |> 
+      get_app_data("validation")  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
         dplyr::mutate(
@@ -99,7 +99,7 @@ mod_body_client_counts_server <- function(id){
     
     output$summary <- DT::renderDT(server = TRUE, {
       
-      hhs <- validation() |> 
+      hhs <- get_app_data("validation") |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
         dplyr::select(HouseholdID,
@@ -134,7 +134,7 @@ mod_body_client_counts_server <- function(id){
         dplyr::group_by(Status) |>
         dplyr::summarise(Households = dplyr::n())
       
-      clients <- validation()  |> 
+      clients <- get_app_data("validation")  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
         dplyr::select(UniqueID,

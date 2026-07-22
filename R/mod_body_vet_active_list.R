@@ -8,7 +8,7 @@
 #' @importFrom shiny NS tagList
 mod_body_vet_active_list_ui <- function(id) {
   ns <- NS(id)
-  val <- veteran_active_list()
+  val <- get_app_data("veteran_active_list")
   # val2 <- vets_housed()
   chronic_status <- as.character(sort(unique(val$ChronicStatus)))
   tagList(
@@ -135,12 +135,12 @@ mod_body_vet_active_list_server <- function(id) {
         "Veteran Active List",
         paste(
           "Homeless Veterans as of",
-          rm_dates()$meta_HUDCSV$Export_End
+          get_app_data("rm_dates")$meta_HUDCSV$Export_End
         )
       )
     })
     
-    val <- veteran_active_list()
+    val <- get_app_data("veteran_active_list")
     # val2 <- vets_housed()
 
     output$detail <- DT::renderDT(server = TRUE, {

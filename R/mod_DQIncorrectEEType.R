@@ -25,8 +25,8 @@ mod_DQIncorrectEEType_server <- function(id){
     ns <- session$ns
     output$DQIncorrectEETypeTable <- renderTable({
       ReportStart <- format.Date(input$dq_startdate, "%m-%d-%Y")
-      ReportEnd <- format.Date(ymd(rm_dates()$meta_HUDCSV$Export_End), "%m-%d-%Y")
-      EEType <- dq_main() %>%
+      ReportEnd <- format.Date(ymd(get_app_data("rm_dates")$meta_HUDCSV$Export_End), "%m-%d-%Y")
+      EEType <- get_app_data("dq_main") %>%
         filter(
           Issue == "Incorrect Entry Exit Type" &
             ProjectName %in% c(input$providerListDQ) &
@@ -45,9 +45,9 @@ mod_DQIncorrectEEType_server <- function(id){
     
     output$DQIncorrectEEType <- renderUI({
       ReportStart <- format.Date(input$dq_startdate, "%m-%d-%Y")
-      ReportEnd <- format.Date(ymd(rm_dates()$meta_HUDCSV$Export_End), "%m-%d-%Y")
+      ReportEnd <- format.Date(ymd(get_app_data("rm_dates")$meta_HUDCSV$Export_End), "%m-%d-%Y")
       
-      EEType <- dq_main() %>%
+      EEType <- get_app_data("dq_main") %>%
         filter(
           Issue == "Incorrect Entry Exit Type" &
             ProjectName %in% c(input$providerListDQ) &

@@ -13,8 +13,8 @@
 mod_body_utilization_ui <- function(id) {
   ns <- shiny::NS(id)
   date_range <-
-    names(utilization_clients()) |> stringr::str_subset("[a-zA-Z]{3}\\d{4}") |> lubridate::parse_date_time(orders = "bY") |> sort()
-  choices <- utilization_clients() |> 
+    names(get_app_data("utilization_clients")) |> stringr::str_subset("[a-zA-Z]{3}\\d{4}") |> lubridate::parse_date_time(orders = "bY") |> sort()
+  choices <- get_app_data("utilization_clients") |> 
     dplyr::distinct(ProjectName, ProjectID) |> 
     dplyr::arrange(ProjectName) |> 
     {\(x) {rlang::set_names(dplyr::pull(x, ProjectID), dplyr::pull(x, ProjectName))}}()
@@ -32,7 +32,7 @@ mod_body_utilization_ui <- function(id) {
         dateFormat = "MM yyyy",
         view = "month",
         value =
-          lubridate::floor_date(rm_dates()$meta_HUDCSV$Export_Date, unit = "month") - lubridate::days(1),
+          lubridate::floor_date(get_app_data("rm_dates")$meta_HUDCSV$Export_Date, unit = "month") - lubridate::days(1),
         minView = "months",
         addon = "none",
         autoClose = TRUE,
@@ -85,7 +85,7 @@ mod_body_utilization_server <- function(id){
     server_debounce(input$program)
     uc_selected <- reactive({
       req(program(), ReportStart(), ReportEnd(), input$program)
-      utilization_clients() |>
+      get_app_data("utilization_clients") |>
         HMIS::served_between(ReportStart(), ReportEnd()) |> 
         dplyr::filter(ProjectID %in% program()) |>
         dplyr::mutate(BedStart = dplyr::if_else(ProjectType %in% c(3, 9, 13),
@@ -94,7 +94,7 @@ mod_body_utilization_server <- function(id){
     })
     bed_count <- reactive({
       req(program(), ReportStart(), ReportEnd())
-       utilization_beds() |> 
+       get_app_data("utilization_beds") |> 
         HMIS::beds_available_between(ReportStart(), ReportEnd()) |> 
         dplyr::filter(ProjectID %in% program()) |>
         dplyr::group_by(ProjectID) |>

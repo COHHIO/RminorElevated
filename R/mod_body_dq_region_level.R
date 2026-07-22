@@ -18,7 +18,7 @@ mod_body_dq_region_level_ui <- function(id) {
         width = "70%"
       ),
       ui_date_range(
-        start = rm_dates()$hc$check_dq_back_to,
+        start = get_app_data("rm_dates")$hc$check_dq_back_to,
         width = "25%"
       )
     ),
@@ -53,7 +53,7 @@ mod_body_dq_region_level_server <- function(id) {
       req(region())
       
       safe_render({
-        dq_main() |>
+        get_app_data("dq_main") |>
           dq_filter_between(date_range = input$date_range,
                             ProjectRegion == region()) |>
           dq_select_cols(ProjectName) |>

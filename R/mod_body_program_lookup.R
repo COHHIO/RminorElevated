@@ -27,7 +27,7 @@ mod_body_program_lookup_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
   
-  df <- program_lookup() |>
+  df <- get_app_data("program_lookup") |>
     dplyr::arrange("ProgramName") |> 
     datatable_default(escape = FALSE) |> 
     DT::formatStyle(
@@ -42,7 +42,7 @@ mod_body_program_lookup_server <- function(id){
                                                   "LastUpdatedDate"))
     output$header <- renderUI(server_header("Agency & Program Lookup"))
     output$detail <- DT::renderDT(server = TRUE, {
-      program_lookup() |> 
+      get_app_data("program_lookup") |> 
         dplyr::arrange("ProgramName") |> 
         datatable_default(escape = FALSE) |> 
         DT::formatStyle(
