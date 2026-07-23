@@ -74,12 +74,9 @@ load_app_data <- function() {
   s3_data <- list()
   
   tryCatch({
-    
-    s3_folder <- get_golem_config("data_env")
-    
     s3_objects <- aws.s3::get_bucket(
       bucket = "shiny-data-cohhio",
-      prefix = s3_folder,
+      prefix = paste0(get_golem_config("data_env"), "/"),
       region = "us-east-2"
     )
     
