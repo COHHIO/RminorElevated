@@ -1,5 +1,7 @@
 # Outline: Speed, Stability, and Navigation Fixes for RminorElevated
 
+## Snapshot from 2026-06, superseded by #54 for live status
+
 ## Status
 
 | Finding | Status |
@@ -7,7 +9,7 @@
 | Cross-session active bug | Done (#52/#53) |
 | global.R S3-loading refactor | Done (#55/#59) |
 | Single `get_app_data()` accessor | Done (#60) |
-| Duplicate S3 refresh call + refresh-workflow doc | Filed (#61) |
+| Duplicate S3 refresh call + refresh-workflow doc | Done (#61) |
 | Runtime error handling | Done (#56) |
 | DT server-side rendering | Done (#57) |
 | COHHIO branding | Filed (#58) |
@@ -172,10 +174,6 @@ Separately from the perf/stability work, there's a want to apply COHHIO's brand 
 - Confirmed via bslib's own docs and the bs4Dash maintainer's comments on [RinteRface/bs4Dash#362](https://github.com/RinteRface/bs4Dash/issues/362): **bslib's `brand.yml` auto-theming only applies to bslib-native page functions** (`page_sidebar()`, `page_navbar()`) on Bootstrap 5. It does **not** theme bs4Dash. bs4Dash is built on Bootstrap 4 + AdminLTE3, and AdminLTE still has no stable Bootstrap 5 release — the bs4Dash maintainer's own answer to "will you support bslib/BS5" is "build with `{bslib}` from scratch instead," not "retrofit bs4Dash."
 - So "switch to bslib" would mean replacing the dashboard framework, not just adding a theme. Checked the blast radius in this repo: `bs4Dash::` is called directly in 13 files ([mod_sidebar.R](R/mod_sidebar.R), [mod_navbar.R](R/mod_navbar.R), [mod_body.R](R/mod_body.R), [app_ui.R](R/app_ui.R), [mod_qpr.R](R/mod_qpr.R), [mod_welcome.R](R/mod_welcome.R), [mod_body_news.R](R/mod_body_news.R), [mod_body_utilization.R](R/mod_body_utilization.R), [mod_body_vet_active_list.R](R/mod_body_vet_active_list.R), two DQ modules, [utils_helpers.R](R/utils_helpers.R), [utils_ui.R](R/utils_ui.R)), with ~27 sidebar-menu-item calls, 10 `box()` calls, and a dozen-plus infoBox/Accordion/Alert calls. Some of this is centralized behind `ui_row()`/`ui_header_row()`/`ui_solid_box()` in `utils_ui.R` (those wrap `bs4Dash::box`, so updating a few functions there covers part of it), but the dashboard shell and several report modules call bs4Dash directly and would need hand rewriting to bslib's `sidebar()`/`card()`/`value_box()`/nav idioms. Meaningful regression risk for a production app, for what is fundamentally a colors request. (bslib itself is mature and actively maintained as of 2026 — this isn't a maturity concern, it's a "different framework" concern.)
 - **Decision: ship COHHIO colors now via the existing SCSS variable mechanism** (`_bootstrap-variables.scss`/`_colors.scss`, compiled by `do_sass()` in `mod_theme.R`) — no framework change, low risk. A possible future bs4Dash → bslib migration is a separate, much larger initiative to consider on its own merits later, independent of branding and not part of the 1.0 milestone. Drafted as its own issue below, not assigned to the 1.0 milestone.
-
-## Drafted issues (pending approval — none created on GitHub yet)
-
-Three new issues, written in the same style as #55. Two fill gaps in the #54/#55 roadmap; one covers the branding work above (the original third gap — the `active <<-` bug — turned out to already be fixed via #52/#53, see above, so it's dropped from this list). On approval, create the first two with `gh issue create --repo COHHIO/RminorElevated --milestone "1.0.0 Production architecture cleanup"`, and the branding one with no milestone, using the bodies below.
 
 ---
 
