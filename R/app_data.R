@@ -69,17 +69,23 @@ load_local_data <- function () {
 
 load_app_data <- function() {
   
+tictoc::tic()
+  
   cli::cli_alert_info("Initializing app data...")
   
   s3_data <- list()
   
   tryCatch({
+    
+    s3_folder <- get_golem_config("data_env")
+
     s3_objects <- aws.s3::get_bucket(
       bucket = "shiny-data-cohhio",
       prefix = paste0(get_golem_config("data_env"), "/"),
       region = "us-east-2"
     )
-    
+
+
     s3_files <- purrr::map_chr(s3_objects, ~.x$Key) |>
       basename()
     
@@ -97,6 +103,7 @@ load_app_data <- function() {
     ) |>
       purrr::compact()
     
+    
   }, error = function(e) {
     
     cli::cli_alert_danger(
@@ -111,5 +118,16 @@ load_app_data <- function() {
     c(s3_data, local_data)
   )
   
+  cli::cli_alert_info("Total download time...")
+  tictoc::toc()
+
+  sizes <- purrr::map(APP_DATA, lobstr::obj_size)
+  tibble::tibble(
+    dataset = names(APP_DATA),
+    size = purrr::map_dbl(APP_DATA, ~as.numeric(lobstr::obj_size(.x)))
+  ) |>
+    dplyr::arrange(dplyr::desc(size)) |>
+    dplyr::mutate(size = scales::comma(size, suffix = " bytes")) |> View()
+
   APP_DATA
 }
