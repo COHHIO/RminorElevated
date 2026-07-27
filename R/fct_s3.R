@@ -96,7 +96,7 @@ load_s3_file <- function(
 #' @return \code{(POSIXct)} Vector of last modified dates
 #' @noRd
 get_s3_refresh_date <- function(bucket = "hud.csv-daily", 
-                                folder = "HMIS", 
+                                folder = "HMIS/", # add / defensively
                                 region = "us-east-2") {
   tryCatch({
     # Get all objects in the S3 bucket/folder
