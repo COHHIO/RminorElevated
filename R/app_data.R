@@ -1,3 +1,30 @@
+DEFERRED_S3_DATASETS <- c(
+  "enrollment_small"
+)
+
+# Deferred datasets that come from somewhere other than the app's S3 folder.
+# Each entry is a zero-arg function returning the dataset. co_clients_served
+# is not in the app's S3 folder — it's fetched through HMISdata, which is why
+# it needs an explicit loader rather than a name in DEFERRED_S3_DATASETS.
+DEFERRED_LOADERS <- list(
+  co_clients_served = function() {
+    HMISdata::load_hmis_parquet("co_clients_served.parquet")
+  }
+)
+
+set_deferred_loaders <- function(loaders) {
+  assign("DEFERRED_LOADERS", loaders, envir = .app_data_env)
+  invisible(loaders)
+}
+
+get_deferred_loaders <- function() {
+  get0(
+    "DEFERRED_LOADERS",
+    envir = .app_data_env,
+    ifnotfound = rlang::set_names(character())
+  )
+}
+
 # ---- App data accessor ------------------------------------------------------
 # Single seam for retrieving loaded datasets. Backed by an internal environment
 # so it can be populated at boot (global.R) and mocked in tests without touching
@@ -39,10 +66,30 @@ get_app_data <- function(name = NULL) {
   if (is.null(name)) {
     return(data)
   }
+
   if (!is.character(name) || length(name) != 1L) {
     rlang::abort("`name` must be a single string or NULL.")
   }
   if (!name %in% names(data)) {
+    loaders <- get_deferred_loaders()
+
+    if (name %in% names(loaders)) {
+      cli::cli_alert_info("Lazy-loading '{name}' on first access...")
+
+      value <- loaders[[name]]()
+
+      if (is.null(value)) {
+        rlang::abort(
+          sprintf("Failed to lazy-load dataset '%s'.", name)
+        )
+      }
+
+      data[[name]] <- value
+      set_app_data(data)
+
+      return(value)
+    }
+    
     rlang::abort(
       sprintf(
         "Dataset '%s' not found. Available: %s",
@@ -58,8 +105,6 @@ load_local_data <- function () {
   
   local_data$Regions <- HMISdata::Regions
   local_data$rm_dates <- HMISprep::load_dates()
-  local_data$co_clients_served <-
-    HMISdata::load_hmis_parquet("co_clients_served.parquet")
   
   local_data$program_lookup <-
     HMISdata::load_hmis_parquet("program_lookup.parquet")
@@ -74,6 +119,7 @@ tictoc::tic()
   cli::cli_alert_info("Initializing app data...")
   
   s3_data <- list()
+  s3_loaders <- list()
   
   tryCatch({
     
@@ -94,10 +140,29 @@ tictoc::tic()
         tools::file_ext(s3_files) %in% c("rds", "parquet")
     ]
     
+    deferred_names <- c(DEFERRED_S3_DATASETS, names(DEFERRED_LOADERS))
+    is_deferred <- tools::file_path_sans_ext(s3_files) %in% deferred_names
+
+    eager_files <- s3_files[!is_deferred]
+    deferred_files <- s3_files[is_deferred]
+
+    # Deferred files aren't downloaded here; build a loader closure per file
+    # instead, so get_app_data() can fetch it on first access (see #73).
+    s3_loaders <- purrr::map(
+      rlang::set_names(
+        deferred_files,
+        tools::file_path_sans_ext(deferred_files)
+      ),
+      function(file_name) {
+        force(file_name)
+        function() load_s3_file(file_name)
+      }
+    )
+
     s3_data <- purrr::map(
       rlang::set_names(
-        s3_files,
-        tools::file_path_sans_ext(s3_files)
+        eager_files,
+        tools::file_path_sans_ext(eager_files)
       ),
       load_s3_file
     ) |>
@@ -112,6 +177,10 @@ tictoc::tic()
     
   })
   
+  # Registered outside the tryCatch so the non-S3 loaders are still available
+  # even if the bucket listing above failed.
+  set_deferred_loaders(c(s3_loaders, DEFERRED_LOADERS))
+
   local_data <- load_local_data()
   
   APP_DATA <- add_clarity_links(

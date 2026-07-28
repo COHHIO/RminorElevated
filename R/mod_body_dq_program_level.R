@@ -107,12 +107,10 @@ mod_body_dq_program_level_server <- function(id){
       })
     }) |> debounce(1500)
     
-    co_clients <- get_app_data("co_clients_served")
-    
     clients <- eventReactive(input$date_range, {
       req(input$date_range)
       safe_render({
-        co_clients |> 
+        get_app_data("co_clients_served") |> 
           dq_filter_between(date_range = input$date_range)
       })
     }) |> debounce(1500)
