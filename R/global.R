@@ -33,6 +33,7 @@ APP_META <- list(
   loaded_at = Sys.time()
 )
 
+# names() only — see get_app_data() docs on the raw/undecorated NULL form
 app_data_names <- names(get_app_data())
 
 if ("validation" %in% app_data_names) {
