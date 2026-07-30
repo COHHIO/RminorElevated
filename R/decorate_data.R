@@ -1,12 +1,3 @@
-# Function to apply data linking (extracted from deps_to_destination logic)
-add_clarity_links <- function(data_list) {
-  cli::cli_alert_info("Applying data linking to datasets...")
-
-  linked_data <- purrr::map(data_list, add_clarity_links_df)
-
-  return(linked_data)
-}
-
 #' Apply clarity-link decoration to a single dataset
 #'
 #' Adds linked-ID columns via [clarity.looker::make_linked_df()] when the

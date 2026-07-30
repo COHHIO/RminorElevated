@@ -210,6 +210,8 @@ tictoc::tic()
 
   local_data <- load_local_data()
   
+  # Stored raw — clarity-link decoration happens per-dataset on first access
+  # in get_app_data(). See #77
   APP_DATA <- c(s3_data, local_data)
   
   cli::cli_alert_info("Total download time...")
