@@ -5,7 +5,6 @@ goals <-  HMISdata::load_hmis_csv("mahoning_goals.csv", bucket = "shiny-data-coh
                       values_to = "Goal") |>
   dplyr::mutate(ProjectType = as.numeric(ProjectType)) |>
   dplyr::filter(!is.na(Goal))
-cli::cli_alert_info("goals size: {lobstr::obj_size(goals)}")
 cli::cli_alert_info("Total download time for Mahoning goals...")
 tictoc::toc()
 

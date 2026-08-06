@@ -190,13 +190,5 @@ tictoc::tic()
   cli::cli_alert_info("Total download time...")
   tictoc::toc()
 
-  tibble::tibble(
-    dataset = names(APP_DATA),
-    size = purrr::map_dbl(APP_DATA, ~as.numeric(lobstr::obj_size(.x)))
-  ) |>
-    dplyr::arrange(dplyr::desc(size)) |>
-    dplyr::mutate(size = scales::comma(size, suffix = " bytes")) |>
-    print(n = Inf)
-
   APP_DATA
 }
