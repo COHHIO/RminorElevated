@@ -53,7 +53,10 @@ set_app_data <- function(data) {
 #' `create_data_accessors()`.
 #'
 #' @param name Optional. The name of a single dataset to return. If `NULL`
-#'   (the default), the full named list of datasets is returned.
+#'   (the default), the full named list is returned **raw** — undecorated, and
+#'   without triggering any deferred loaders. Use `get_app_data("<name>")` to
+#'   get a decorated dataset; the `NULL` form is for metadata such as
+#'   `names(get_app_data())`, not for pulling datasets out with `[[`.
 #' @return The requested dataset, or the full named list when `name` is `NULL`.
 #' @export
 get_app_data <- function(name = NULL) {
@@ -84,10 +87,7 @@ get_app_data <- function(name = NULL) {
         )
       }
 
-      data[[name]] <- value
-      set_app_data(data)
-
-      return(value)
+      return(decorate_and_store(name, value, data))
     }
     
     rlang::abort(
@@ -97,7 +97,37 @@ get_app_data <- function(name = NULL) {
       )
     )
   }
-  data[[name]]
+  
+  decorate_and_store(name, data[[name]], data)
+
+}
+
+#' Decorate a dataset on first access and memoize the result
+#'
+#' Applies [add_clarity_links_df()] to `value` unless it's already been
+#' decorated (tracked via a `clarity_linked` attribute, since
+#' `make_linked_df()` isn't assumed idempotent), then writes the result back
+#' into the app data store so later calls skip re-decorating. Shared by both
+#' the already-loaded and deferred-loader branches of [get_app_data()] so
+#' they can't diverge in whether/when decoration happens.
+#'
+#' @param name Name of the dataset, used as the key into `data`.
+#' @param value The raw (possibly undecorated) dataset.
+#' @param data The current full app data list, used as the base to update.
+#' @return The decorated `value`.
+#' @noRd
+decorate_and_store <- function(name, value, data) {
+  if (isTRUE(attr(value, "clarity_linked", exact = TRUE))) {
+    return(value)
+  }
+
+  value <- add_clarity_links_df(value)
+  attr(value, "clarity_linked") <- TRUE
+
+  data[[name]] <- value
+  set_app_data(data)
+
+  value
 }
 
 load_local_data <- function () {
@@ -183,9 +213,9 @@ tictoc::tic()
 
   local_data <- load_local_data()
   
-  APP_DATA <- add_clarity_links(
-    c(s3_data, local_data)
-  )
+  # Stored raw — clarity-link decoration happens per-dataset on first access
+  # in get_app_data(). See #77
+  APP_DATA <- c(s3_data, local_data)
   
   cli::cli_alert_info("Total download time...")
   tictoc::toc()
