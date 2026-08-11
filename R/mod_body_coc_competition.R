@@ -219,10 +219,9 @@ mod_body_coc_competition_server <- function(id){
         datatable_default(
           estimated_score_dq |> 
             dplyr::select(1, Calculation, 2, "Estimated Score", "Possible Score" = 5, "Data Quality" = DQ),
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+          add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(15, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 15)
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 15)
         )
       })
     

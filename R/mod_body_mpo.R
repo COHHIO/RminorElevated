@@ -120,10 +120,9 @@ mod_body_mpo_server <- function(id){
         if (length(goal) > 0) {
           datatable_default(
             length_of_stay,
-            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+            add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
           ) |> 
             DT::formatStyle(
               'Average',
@@ -176,10 +175,9 @@ mod_body_mpo_server <- function(id){
         if (length(goal) > 0) {
           datatable_default(
             health,
-            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+            add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
           ) |>
             DT::formatStyle(
               'Percent',
@@ -228,10 +226,9 @@ mod_body_mpo_server <- function(id){
         if (length(goal) > 0) {
           datatable_default(
             noncash,
-            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+            add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
           ) |> 
             DT::formatStyle(
               'Percent',
@@ -285,10 +282,9 @@ mod_body_mpo_server <- function(id){
         if (length(goal) > 0) {
           datatable_default(
             income_growth,
-            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+            add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
           ) |> 
             DT::formatStyle(
               'Percent',
@@ -335,10 +331,9 @@ mod_body_mpo_server <- function(id){
         if (length(goal) > 0) {
           datatable_default(
             placement,
-            options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+            add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                            list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                           75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                  list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
           ) |> 
             DT::formatStyle(
               'AvgDaysToHouse',
@@ -440,10 +435,9 @@ mod_body_mpo_server <- function(id){
       if (length(goal) > 0) {
         datatable_default(
           PHTable,
-          options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
+          add_options = list(dom = "Blfrtip", buttons = list("copy", "excel", "csvHtml5",
                                                          list(extend = "csvHtml5", text = "Full CSV", filename = "data_full", exportOptions =
-                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu = c(10, 25, 50,
-                                                                                                                                         75, 100, 1000), lengthChange = TRUE, pageLength = 10)
+                                                                list(modifier = list(page = "all")))), responsive = TRUE, lengthChange = TRUE, pageLength = 10)
         ) |>
           DT::formatStyle(
             'Percent',

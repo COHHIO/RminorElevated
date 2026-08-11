@@ -63,7 +63,7 @@ datatable_default <- function(data,
                                   )
                                 ),
                                 responsive = TRUE,
-                                lengthMenu = c(10, 25, 50, 75, 100),
+                                lengthMenu = list(c(10, 25, 50, 75, 100, -1), c("10", "25", "50", "75", "100", "All")),
                                 lengthChange = TRUE,
                                 pageLength = 10
                               ),

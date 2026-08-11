@@ -85,7 +85,7 @@ mod_body_prioritization_server <- function(id){
        ) |> 
      datatable_default(
        rownames = FALSE,
-       options = list(dom = 'Bfrltip',
+       add_options = list(dom = 'Bfrltip',
                       buttons = c('copy', 'excel', 'csvHtml5'),
                       responsive = TRUE,
                       initComplete = DT::JS(
