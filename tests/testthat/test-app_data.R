@@ -133,3 +133,28 @@ test_that("get_app_data() with no name does not trigger deferred loaders", {
   expect_null(attr(all_data[["plain"]], "clarity_linked", exact = TRUE))
   expect_false(loader_ran)
 })
+
+test_that("a deferred loader runs once, then serves from the store", {
+  # After first access decorate_and_store() writes the dataset into APP_DATA,
+  # so subsequent reads take the in-store branch and never re-run the loader.
+  withr::defer(clear_app_data())
+  loader_calls <- 0L
+  set_app_data(list())
+  set_deferred_loaders(list(lazy_one = function() {
+    loader_calls <<- loader_calls + 1L
+    data.frame(a = 1:3)
+  }))
+
+  get_app_data("lazy_one")
+  get_app_data("lazy_one")
+
+  expect_identical(loader_calls, 1L)
+})
+
+test_that("a deferred loader returning NULL is an error", {
+  withr::defer(clear_app_data())
+  set_app_data(list())
+  set_deferred_loaders(list(broken = function() NULL))
+
+  expect_error(get_app_data("broken"), "Failed to lazy-load")
+})
