@@ -6,7 +6,6 @@ data
 rsconnect
 .Rprofile
 comparisons
-tests/
 *.jpg
 .DS_Store
 .httr-oauth
@@ -16,21 +15,13 @@ inst/auth
 
 .Rproj.user/
 
-.Renviron
-
 golem_commands.R
-inst/auth/
-data/
-inst/auth
-.Renviron
 
 .files/
 
 reprex/
 
 inst/vault/
-
-appDependencies.R
 
 appDependencies.R
 
