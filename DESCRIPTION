@@ -111,6 +111,7 @@ Collate:
     'utils_server.R'
     'utils_ui.R'
 Suggests: 
+    shinytest2,
     testthat (>= 3.2.0),
     withr
 Config/testthat/edition: 3
