@@ -491,7 +491,7 @@ mod_body_coc_competition_server <- function(id){
     
     # Measure 5.5
     # Length of Stay
-    pe_length_of_stay <- pe_length_of_stay() |> 
+    pe_length_of_stay <- get_app_data("pe_length_of_stay") |> 
       dplyr::mutate(DaysInProject = (DaysInProject / 86400))
     
     pe_length_of_stay_filter <- eventReactive(pe_provider(), {

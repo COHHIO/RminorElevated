@@ -73,7 +73,7 @@ mod_body_dq_system_summary_server <- function(id){
       )
     })
     
-    dq_summary <- dq_summary()
+    dq_summary <- get_app_data("dq_summary")
     
     dq_summary_args <- tibble::tribble(
       ~ id,
