@@ -26,3 +26,4 @@ Other QPR:
 \code{\link{mod_qpr_ui}()}
 }
 \concept{QPR}
+\keyword{internal}

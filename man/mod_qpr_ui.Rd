@@ -38,3 +38,4 @@ Other QPR:
 \code{\link{mod_qpr_server}()}
 }
 \concept{QPR}
+\keyword{internal}
