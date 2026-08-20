@@ -17,3 +17,4 @@ sym2function(x, file)
 \description{
 Useful to replace calls to an object by symbol name with an accessor function or reactive with the same name
 }
+\keyword{internal}
