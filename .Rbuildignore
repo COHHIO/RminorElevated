@@ -13,3 +13,7 @@ $run_dev.*
 ^rsconnect$
 ^\.positai$
 ^\.claude$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^vignettes/articles$
