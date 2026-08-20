@@ -13,7 +13,8 @@ datatable_default(
     
      "csvHtml5", list(extend = "csvHtml5", text = "Full CSV", filename =
     "data_full", exportOptions = list(modifier = list(page = "all")))), responsive =
-    TRUE, lengthMenu = c(10, 25, 50, 75, 100), lengthChange = TRUE, pageLength = 10),
+    TRUE, lengthMenu = list(c(10, 25, 50, 75, 100, -1), c("10", "25", "50", "75", "100",
+    "All")), lengthChange = TRUE, pageLength = 10),
   filter = list(position = "top", clear = TRUE, plain = FALSE),
   width = "100\%",
   height = "auto",

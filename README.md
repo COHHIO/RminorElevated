@@ -4,7 +4,7 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Overview
@@ -18,6 +18,10 @@ interactive reports and visualizations.
 **Note:** This application displays client-level data (without
 Personally Identifying Information) and requires authentication for
 access.
+
+📖 **Developer documentation**, including the function reference and an
+architecture overview, is published at
+<https://cohhio.github.io/RminorElevated/>.
 
 ## Key Features
 
@@ -68,20 +72,12 @@ access.
 ### Running Locally (for development)
 
 ``` r
-library(RminorElevated)
-
-# Ensure you have proper AWS credentials configured
-# and that the daily data pipeline has run
-
-# Run the application
-shiny::runApp()
+# Ensure AWS credentials are configured and the daily data
+# pipeline has run, then launch the app via its entry point:
+RminorElevated::run_app()
 ```
 
 ## Data Pipeline
-
-### Documentation
-
-- [Data refresh workflow](docs/data-refresh-workflow.md)
 
 RminorElevated relies on a daily automated data pipeline that:
 
