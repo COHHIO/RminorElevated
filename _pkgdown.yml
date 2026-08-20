@@ -1,0 +1,61 @@
+url: https://cohhio.github.io/RminorElevated/
+
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+
+navbar:
+  structure:
+    left:  [reference, articles]
+    right: [search, github]
+
+
+reference:
+- title: Running the App
+  contents:
+  - run_app
+
+- title: Data Access & Loading
+  desc: >
+    Single accessor for app datasets and the helpers behind first-access
+    loading and decoration.
+  contents:
+  - get_app_data
+  - living_situation
+  - iterate
+
+- title: Reactivity & Error Handling
+  desc: Helpers that isolate module failures so one error can't blank the page.
+  contents:
+  - safe_reactive_quoted
+
+- title: DataTable Helpers
+  contents:
+  - datatable_default
+  - datatable_add_bars
+  - datatable_options_update
+  - styleDivergentBar
+  - qpr_datatable
+  - make_columns
+
+- title: Data Quality Helpers
+  contents:
+  - dq_filter_between
+  - dq_select_cols
+  - which_cols
+
+- title: QPR Helpers
+  contents:
+  - qpr_infobox
+
+- title: UI Builders
+  contents:
+  - bs4Alert
+  - server_header
+  - ui_header_row
+  - ui_row
+  - ui_list
+  - ui_icons
+  - ui_solid_box
+  - ui_date_range
+  - ui_picker_program
