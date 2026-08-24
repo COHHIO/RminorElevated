@@ -1,12 +1,18 @@
 
-tictoc::tic()
-goals <-  HMISdata::load_hmis_csv("mahoning_goals.csv", bucket = "shiny-data-cohhio", folder = "RME") |>
-  tidyr::pivot_longer(- tidyselect::all_of(c("Measure", "Operator")),  names_to = "ProjectType",
-                      values_to = "Goal") |>
-  dplyr::mutate(ProjectType = as.numeric(ProjectType)) |>
-  dplyr::filter(!is.na(Goal))
-cli::cli_alert_info("Total download time for Mahoning goals...")
-tictoc::toc()
+goals <- NULL
+
+tryCatch({
+  tictoc::tic()
+  goals <- HMISdata::load_hmis_csv("mahoning_goals.csv", bucket = "shiny-data-cohhio", folder = "RME") |>
+    tidyr::pivot_longer(- tidyselect::all_of(c("Measure", "Operator")), names_to = "ProjectType",
+                        values_to = "Goal") |>
+    dplyr::mutate(ProjectType = as.numeric(ProjectType)) |>
+    dplyr::filter(!is.na(Goal))
+  cli::cli_alert_info("Total download time for Mahoning goals...")
+  tictoc::toc()
+}, error = function(e) {
+  message("Skipping Mahoning goals init at load time: ", conditionMessage(e))
+})
 
 #' body_coc_competition UI Function
 #'
