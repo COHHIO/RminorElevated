@@ -23,7 +23,12 @@ if (!exists("create_accessors_s3")) {
   }
 }
 
-# Get app data
+# Get app data — only when we can actually reach S3.
+# During R CMD INSTALL / pkgdown builds (and dev installs) there are no
+# AWS credentials; skip so the package still installs. The app loads data
+# at process start in the deployed environment, where creds are present.
+if (nzchar(Sys.getenv("AWS_ACCESS_KEY"))) {
+  # Get app data
 APP_DATA <- load_app_data()
 set_app_data(APP_DATA)
 
@@ -93,6 +98,16 @@ if ("Regions" %in% app_data_names) {
       )
     )}}()
   
+}
+} else {
+  # No credentials: define the top-level bindings as NULL so the namespace
+  # still has them and nothing errors at load/doc-build time.
+  APP_DATA <- NULL
+  APP_META <- list(refresh_time = NA, loaded_at = Sys.time())
+  programs <- NULL
+  regions <- NULL
+  counties <- NULL
+  qpr_tab_choices <- NULL
 }
 
 #' @title Living Situation Reference Number Translation `r lifecycle::badge("deprecated")`
