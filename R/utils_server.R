@@ -39,7 +39,7 @@ server_header <- function(title, ..., program, date_range, region, county) {
 datatable_default <- function(data,
                               rownames = FALSE,
                               options = list(
-                                dom = 'Blfrtip',
+                                dom = 'lfrtip',
                                 buttons = list(
                                   'copy',
                                   list(
@@ -329,4 +329,35 @@ styleDivergentBar <- function(data,
       max_val
     )
   )
+}
+
+#' Full-data download buttons for a server-side DT table
+#'
+#' Under server = TRUE the DataTables export buttons only see the current page.
+#' These buttons read the reactive server-side and always export the full frame,
+#' independent of the length menu / paging.
+#'
+#' @param id Module id.
+#' @param data A reactive returning the full, display-ready data frame.
+#' @param filename_prefix File-name stem for the download.
+#' @noRd
+mod_dt_download_ui <- function(id) {
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shiny::downloadButton(ns("csv"),   "CSV",   class = "btn btn-default btn-sm"),
+    shiny::downloadButton(ns("excel"), "Excel", class = "btn btn-default btn-sm")
+  )
+}
+
+mod_dt_download_server <- function(id, data, filename_prefix = "export") {
+  shiny::moduleServer(id, function(input, output, session) {
+    output$csv <- shiny::downloadHandler(
+      filename = function() paste0(filename_prefix, "_", Sys.Date(), ".csv"),
+      content  = function(file) readr::write_csv(data(), file, na = "")
+    )
+    output$excel <- shiny::downloadHandler(
+      filename = function() paste0(filename_prefix, "_", Sys.Date(), ".xlsx"),
+      content  = function(file) writexl::write_xlsx(data(), file)
+    )
+  })
 }
