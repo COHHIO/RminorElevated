@@ -19,7 +19,6 @@ tryCatch({
   message("Skipping dq_timeliness init at load time: ", conditionMessage(e))
 })
 
-desk_time_providers <- rlang::set_names(dt_time$ProjectID |> unique(), dt_time$ProjectName |> unique())
 # DEBUG
 # input <- list(date_range = c(lubridate::ymd("2020-01-01"), lubridate::ymd("2022-01-21")),
 #               program = "558")
