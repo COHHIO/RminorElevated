@@ -1,3 +1,7 @@
+---
+title: "Data Refresh Workflow"
+---
+
 # Outline: Speed, Stability, and Navigation Fixes for RminorElevated
 
 ## Snapshot from 2026-06, superseded by #54 for live status

@@ -1,29 +1,24 @@
 
-dt_time <- get_app_data("validation") |>
-  dplyr::filter(ProjectType %in% c(0, 1, 2, 3, 4, 6, 8, 9, 12, 13, 14)) |>
-  dplyr::mutate(
-    DateCreated = lubridate::as_date(DateCreated, tz = NULL),
-    DeskTime = as.integer(
-      difftime(DateCreated,
-               EntryDate,
-               units = "days")
-    ),
-    GoalMet = dplyr::if_else(DeskTime > 5 |
-                               DeskTime < 0,
-                             "orangered",
-                             "forestgreen")
-  ) |>
-  dplyr::select(HouseholdID,
-                UniqueID,
-                ProjectName,
-                ProjectID,
-                EntryDate,
-                ExitDate,
-                DateCreated,
-                DeskTime,
-                GoalMet)
+dt_time <- NULL
+desk_time_providers <- NULL
 
-desk_time_providers <- rlang::set_names(dt_time$ProjectID |> unique(), dt_time$ProjectName |> unique())
+tryCatch({
+  dt_time <- get_app_data("validation") |>
+    dplyr::filter(ProjectType %in% c(0, 1, 2, 3, 4, 6, 8, 9, 12, 13, 14)) |>
+    dplyr::mutate(
+      DateCreated = lubridate::as_date(DateCreated, tz = NULL),
+      DeskTime = as.integer(difftime(DateCreated, EntryDate, units = "days")),
+      GoalMet = dplyr::if_else(DeskTime > 5 | DeskTime < 0, "orangered", "forestgreen")
+    ) |>
+    dplyr::select(HouseholdID, UniqueID, ProjectName, ProjectID,
+                  EntryDate, ExitDate, DateCreated, DeskTime, GoalMet)
+
+  desk_time_providers <- rlang::set_names(dt_time$ProjectID |> unique(),
+                                          dt_time$ProjectName |> unique())
+}, error = function(e) {
+  message("Skipping dq_timeliness init at load time: ", conditionMessage(e))
+})
+
 # DEBUG
 # input <- list(date_range = c(lubridate::ymd("2020-01-01"), lubridate::ymd("2022-01-21")),
 #               program = "558")
