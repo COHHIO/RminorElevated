@@ -1,0 +1,258 @@
+# RminorElevated
+
+## Overview
+
+RminorElevated is a Shiny application that provides HMIS data quality
+monitoring and reporting tools for the Ohio Balance of State Continuum
+of Care (CoC) and the Mahoning County CoC. The application helps HMIS
+users verify that their data is accurate and complete through
+interactive reports and visualizations.
+
+**Note:** This application displays client-level data (without
+Personally Identifying Information) and requires authentication for
+access.
+
+📖 **Developer documentation**, including the function reference and an
+architecture overview, is published at
+<https://cohhio.github.io/RminorElevated/>.
+
+## Key Features
+
+RminorElevated includes several reporting modules:
+
+- **Data Quality Reports** - Monitor and identify data completeness and
+  accuracy issues
+- **Prioritization Lists** - View and manage client prioritization for
+  housing placement
+- **Agency & Program Lookup** - Search and reference agency and program
+  information
+- Additional specialized reports for HMIS data analysis including
+  performance reporting, bed & unit counts, and veteran reporting
+
+## Installation
+
+### For Developers
+
+RminorElevated is not available on CRAN. To install the development
+version from GitHub:
+
+``` r
+
+# install.packages("remotes")
+remotes::install_github("COHHIO/RminorElevated")
+```
+
+### Prerequisites
+
+This package depends on several internal COHHIO packages that handle
+data processing:
+
+- `HMISdata` - Data retrieval from AWS
+- `HMISprep` - Data preparation and cleaning  
+- `HMISserve` - Data serving utilities
+
+These packages must be installed and configured before RminorElevated
+will function properly.
+
+## Usage
+
+### Accessing the Application
+
+The production application is deployed at the [RminorElevated
+website](https://ohiobalanceofstatecoc.shinyapps.io/Rminor_elevated/)
+and requires login credentials. Contact your HMIS administrator for
+access.
+
+### Running Locally (for development)
+
+``` r
+
+# Ensure AWS credentials are configured and the daily data
+# pipeline has run, then launch the app via its entry point:
+RminorElevated::run_app()
+```
+
+## Data Pipeline
+
+RminorElevated relies on a daily automated data pipeline that:
+
+1.  Retrieves HMIS CSV exports from AWS
+2.  Pulls supplementary data from Looker via AWS
+3.  Processes and prepares data using `HMISdata`, `HMISprep`, and
+    `HMISserve`
+4.  Stores processed data in AWS S3
+
+The application always displays the most recently processed data from
+this pipeline.
+
+## Target Users
+
+This application is designed for:
+
+- HMIS end users (case managers, housing navigators, program staff)
+- Agency administrators
+- CoC-level data analysts and coordinators
+- Data quality managers
+
+Users should have familiarity with HMIS data standards and their
+organization’s data entry workflows.
+
+## Package Ecosystem
+
+RminorElevated is part of COHHIO’s suite of HMIS tools:
+
+``` R
+HMISdata ──→ HMISprep ──→ HMISserve ──→ RminorElevated
+   ↓            ↓            ↓              ↓
+(Extract)   (Transform)   (Serve)      (Visualize)
+```
+
+This modular approach separates data pipeline concerns from the
+presentation layer, making each component easier to maintain and test.
+
+## For COHHIO Staff
+
+### Deployment
+
+The application is deployed to shinyapps.io. Deployment is managed
+through:
+
+``` r
+
+# Deploy to shinyapps.io
+rsconnect::deployApp()
+```
+
+### Configuration
+
+Key configuration files: - AWS credentials and region settings -
+Shinyapps.io account configuration  
+- Authentication provider settings
+
+See the `aws/` directory for deployment-related configuration.
+
+## Contributing
+
+This is an internal tool for the Ohio Balance of State CoC and Mahoning
+County CoC. If you’re part of the COHHIO team:
+
+1.  Create a feature branch from `main`
+2.  Make your changes with clear commit messages
+3.  Test thoroughly with recent data
+4.  Submit a pull request with a description of changes
+
+## Support
+
+For questions or issues:
+
+- **Users and Developers**: Open an issue on GitHub or contact the
+  [COHHIO HMIS team](mailto:hmis@cohhio.org)
+
+## License
+
+This project is licensed under the AGPL-3.0 License - see the
+[LICENSE.md](https://cohhio.github.io/RminorElevated/LICENSE.md) file
+for details.
+
+## Acknowledgments
+
+Developed and maintained by the Coalition on Homelessness and Housing in
+Ohio (COHHIO) to support the data quality and reporting needs of Ohio’s
+homeless services system.
+
+# Package index
+
+## Running the App
+
+- [`run_app()`](https://cohhio.github.io/RminorElevated/reference/run_app.md)
+  : Run the Shiny Application
+
+## Data Access & Loading
+
+Single accessor for app datasets and the helpers behind first-access
+loading and decoration.
+
+- [`get_app_data()`](https://cohhio.github.io/RminorElevated/reference/get_app_data.md)
+  : Retrieve loaded app data
+- [`living_situation()`](https://cohhio.github.io/RminorElevated/reference/living_situation.md)
+  : Living Situation Reference Number Translation \`r
+  lifecycle::badge("deprecated")\`
+- [`iterate()`](https://cohhio.github.io/RminorElevated/reference/iterate.md)
+  : Iterative generate output functions
+
+## Reactivity & Error Handling
+
+Helpers that isolate module failures so one error can’t blank the page.
+
+- [`safe_reactive_quoted()`](https://cohhio.github.io/RminorElevated/reference/safe_reactive_quoted.md)
+  : safe_reactive_quoted
+
+## DataTable Helpers
+
+- [`datatable_default()`](https://cohhio.github.io/RminorElevated/reference/datatable_default.md)
+  : DT Datatable with some helpful defaults
+
+- [`datatable_add_bars()`](https://cohhio.github.io/RminorElevated/reference/datatable_add_bars.md)
+  :
+
+  Add [styleColorBar](https://rdrr.io/pkg/DT/man/styleInterval.html) or
+  \`styleDivergentBar\` to datatable
+
+- [`datatable_options_update()`](https://cohhio.github.io/RminorElevated/reference/datatable_options_update.md)
+  : Update datatable options
+
+- [`styleDivergentBar()`](https://cohhio.github.io/RminorElevated/reference/styleDivergentBar.md)
+  : Style DT divergent color bar
+
+- [`qpr_datatable()`](https://cohhio.github.io/RminorElevated/reference/qpr_datatable.md)
+  : qpr_datatable
+
+- [`make_columns()`](https://cohhio.github.io/RminorElevated/reference/make_columns.md)
+  : Make columns from assorted shiny.tag elements Sorts shiny.tags into
+  columns based on the maximum number of columns (\`max_cols\`) per row
+
+## Data Quality Helpers
+
+- [`dq_filter_between()`](https://cohhio.github.io/RminorElevated/reference/dq_filter_between.md)
+  : Filter data.frame with default filters for DQ
+- [`dq_select_cols()`](https://cohhio.github.io/RminorElevated/reference/dq_select_cols.md)
+  : Select default display columns for Data Quality Tables
+- [`which_cols()`](https://cohhio.github.io/RminorElevated/reference/which_cols.md)
+  : Give DT ready column numbers from names or numbers
+
+## QPR Helpers
+
+- [`qpr_infobox()`](https://cohhio.github.io/RminorElevated/reference/qpr_infobox.md)
+  : qpr_infobox
+
+## UI Builders
+
+- [`bs4Alert()`](https://cohhio.github.io/RminorElevated/reference/bs4Alert.md)
+  : Create a bootstrap 4 Alert box
+- [`server_header()`](https://cohhio.github.io/RminorElevated/reference/server_header.md)
+  : Create a default header block
+- [`ui_header_row()`](https://cohhio.github.io/RminorElevated/reference/ui_header_row.md)
+  : The UI Header output
+- [`ui_row()`](https://cohhio.github.io/RminorElevated/reference/ui_row.md)
+  : A default full width row box.
+- [`ui_list()`](https://cohhio.github.io/RminorElevated/reference/ui_list.md)
+  : Construct a list from various elements
+- [`ui_icons()`](https://cohhio.github.io/RminorElevated/reference/ui_icons.md)
+  : Iterative generation of icons
+- [`ui_solid_box()`](https://cohhio.github.io/RminorElevated/reference/ui_solid_box.md)
+  : A default full width row box.
+- [`ui_date_range()`](https://cohhio.github.io/RminorElevated/reference/ui_date_range.md)
+  : A date range picker with sensible defaults
+- [`ui_picker_program()`](https://cohhio.github.io/RminorElevated/reference/ui_picker_program.md)
+  : A pickerInput that provides active programs to select from
+
+# Articles
+
+### All vignettes
+
+- [Data Refresh
+  Workflow](https://cohhio.github.io/RminorElevated/articles/architecture-review-2026-06.md):
+- [Architecture
+  Overview](https://cohhio.github.io/RminorElevated/articles/architecture.md):
+- [Data Refresh
+  Workflow](https://cohhio.github.io/RminorElevated/articles/data-refresh-workflow.md):
