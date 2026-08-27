@@ -124,6 +124,8 @@ mod_body_dq_system_summary_server <- function(id){
           out <- dplyr::rename(out, `# of Issues` = "n_Issue")
         out <- dplyr::select(out, -dplyr::any_of(c("Total Clients", "ProjectID"))) 
         
+        cat(.x, ":", paste(names(out), collapse = ", "), "\n")
+
         datatable_default(out, add_options = list(pageLength = 20)) |>
           datatable_add_bars(divergent = TRUE) |>
           datatable_options_update(hide_cols = "from_mean", options = list(columnDefs = list(
