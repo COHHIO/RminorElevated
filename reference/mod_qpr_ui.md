@@ -39,4 +39,4 @@ mod_qpr_ui(
 ## See also
 
 Other QPR:
-[`mod_qpr_server()`](https://cohhio.github.io/RminorElevated/reference/mod_QPR_server.md)
+[`mod_qpr_server()`](https://cohhio.github.io/RminorElevated/reference/mod_qpr_server.md)
