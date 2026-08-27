@@ -124,3 +124,15 @@ safe_render <- function(expr, error_message = "Something went wrong loading this
     }
   )
 }
+
+# Take out html for downloading data tables
+strip_html <- function(x) {
+  # remove tags, then unescape common entities
+  x <- gsub("<[^>]*>", "", x)
+  x <- gsub("&amp;", "&", x, fixed = TRUE)
+  x <- gsub("&lt;", "<", x, fixed = TRUE)
+  x <- gsub("&gt;", ">", x, fixed = TRUE)
+  x <- gsub("&#39;|&apos;", "'", x)
+  x <- gsub("&quot;", '"', x)
+  trimws(x)
+}

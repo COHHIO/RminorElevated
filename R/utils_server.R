@@ -31,6 +31,12 @@ server_header <- function(title, ..., program, date_range, region, county) {
 #'
 #' @inheritParams DT::datatable
 #' @inheritDotParams DT::datatable
+#' @param filename Base name (no extension) for the Excel/CSV downloads. The
+#'   Full CSV button appends "_full". Defaults to a dated stem.
+#' @param export_buttons Whether to render the native DataTables export button
+#'   bar. Set FALSE for server-side (server = TRUE) tables, which page their
+#'   data and would export only the current page — use the download module
+#'   (mod_dt_download) on those instead.
 #' @param add_options Options to add to the existing defaults
 #' @param add_extensions Extensions to add to the existing defaults
 #' @return \code{(shiny.tag)}
@@ -38,10 +44,11 @@ server_header <- function(title, ..., program, date_range, region, county) {
 
 datatable_default <- function(data,
                               rownames = FALSE,
+                              filename = paste0("RminorElevated_", Sys.Date()),
+                              export_buttons = TRUE,
                               options = list(
                                 dom = 'Blfrtip',
                                 buttons = list(
-                                  'copy',
                                   list(
                                     extend = "excel",
                                     customizeData = htmlwidgets::JS(
@@ -52,15 +59,10 @@ datatable_default <- function(data,
                                           }
                                         }
                                       }"
-                                    )
-                                  ),
-                                  "csvHtml5",
-                                  list(
-                                    extend = "csvHtml5",
-                                    text = "Full CSV",
-                                    filename = "data_full",
+                                    ),
                                     exportOptions = list(modifier = list(page = "all"))
-                                  )
+                                  ),
+                                  list(extend = "csvHtml5", exportOptions = list(modifier = list(page = "all")))
                                 ),
                                 responsive = TRUE,
                                 lengthMenu = list(c(10, 25, 50, 75, 100, -1), c("10", "25", "50", "75", "100", "All")),
@@ -78,34 +80,51 @@ datatable_default <- function(data,
                               add_options,
                               add_extensions,
                               ...) {
-  
   if (!missing(add_options))
     options <- purrr::list_modify(options, !!!add_options)
   if (!missing(add_extensions))
     extensions <- c(extensions, add_extensions)
-  
-  # Replace any plain 'excel' string in buttons with the customizeData version
+
+  # Normalize the buttons: upgrade any plain-string buttons to list form
+  # (re-applying the Excel zero-width-space fix), then stamp the download
+  # filename onto the file-producing buttons.
   if (!is.null(options$buttons)) {
+    excel_js <- htmlwidgets::JS(
+      "function(data) {
+        for (var i = 0; i < data.body.length; i++) {
+          for (var j = 0; j < data.body[i].length; j++) {
+            data.body[i][j] = '\u200C' + data.body[i][j];
+          }
+        }
+      }"
+    )
     options$buttons <- lapply(options$buttons, function(btn) {
+      # promote plain-string buttons to list form
       if (identical(btn, "excel")) {
-        list(
-          extend = "excel",
-          customizeData = htmlwidgets::JS(
-            "function(data) {
-            for (var i = 0; i < data.body.length; i++) {
-              for (var j = 0; j < data.body[i].length; j++) {
-                data.body[i][j] = '\u200C' + data.body[i][j];
-              }
-            }
-          }"
-          )
-        )
-      } else {
-        btn
+        btn <- list(extend = "excel")
+      } else if (identical(btn, "csvHtml5")) {
+        btn <- list(extend = "csvHtml5")
       }
+      if (is.list(btn) && !is.null(btn$extend)) {
+        # any excel button gets the zero-width-space fix unless it already sets one
+        if (identical(btn$extend, "excel") && is.null(btn$customizeData)) {
+          btn$customizeData <- excel_js
+        }
+        # stamp a filename onto file-producing buttons that don't set one
+        if (btn$extend %in% c("excel", "csvHtml5") && is.null(btn$filename)) {
+          btn$filename <- if (identical(btn$text, "Full CSV")) paste0(filename, "_full") else filename
+        }
+      }
+      btn
     })
   }
-  
+
+  # Server-side tables opt out of the native (page-limited) button bar.
+  if (!export_buttons) {
+    options$buttons <- NULL
+    options$dom <- gsub("B", "", options$dom, fixed = TRUE)
+  }
+
   DT::datatable(
     data,
     rownames = rownames,
@@ -193,47 +212,46 @@ datatable_options_update <- function(x, options, hide_cols) {
 #' @export
 
 datatable_add_bars <-
-  function(table,
-           columns,
-           valueColumns,
-           ...,
-           divergent = FALSE) {
+  function(table, columns, valueColumns, ..., divergent = FALSE) {
     .args <- rlang::dots_list(..., .named = TRUE)
     .args$table <- table
     .data <- table$x$data
     .data_nms <- names(.data)
-    
+
     if (missing(columns) && divergent)
       .args$columns = stringr::str_which(.data_nms, stringr::regex("frequency", ignore_case = TRUE))
     else
       .args$columns <- columns
-    
+
     if (missing(valueColumns) && divergent)
-      .args$valueColumns = stringr::str_which(.data_nms,
-                                              stringr::regex("rank|from_mean", ignore_case = TRUE))
+      .args$valueColumns = stringr::str_which(.data_nms, stringr::regex("rank|from_mean", ignore_case = TRUE))
     else
       .args$valueColumns <- valueColumns
-    
+
+    # No value columns found, or the data is empty / all-NA -> nothing to draw. Return table unchanged.
+    if (length(.args$valueColumns) == 0 ||
+        length(.args$columns) == 0 ||
+        nrow(.data) == 0 ||
+        !any(purrr::map_lgl(.args$valueColumns, ~ any(is.finite(.data[[.x]]))))) {
+      return(table)
+    }
+
     if (divergent)
-      bar_args <-
-      purrr::list_modify(.args[names(.args) %in% c("color_pos", "color_neg")], color_pos = "#28a745", color_neg = "#dc3545")
+      bar_args <- purrr::list_modify(.args[names(.args) %in% c("color_pos", "color_neg")],
+                                     color_pos = "#28a745", color_neg = "#dc3545")
     else
       bar_args <- .args[names(.args) %in% c("data", "color", "angle")]
-    
+
     .args$background <-
       purrr::map(.args$valueColumns,
                  ~ rlang::exec(
                    purrr::when(divergent, . ~ styleDivergentBar, ~ DT::styleColorBar),
-                   range(.data[[.x]]),
+                   range(.data[[.x]], na.rm = TRUE),
                    !!!bar_args
                  )) |>
-      {
-        \(x) {
-          purrr::when(length(x), . == 1 ~ x[[1]], ~ x)
-        }
-      }()
-    
-    rlang::exec(DT::formatStyle,!!!.args)
+      { \(x) { purrr::when(length(x), . == 1 ~ x[[1]], ~ x) } }()
+
+    rlang::exec(DT::formatStyle, !!!.args)
   }
 
 
@@ -329,4 +347,40 @@ styleDivergentBar <- function(data,
       max_val
     )
   )
+}
+
+#' Full-data download buttons for a server-side DT table
+#'
+#' Under server = TRUE the DataTables export buttons only see the current page.
+#' These buttons read the reactive server-side and always export the full frame,
+#' independent of the length menu / paging.
+#'
+#' @param id Module id.
+#' @param data A reactive returning the full, display-ready data frame.
+#' @param filename_prefix File-name stem for the download.
+#' @noRd
+mod_dt_download_ui <- function(id) {
+  ns <- shiny::NS(id)
+  shiny::div(
+    class = "dt-download-buttons",
+    style = "margin-bottom: 1rem;",
+    shiny::downloadButton(ns("csv"),   "CSV",   class = "btn btn-default btn-sm"),
+    shiny::downloadButton(ns("excel"), "Excel", class = "btn btn-default btn-sm")
+  )
+}
+
+mod_dt_download_server <- function(id, data, filename_prefix = "export") {
+  shiny::moduleServer(id, function(input, output, session) {
+    clean <- shiny::reactive({
+      data() |> dplyr::mutate(dplyr::across(where(is.character), strip_html))
+    })
+    output$csv <- shiny::downloadHandler(
+      filename = function() paste0(filename_prefix, "_", Sys.Date(), ".csv"),
+      content  = function(file) readr::write_csv(clean(), file, na = "")
+    )
+    output$excel <- shiny::downloadHandler(
+      filename = function() paste0(filename_prefix, "_", Sys.Date(), ".xlsx"),
+      content  = function(file) writexl::write_xlsx(clean(), file)
+    )
+  })
 }

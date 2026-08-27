@@ -19,10 +19,12 @@ mod_body_client_counts_ui <- function(id){
     ),
     ui_row(
       title = "Summary",
+      mod_dt_download_ui(ns("dl_counts")),
       DT::dataTableOutput(ns("summary")),
     ),
     ui_row(
       title = "Client Details",
+      mod_dt_download_ui(ns("dl_details")),
       DT::dataTableOutput(ns("dt_output")),
       width = 12
     )
@@ -43,8 +45,7 @@ mod_body_client_counts_server <- function(id){
       )
     })
     
-    output$dt_output <- DT::renderDT(server = TRUE, {
-      
+    details_filtered <- reactive({
       get_app_data("validation")  |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
@@ -93,12 +94,15 @@ mod_body_client_counts_server <- function(id){
           "Move In Date (RRH/PSH Only)" = MoveInDateAdjust,
           "Exit Date" = ExitDate,
           Status
-        ) |> 
-        datatable_default(escape = FALSE)
+        )
+    })
+
+    output$dt_output <- DT::renderDT(server = TRUE, {
+      details_filtered() |>
+        datatable_default(escape = FALSE, export_buttons = FALSE)
     })
     
-    output$summary <- DT::renderDT(server = TRUE, {
-      
+    counts_filtered <- reactive({
       hhs <- get_app_data("validation") |> 
         HMIS::served_between(input$date_range[1], input$date_range[2]) |> 
         dplyr::filter(ProjectID %in% input$program) |>
@@ -166,10 +170,16 @@ mod_body_client_counts_server <- function(id){
         dplyr::group_by(Status) |>
         dplyr::summarise(Clients = dplyr::n())
       
-      final <- dplyr::full_join(clients, hhs, by = "Status")
-      
-      datatable_default(final)
+      dplyr::full_join(clients, hhs, by = "Status")
     })
+
+    output$summary <- DT::renderDT(server = TRUE, {
+      counts_filtered() |>
+        datatable_default(export_buttons = FALSE)
+    })
+
+    mod_dt_download_server("dl_details", data = details_filtered, filename_prefix = "client_details")
+    mod_dt_download_server("dl_counts",  data = counts_filtered,  filename_prefix = "client_counts_summary")
 
   })
 }

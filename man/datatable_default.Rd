@@ -7,14 +7,15 @@
 datatable_default(
   data,
   rownames = FALSE,
-  options = list(dom = "Blfrtip", buttons = list("copy", list(extend = "excel",
-    customizeData =
-    htmlwidgets::JS("function(data) {\\n                                        for (var i = 0; i < data.body.length; i++) {\\n                                          for (var j = 0; j < data.body[i].length; j++) {\\n                                            data.body[i][j] = '‌' + data.body[i][j];\\n                                          }\\n                                        }\\n                                      }")),
+  filename = paste0("RminorElevated_", Sys.Date()),
+  export_buttons = TRUE,
+  options = list(dom = "Blfrtip", buttons = list(list(extend = "excel", customizeData =
+    htmlwidgets::JS("function(data) {\\n                                        for (var i = 0; i < data.body.length; i++) {\\n                                          for (var j = 0; j < data.body[i].length; j++) {\\n                                            data.body[i][j] = '‌' + data.body[i][j];\\n                                          }\\n                                        }\\n                                      }"),
     
-     "csvHtml5", list(extend = "csvHtml5", text = "Full CSV", filename =
-    "data_full", exportOptions = list(modifier = list(page = "all")))), responsive =
-    TRUE, lengthMenu = list(c(10, 25, 50, 75, 100, -1), c("10", "25", "50", "75", "100",
-    "All")), lengthChange = TRUE, pageLength = 10),
+     exportOptions = list(modifier = list(page = "all"))), list(extend = "csvHtml5",
+    exportOptions = list(modifier = list(page = "all")))), responsive = TRUE, lengthMenu
+    = list(c(10, 25, 50, 75, 100, -1), c("10", "25", "50", "75", "100", "All")),
+    lengthChange = TRUE, pageLength = 10),
   filter = list(position = "top", clear = TRUE, plain = FALSE),
   width = "100\%",
   height = "auto",
@@ -32,6 +33,14 @@ datatable_default(
 \item{rownames}{\code{TRUE} (show row names) or \code{FALSE} (hide row names)
 or a character vector of row names; by default, the row names are displayed
 in the first column of the table if exist (not \code{NULL})}
+
+\item{filename}{Base name (no extension) for the Excel/CSV downloads. The
+Full CSV button appends "_full". Defaults to a dated stem.}
+
+\item{export_buttons}{Whether to render the native DataTables export button
+bar. Set FALSE for server-side (server = TRUE) tables, which page their
+data and would export only the current page — use the download module
+(mod_dt_download) on those instead.}
 
 \item{options}{a list of initialization options (see
 \url{https://datatables.net/reference/option/}); the character options

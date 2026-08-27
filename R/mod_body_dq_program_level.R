@@ -44,6 +44,7 @@ mod_body_dq_program_level_ui <- function(id){
     shiny::fluidRow(uiOutput(ns("dq_OverlappingEEs"))),
     ui_solid_box(
       shiny::tags$p(dq_see_guidance()),
+      mod_dt_download_ui(ns("dl_errors")),
       DT::dataTableOutput(ns("dq_Errors")),
       title = "Data Quality Errors",
       width = 12,
@@ -52,6 +53,7 @@ mod_body_dq_program_level_ui <- function(id){
     ),
     ui_solid_box(
       shiny::tags$p(dq_see_guidance()),
+      mod_dt_download_ui(ns("dl_warnings")),
       DT::dataTableOutput(ns("dq_Warnings")),
       title = "Data Quality Warnings",
       width = 12,
@@ -64,6 +66,7 @@ mod_body_dq_program_level_ui <- function(id){
         bs4Dash::accordionItem(title = "Frequency Explanation (# / Total Clients)",
         tags$p("Frequency is calculate as the # of times this error occurs / the # of clients (not the number of clients with the error / the # of clients). The bargraph indicates how frequently this error occurs for th(is/ese) programs(s) compared to the average for the rest of the CoC. ",tags$span("Green", style = "color:rgb(40, 167, 69)") , " indicates that the error occurs less frequently than the CoC average, ",tags$span("Red", style = "color:rgb(220, 53, 69)"), " indicates the error occurs more frequently than the CoC average. The larger the bar, the greater the distance from the average, IE a large red bar indicates this error occurs much more frequently for these programs than the CoC average."))
       ),
+      mod_dt_download_ui(ns("dl_summary")),
       DT::dataTableOutput(ns("dq_summary")),
       title = "Data Quality Guidance",
       status = "info"
@@ -169,8 +172,8 @@ mod_body_dq_program_level_server <- function(id){
           shiny::tags$p(
             "Please correct Household Issues before moving on to make other Data Quality corrections.", dq_see_guidance()
           ),
-          datatable_default(HHIssues, escape = FALSE)
-        )
+            datatable_default(HHIssues, escape = FALSE, filename = "household_issues")
+          )
       }
       else {
         
@@ -199,7 +202,7 @@ mod_body_dq_program_level_server <- function(id){
                 dplyr::pull(value)
             )
           ),
-          datatable_default(DuplicateEEs, escape = FALSE)
+          datatable_default(DuplicateEEs, escape = FALSE, filename = "duplicate_entry_exit_issues")
         )
       }
       else {
@@ -225,7 +228,7 @@ mod_body_dq_program_level_server <- function(id){
                    dplyr::pull(value)
                    )
         ),
-          datatable_default(MissingPathContact, escape = FALSE)
+          datatable_default(MissingPathContact, escape = FALSE, filename = "missing_path_contact")
         )
       }
       else {
@@ -264,7 +267,7 @@ mod_body_dq_program_level_server <- function(id){
                 dplyr::pull(value)
             )
           ),
-          datatable_default(Ineligible, escape = FALSE)
+          datatable_default(Ineligible, escape = FALSE, filename = "check_eligibility")
         )
       }
       else {
@@ -302,16 +305,15 @@ mod_body_dq_program_level_server <- function(id){
                           dplyr::filter(name == "project_stays") |> 
                           dplyr::pull(value))
           ),
-          datatable_default(OverlappingEEs, escape = FALSE)
+          datatable_default(OverlappingEEs, escape = FALSE, filename = "overlapping_issues")
         )
       } else {
 
       }
     })
     
-    output$dq_Errors <- DT::renderDT(server = TRUE, {
+    errors_filtered <- reactive({
       req(dq_main_time_proj())
-      
       dq_main_time_proj() |>
         dq_filter_between(
           !Issue %in% c(
@@ -323,16 +325,22 @@ mod_body_dq_program_level_server <- function(id){
             "Duplicate Entry Exits",
             "Access Point with Entry Exits",
             "Client remains active after Head of Household's exit or deletion"
-          )  &
+          ) &
             Type == "Error"
         ) |>
-        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL)) |> 
+        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL))
+    })
+
+    output$dq_Errors <- DT::renderDT(server = TRUE, {
+      errors_filtered() |>
         datatable_default(escape = FALSE)
     })
+
+    mod_dt_download_server("dl_errors", data = errors_filtered, filename_prefix = "dq_errors")
     
-    output$dq_Warnings <- DT::renderDT(server = TRUE, {
+    warnings_filtered <- reactive({
       req(dq_main_time_proj())
-      DQWarnings <- dq_main_time_proj() |>
+      dq_main_time_proj() |>
         dq_filter_between(
           !Issue %in% c(
             "Too Many Heads of Household",
@@ -346,10 +354,15 @@ mod_body_dq_program_level_server <- function(id){
           ) &
             Type == "Warning"
         ) |>
-        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL)) |> 
-        datatable_default(escape = FALSE)
-
+        dq_select_cols(!!purrr::when(length(program()) > 1, . ~ rlang::expr({ProgramName = "ProjectName"}), ~ NULL))
     })
+
+    output$dq_Warnings <- DT::renderDT(server = TRUE, {
+      warnings_filtered() |>
+        datatable_default(escape = FALSE)
+    })
+
+    mod_dt_download_server("dl_warnings", data = warnings_filtered, filename_prefix = "dq_warnings")
     
     issues_by_program <- reactive({
       req(dq_main_time(), clients())
@@ -360,35 +373,38 @@ mod_body_dq_program_level_server <- function(id){
         dplyr::distinct(Issue, ProjectID, rank, p)
     })
       
-    output$dq_summary <- DT::renderDT(server = TRUE, {
+    summary_out <- reactive({
       req(input$program, issues_by_program(), dq_main_time_proj())
-      
-      out <- dq_main_time_proj() |>
+      dq_main_time_proj() |>
         dplyr::group_by(Type, Issue, Guidance, ProjectName, ProjectID) |>
-        dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
-        dplyr::mutate(Type = factor(Type, levels = c("High Priority",
-                                              "Error",
-                                              "Warning"))) |>
+        dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
+        dplyr::mutate(Type = factor(Type, levels = c("High Priority", "Error", "Warning"))) |>
         dplyr::arrange(Type) |>
-        dplyr::left_join(issues_by_program(), by = c("ProjectID", "Issue")) |> 
-        dplyr::mutate(p = round(p, 3),
-                      ProjectID = NULL) |> 
-        dplyr::rename(`# of Issues` = n,
-                      Frequency = p) |> 
+        dplyr::left_join(issues_by_program(), by = c("ProjectID", "Issue")) |>
+        dplyr::mutate(p = round(p, 3), ProjectID = NULL) |>
+        dplyr::rename(`# of Issues` = n, Frequency = p) |>
         unique()
-        
-        
-        datatable_default(out, escape = FALSE) |> 
-          DT::formatStyle(
-            columns = "Frequency",
-            valueColumns = "rank",
-            background = styleDivergentBar(c(-.5,.5), color_pos = "#28a745", color_neg = "#dc3545")
-          ) |> 
-          datatable_options_update(options = list(columnDefs = list(list(
-            visible = FALSE,
-            targets = length(out)- 1
-          ))))
     })
+
+    output$dq_summary <- DT::renderDT(server = TRUE, {
+      out <- summary_out()
+      datatable_default(out, escape = FALSE) |>
+        DT::formatStyle(
+          columns = "Frequency",
+          valueColumns = "rank",
+          background = styleDivergentBar(c(-.5, .5), color_pos = "#28a745", color_neg = "#dc3545")
+        ) |>
+        datatable_options_update(options = list(columnDefs = list(list(
+          visible = FALSE,
+          targets = length(out) - 1
+        ))))
+    })
+
+    mod_dt_download_server(
+      "dl_summary",
+      data = reactive(dplyr::select(summary_out(), -dplyr::any_of("rank"))),
+      filename_prefix = "dq_summary"
+    )
     
   })
 }

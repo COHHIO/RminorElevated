@@ -1,3 +1,6 @@
+# RminorElevated 1.1.0
+- Full data downloads available on all data tables.
+
 # RminorElevated 0.3.0
 
 # RminorElevated 0.2.1

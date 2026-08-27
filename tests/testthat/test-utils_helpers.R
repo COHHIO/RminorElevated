@@ -32,3 +32,21 @@ test_that("safe_render re-throws shiny.silent.error instead of swallowing it", {
 # they need a reactive context. Test those with shiny::testServer() (or
 # shiny::reactiveConsole(TRUE) + isolate()) plus the same shinyalert mock --
 # that's a separate layer from these plain-function unit tests.
+
+test_that("strip_html removes tags and unescapes entities", {
+  expect_equal(strip_html("<b>Hello</b>"), "Hello")
+  expect_equal(strip_html("<a href='#'>link</a>"), "link")
+  expect_equal(strip_html("Tom &amp; Jerry"), "Tom & Jerry")
+  expect_equal(strip_html("&lt;tag&gt;"), "<tag>")
+  expect_equal(strip_html("it&#39;s"), "it's")
+  expect_equal(strip_html("say &quot;hi&quot;"), 'say "hi"')
+})
+
+test_that("strip_html trims surrounding whitespace and is vectorised", {
+  expect_equal(strip_html("  <p>x</p>  "), "x")
+  expect_equal(strip_html(c("<b>a</b>", "<i>b</i>")), c("a", "b"))
+})
+
+test_that("strip_html passes NA through unchanged", {
+  expect_true(is.na(strip_html(NA_character_)))
+})

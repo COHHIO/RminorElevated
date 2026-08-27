@@ -1,6 +1,6 @@
 Package: RminorElevated
 Title: RminorElevated
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(person('Stephen', 'Holsenbeck', email = 'hmisdataanalyst@cohhio.org', role = c('cre', 'aut')),
   person('Genelle', 'Denzin', email = 'genelledenzin@cohhio.org', role = c('aut')), person('Stephen', 'Holsenbeck', email = 'sholsen@alumni.emory.edu', role = c('ctb')))
 Description: An open-source HMIS custom reporting Shiny app
@@ -24,6 +24,7 @@ Imports:
     plotly,
     prettydoc,
     purrr,
+    readr,
     rlang,
     sass,
     scales,
@@ -31,7 +32,8 @@ Imports:
     shinyalert,
     shinyWidgets,
     usethis,
-    UU
+    UU,
+    writexl
 Remotes:
     COHHIO/HMIS,
     COHHIO/HMISdata,

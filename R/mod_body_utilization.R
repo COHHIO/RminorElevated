@@ -56,7 +56,8 @@ mod_body_utilization_ui <- function(id) {
       width = 12
     ),
     ui_row(
-      title = "Detail", 
+      title = "Detail",
+      mod_dt_download_ui(ns("dl_details")), 
       DT::dataTableOutput(ns("detail")),
       width = 12
     )
@@ -82,7 +83,8 @@ mod_body_utilization_server <- function(id){
       ReportStart() |>
         format(format = "%b%Y")
     })
-    server_debounce(input$program)
+    program <- server_debounce(input$program)
+
     uc_selected <- reactive({
       req(program(), ReportStart(), ReportEnd(), input$program)
       get_app_data("utilization_clients") |>
@@ -104,13 +106,16 @@ mod_body_utilization_server <- function(id){
     
     daysInMonth <- reactive(lubridate::days_in_month(input$date_range))
     
-    output$detail <-
-      DT::renderDT(server = TRUE, {
+    details_filtered <- reactive({
         req(input$program, uc_selected())
         uc_selected() |> 
-          rlang::set_names(c("Unique ID", "Bed Start", "Exit Date", paste("Bed Nights in", format(ReportStart(), "%B %Y")))) |> 
-          datatable_default(escape = FALSE)
+          rlang::set_names(c("Unique ID", "Bed Start", "Exit Date", paste("Bed Nights in", format(ReportStart(), "%B %Y"))))
       })
+    
+    output$detail <- DT::renderDT(server = TRUE, {
+      details_filtered() |>
+        datatable_default(escape = FALSE, export_buttons = FALSE)
+    })
     
     output$infobox_bn_served <-
       bs4Dash::renderInfoBox({
@@ -163,6 +168,8 @@ mod_body_utilization_server <- function(id){
                            bedUtilization)
         )
       })
+    
+    mod_dt_download_server("dl_details", data = details_filtered, filename_prefix = "utilization_detail")
   })
 }
 
