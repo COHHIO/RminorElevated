@@ -84,7 +84,7 @@ mod_body_utilization_server <- function(id){
         format(format = "%b%Y")
     })
     program <- server_debounce(input$program)
-    
+
     uc_selected <- reactive({
       req(program(), ReportStart(), ReportEnd(), input$program)
       get_app_data("utilization_clients") |>
@@ -114,7 +114,7 @@ mod_body_utilization_server <- function(id){
     
     output$detail <- DT::renderDT(server = TRUE, {
       details_filtered() |>
-        datatable_default(escape = FALSE)
+        datatable_default(escape = FALSE, export_buttons = FALSE)
     })
     
     output$infobox_bn_served <-

@@ -99,7 +99,7 @@ mod_body_client_counts_server <- function(id){
 
     output$dt_output <- DT::renderDT(server = TRUE, {
       details_filtered() |>
-        datatable_default(escape = FALSE)
+        datatable_default(escape = FALSE, export_buttons = FALSE)
     })
     
     counts_filtered <- reactive({
@@ -175,7 +175,7 @@ mod_body_client_counts_server <- function(id){
 
     output$summary <- DT::renderDT(server = TRUE, {
       counts_filtered() |>
-        datatable_default()
+        datatable_default(export_buttons = FALSE)
     })
 
     mod_dt_download_server("dl_details", data = details_filtered, filename_prefix = "client_details")
