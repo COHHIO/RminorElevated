@@ -24,6 +24,7 @@ Imports:
     plotly,
     prettydoc,
     purrr,
+    readr,
     rlang,
     sass,
     scales,
