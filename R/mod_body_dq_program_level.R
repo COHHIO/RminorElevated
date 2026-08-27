@@ -172,16 +172,7 @@ mod_body_dq_program_level_server <- function(id){
           shiny::tags$p(
             "Please correct Household Issues before moving on to make other Data Quality corrections.", dq_see_guidance()
           ),
-          datatable_default(HHIssues,
-            escape = FALSE,
-            add_options = list(
-              dom = 'Blfrtip',
-              buttons = list(
-                list(extend = "excel",    filename = "household_issues"),
-                list(extend = "csvHtml5", filename = "household_issues"),
-                    exportOptions = list(modifier = list(page = "all")))
-              )
-            )
+            datatable_default(HHIssues, escape = FALSE, filename = "household_issues")
           )
       }
       else {
@@ -211,16 +202,7 @@ mod_body_dq_program_level_server <- function(id){
                 dplyr::pull(value)
             )
           ),
-          datatable_default(DuplicateEEs,
-            escape = FALSE,
-            add_options = list(
-              dom = 'Blfrtip',
-              buttons = list(
-                list(extend = "excel",    filename = "duplicate_entry_exit_issues"),
-                list(extend = "csvHtml5", filename = "duplicate_entry_exit_issues"),
-                    exportOptions = list(modifier = list(page = "all")))
-              )
-          )
+          datatable_default(DuplicateEEs, escape = FALSE, filename = "duplicate_entry_exit_issues")
         )
       }
       else {
@@ -246,16 +228,7 @@ mod_body_dq_program_level_server <- function(id){
                    dplyr::pull(value)
                    )
         ),
-          datatable_default(MissingPathContact,
-            escape = FALSE,
-            add_options = list(
-              dom = 'Blfrtip',
-              buttons = list(
-                list(extend = "excel",    filename = "missing_path_contact"),
-                list(extend = "csvHtml5", filename = "missing_path_contact"),
-                    exportOptions = list(modifier = list(page = "all")))
-              )
-          )
+          datatable_default(MissingPathContact, escape = FALSE, filename = "missing_path_contact")
         )
       }
       else {
@@ -294,16 +267,7 @@ mod_body_dq_program_level_server <- function(id){
                 dplyr::pull(value)
             )
           ),
-          datatable_default(Ineligible,
-            escape = FALSE,
-            add_options = list(
-              dom = 'Blfrtip',
-              buttons = list(
-                list(extend = "excel",    filename = "check_eligibility"),
-                list(extend = "csvHtml5", filename = "check_eligibility"),
-                    exportOptions = list(modifier = list(page = "all")))
-              )
-          )
+          datatable_default(Ineligible, escape = FALSE, filename = "check_eligibility")
         )
       }
       else {
@@ -341,16 +305,7 @@ mod_body_dq_program_level_server <- function(id){
                           dplyr::filter(name == "project_stays") |> 
                           dplyr::pull(value))
           ),
-          datatable_default(OverlappingEEs,
-            escape = FALSE,
-            add_options = list(
-              dom = 'Blfrtip',
-              buttons = list(
-                list(extend = "excel",    filename = "overlapping_issues"),
-                list(extend = "csvHtml5", filename = "overlapping_issues"),
-                    exportOptions = list(modifier = list(page = "all")))
-              )
-          )
+          datatable_default(OverlappingEEs, escape = FALSE, filename = "overlapping_issues")
         )
       } else {
 
