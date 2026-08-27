@@ -23,77 +23,65 @@ if (!exists("create_accessors_s3")) {
   }
 }
 
-# Get app data
-APP_DATA <- load_app_data()
-set_app_data(APP_DATA)
+# Get app data. Populate from S3 when reachable, but never let a load
+# failure break package installation — this file runs at load time, and
+# CI / pkgdown / dev installs have no AWS credentials. Safe defaults first,
+# then try to overwrite them.
+APP_DATA <- NULL
+APP_META <- list(refresh_time = NA, loaded_at = Sys.time())
+programs <- NULL
+regions <- NULL
+counties <- NULL
+qpr_tab_choices <- NULL
 
-# Get refresh timestamp
-APP_META <- list(
-  refresh_time = get_s3_refresh_date(),
-  loaded_at = Sys.time()
-)
+tryCatch({
+  APP_DATA <- load_app_data()
+  set_app_data(APP_DATA)
 
-# names() only — see get_app_data() docs on the raw/undecorated NULL form
-app_data_names <- names(get_app_data())
+  APP_META <- list(
+    refresh_time = get_s3_refresh_date(),
+    loaded_at = Sys.time()
+  )
 
-if ("validation" %in% app_data_names) {
-  programs <- get_app_data("validation") |>
-    dplyr::distinct(ProjectID, ProjectName) |>
-    dplyr::arrange(ProjectName) |> 
+  app_data_names <- names(get_app_data())
+
+  if ("validation" %in% app_data_names) {
+    programs <- get_app_data("validation") |>
+      dplyr::distinct(ProjectID, ProjectName) |>
+      dplyr::arrange(ProjectName) |>
       {\(x) {rlang::set_names(x$ProjectID, x$ProjectName)}}()
-  
-}
-  
-if ("Regions" %in% app_data_names) {
-  regions <- get_app_data("Regions") |> 
-    dplyr::distinct(Region, RegionName) |> 
-    {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
-  counties <- sort(get_app_data("Regions")$County)
-  .qpr_leavers <- get_app_data("qpr_leavers")
-  qpr_tab_choices <- regions |>
-    {\(x) {list(
-      community_need_ph = list(
-        choices = x
-      ),
-      community_need_lh = list(
-        choices = x
-      ),
-      length_of_stay = list(
-        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0, 1, 2, 8, 13)])
-      ),
-      permanent_housing = list(
-        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0:4, 8:9, 12:13)])
-      ),
-      temp_permanent_housing = list(
-        choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(4)])
-      ),
-      noncash_benefits = list(
-        choices = unique(get_app_data("qpr_benefits")$ProjectName)
-      ),
-      health_insurance = list(
-        choices = unique(get_app_data("qpr_benefits")$ProjectName)
-      ),
-      income_growth = list(
-        choices = unique(get_app_data("qpr_income")$ProjectName)
-      ),
-      rrh_placement = list(
-        choices = unique(sort(
-          get_app_data("qpr_rrh_enterers")$ProjectName
-        ))
-      ),
-      reentries = list(
-        choices = unique(sort(
-          get_app_data("qpr_reentries")$ExitingHP
-        ))
-      ),
-      rrh_spending = list(
-        choices = unique(sort(
-          get_app_data("qpr_spending")$OrganizationName
-        ))
-      )
-    )}}()
-  
-}
+  }
+
+  if ("Regions" %in% app_data_names) {
+    regions <- get_app_data("Regions") |>
+      dplyr::distinct(Region, RegionName) |>
+      {\(x) {rlang::set_names(x$Region, x$RegionName)}}()
+    counties <- sort(get_app_data("Regions")$County)
+    .qpr_leavers <- get_app_data("qpr_leavers")
+    qpr_tab_choices <- regions |>
+      {\(x) {list(
+        community_need_ph = list(choices = x),
+        community_need_lh = list(choices = x),
+        length_of_stay = list(
+          choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0, 1, 2, 8, 13)])
+        ),
+        permanent_housing = list(
+          choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(0:4, 8:9, 12:13)])
+        ),
+        temp_permanent_housing = list(
+          choices = unique(.qpr_leavers$ProjectName[.qpr_leavers$ProjectType %in% c(4)])
+        ),
+        noncash_benefits = list(choices = unique(get_app_data("qpr_benefits")$ProjectName)),
+        health_insurance = list(choices = unique(get_app_data("qpr_benefits")$ProjectName)),
+        income_growth = list(choices = unique(get_app_data("qpr_income")$ProjectName)),
+        rrh_placement = list(choices = unique(sort(get_app_data("qpr_rrh_enterers")$ProjectName))),
+        reentries = list(choices = unique(sort(get_app_data("qpr_reentries")$ExitingHP))),
+        rrh_spending = list(choices = unique(sort(get_app_data("qpr_spending")$OrganizationName)))
+      )}}()
+  }
+}, error = function(e) {
+  message("Skipping app-data init at load time (no S3 access?): ", conditionMessage(e))
+})
 
 #' @title Living Situation Reference Number Translation `r lifecycle::badge("deprecated")`
 #' @description Deprecated in favor of `hud_translations`. Return a human-readable living situation character vector provided with an integer reference number

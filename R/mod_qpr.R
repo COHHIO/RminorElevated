@@ -22,7 +22,7 @@ strip_id <- function(id) {
 #QUESTION Should there be defaults for options?
 #' @param date_choices \code{(logical)} whether to show a date range picker
 
-
+#' @keywords internal
 mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::caller_env()$ns) {
   # Create labeled Quarter List
   # .quarter_labels <- rev(unique(zoo::Sys.yearqtr() - 6 / 4:zoo::Sys.yearqtr() 
@@ -104,7 +104,7 @@ mod_qpr_ui <- function(id, choices = NULL, date_choices = NULL, ns = rlang::call
 #'  \code{list(h4(input$region), h4(paste(ReportStart, "to", ReportEnd)))} if 
 #'  unspecified. 
 
-
+#' @keywords internal
 mod_qpr_server <- function(id, header, ...){
   .id <- strip_id(id)
 

@@ -50,6 +50,7 @@ compare_image_sizes <- function(new = "data/Rminor_elevated.RData", old = "data/
 #' @param x \code{(character)} All symbols to change
 #' @param file \code{(character)} Path to file in which to change them
 #' @return \code{(character)} vector of text in the file with the new function calls
+#' @keywords internal
 sym2function <- function(x, file) {
   .parse <- parse(file)
   .server_data <- utils::getParseData(.parse)

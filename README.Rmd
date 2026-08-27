@@ -5,7 +5,7 @@ output: github_document
 # RminorElevated
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Overview
@@ -13,6 +13,8 @@ output: github_document
 RminorElevated is a Shiny application that provides HMIS data quality monitoring and reporting tools for the Ohio Balance of State Continuum of Care (CoC) and the Mahoning County CoC. The application helps HMIS users verify that their data is accurate and complete through interactive reports and visualizations.
 
 **Note:** This application displays client-level data (without Personally Identifying Information) and requires authentication for access.
+
+📖 **Developer documentation**, including the function reference and an architecture overview, is published at <https://cohhio.github.io/RminorElevated/>.
 
 ## Key Features
 
@@ -53,13 +55,9 @@ The production application is deployed at the [RminorElevated website](https://o
 ### Running Locally (for development)
 
 ```r
-library(RminorElevated)
-
-# Ensure you have proper AWS credentials configured
-# and that the daily data pipeline has run
-
-# Run the application
-shiny::runApp()
+# Ensure AWS credentials are configured and the daily data
+# pipeline has run, then launch the app via its entry point:
+RminorElevated::run_app()
 ```
 
 ## Data Pipeline
