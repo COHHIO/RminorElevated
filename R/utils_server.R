@@ -366,13 +366,16 @@ mod_dt_download_ui <- function(id) {
 
 mod_dt_download_server <- function(id, data, filename_prefix = "export") {
   shiny::moduleServer(id, function(input, output, session) {
+    clean <- shiny::reactive({
+      data() |> dplyr::mutate(dplyr::across(where(is.character), strip_html))
+    })
     output$csv <- shiny::downloadHandler(
       filename = function() paste0(filename_prefix, "_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(data(), file, na = "")
+      content  = function(file) readr::write_csv(clean(), file, na = "")
     )
     output$excel <- shiny::downloadHandler(
       filename = function() paste0(filename_prefix, "_", Sys.Date(), ".xlsx"),
-      content  = function(file) writexl::write_xlsx(data(), file)
+      content  = function(file) writexl::write_xlsx(clean(), file)
     )
   })
 }
