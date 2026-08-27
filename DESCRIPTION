@@ -31,7 +31,8 @@ Imports:
     shinyalert,
     shinyWidgets,
     usethis,
-    UU
+    UU,
+    writexl
 Remotes:
     COHHIO/HMIS,
     COHHIO/HMISdata,
