@@ -99,14 +99,19 @@ datatable_default <- function(data,
       }"
     )
     options$buttons <- lapply(options$buttons, function(btn) {
+      # promote plain-string buttons to list form
       if (identical(btn, "excel")) {
-        btn <- list(extend = "excel", customizeData = excel_js)
+        btn <- list(extend = "excel")
       } else if (identical(btn, "csvHtml5")) {
         btn <- list(extend = "csvHtml5")
       }
-      # add a filename to excel / csv buttons that don't set one themselves
-      if (is.list(btn) && !is.null(btn$extend) && btn$extend %in% c("excel", "csvHtml5")) {
-        if (is.null(btn$filename)) {
+      if (is.list(btn) && !is.null(btn$extend)) {
+        # any excel button gets the zero-width-space fix unless it already sets one
+        if (identical(btn$extend, "excel") && is.null(btn$customizeData)) {
+          btn$customizeData <- excel_js
+        }
+        # stamp a filename onto file-producing buttons that don't set one
+        if (btn$extend %in% c("excel", "csvHtml5") && is.null(btn$filename)) {
           btn$filename <- if (identical(btn$text, "Full CSV")) paste0(filename, "_full") else filename
         }
       }
