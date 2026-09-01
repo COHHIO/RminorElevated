@@ -96,7 +96,7 @@ mod_body_dq_system_summary_server <- function(id){
         # Data tables
         fluidRow(
           bs4Dash::column(6,
-                          datatable_default(current$aps_no_referrals, add_options = list(pageLength = 20))
+                          datatable_default(dq_aps_no_referrals, add_options = list(pageLength = 20))
           ),
           bs4Dash::column(6,
                           datatable_default(dq_aps_referrals, add_options = list(pageLength = 20))
