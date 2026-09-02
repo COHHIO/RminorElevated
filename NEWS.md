@@ -1,3 +1,6 @@
+# RminorElevated 1.2.0
+- Data Quality System Summary can now be viewed across selectable time windows (last year, 6 months, 3 months, or last month).
+
 # RminorElevated 1.1.0
 - Full data downloads available on all data tables.
 
