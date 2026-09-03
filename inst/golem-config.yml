@@ -1,10 +1,11 @@
 default:
   golem_name: RminorElevated
   golem_version: 0.0.0.9000
-  app_prod: no
+  app_prod: yes
   data_env: RME
 
 production:
+  inherits: default
   app_prod: yes
   data_env: RME
 
