@@ -1,7 +1,12 @@
 # Dockerfile for Shinyapps.io Deployment Runner
 FROM r-base:4.4.2
 
-# Install system dependencies with better error handling
+# Confirm the base codename before trusting the URL below:
+#   docker run --rm r-base:4.4.2 sh -c 'cat /etc/os-release | grep VERSION_CODENAME'
+# r-base:4.4.2 should be Debian bookworm. If it's trixie, swap the codename below.
+ENV P3M=https://packagemanager.posit.co/cran/__linux__/bookworm/latest
+
+# Install system dependencies (still needed at runtime even for binary packages)
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get update -y && \
@@ -25,11 +30,15 @@ RUN apt-get clean && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install renv and rsconnect
-RUN R -e "install.packages(c('renv', 'rsconnect'), repos = c(CRAN = 'https://cloud.r-project.org'))"
+# Install renv and rsconnect (as binaries)
+RUN R -e "install.packages(c('renv', 'rsconnect'), repos = '$P3M')"
 
 # Create app directory
 WORKDIR /app
+
+# Force renv to restore from P3M binaries instead of compiling from source.
+# This is the line that kills the ~46 min duckdb build in the deploy path.
+ENV RENV_CONFIG_REPOS_OVERRIDE=$P3M
 
 # Copy renv.lock and restore to default library paths (global)
 COPY renv.lock /app/renv.lock
