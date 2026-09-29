@@ -28,3 +28,5 @@ appDependencies.R
 /.quarto/
 .positai
 docs
+
+.config_active

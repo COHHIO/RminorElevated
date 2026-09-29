@@ -2,8 +2,13 @@
 # To deploy, run: rsconnect::deployApp()
 # Or use the blue button on top of this file
 
-# was: Sys.setenv(R_CONFIG_ACTIVE = "dev")
-message("Active config: ", Sys.getenv("R_CONFIG_ACTIVE", unset = Sys.getenv("GOLEM_CONFIG_ACTIVE", unset = "default")))
+# Deploy script writes .config_active with the target's profile.
+# An explicit env var (e.g. local dev runs) takes precedence.
+if (Sys.getenv("GOLEM_CONFIG_ACTIVE") == "" && file.exists(".config_active")) {
+  Sys.setenv(GOLEM_CONFIG_ACTIVE = readLines(".config_active", n = 1))
+}
+message("Active config: ", Sys.getenv("GOLEM_CONFIG_ACTIVE",
+                                      unset = Sys.getenv("R_CONFIG_ACTIVE", unset = "default")))
 
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 message("Package loaded successfully")

@@ -15,9 +15,9 @@ library(rsconnect)
 SHINYAPPS_ACCOUNT <- Sys.getenv("SHINYAPPS_ACCOUNT")
 SHINYAPPS_TOKEN <- Sys.getenv("SHINYAPPS_TOKEN")
 SHINYAPPS_SECRET <- Sys.getenv("SHINYAPPS_SECRET")
-APP_NAME <- "Rminor_elevated"
+APP_NAME <- Sys.getenv("SHINYAPPS_NAME", unset = "Rminor_elevated")
 
-cat("Starting deployment process...\n")
+cat("Deploying to app:", APP_NAME, "\n")
 
 # 1. Configure rsconnect authentication
 cat("Configuring rsconnect authentication...\n")
@@ -35,6 +35,11 @@ tryCatch({
 
 # Enable more verbose output and warnings
 options(warn = 1)
+
+profile <- if (APP_NAME == "Rminor_elevated") "production" else "dev"
+writeLines(profile, ".config_active")
+on.exit(unlink(".config_active"), add = TRUE)
+cat("Config profile:", profile, "\n")
 
 # 2. Deploy the app
 cat("Deploying app to shinyapps.io...\n")
